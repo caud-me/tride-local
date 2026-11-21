@@ -66,6 +66,12 @@ body {
     flex-direction: column;
 }
 
+@media (min-width: 600px) {
+    .app {
+        max-width: 100%;
+    }
+}
+
 @keyframes trSlideForward {
     from {
         opacity: 0;
@@ -130,6 +136,11 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.navigation-bar > h1 {
+    font-size: inherit;
+    font-weight: inherit;
 }
 
 .story-bar {
@@ -661,9 +672,17 @@ select optgroup {
     text-align: center;
 }
 
-.empty-state > .icon {
+.empty-state > .icon,
+i.icon.as-big {
     font-size: 40px;
     color: var(--tr-mid);
+    align-self: center;
+}
+
+.list-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tr-xs);
 }
 
 /* typography & utilities */
@@ -697,6 +716,21 @@ select optgroup {
     font-weight: 500;
     font-size: 24px;
     text-align: center;
+    white-space: pre-line;
+}
+
+.notif-bell {
+    position: relative;
+}
+
+.notif-dot {
+    position: absolute;
+    top: var(--tr-xs);
+    right: var(--tr-xs);
+    width: var(--tr-s);
+    height: var(--tr-s);
+    border-radius: 50%;
+    background-color: var(--tr-critical);
 }
 
 .hidden {

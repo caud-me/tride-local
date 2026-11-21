@@ -5,8 +5,10 @@
     max-width: 1080px;
 }
 
-.app:has(.content.justify-center) {
+.content.justify-center > * {
+    width: 100%;
     max-width: 440px;
+    align-self: center;
 }
 
 .card-grid {

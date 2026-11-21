@@ -16,27 +16,19 @@ function apiMarkAllNotificationsRead() {
 function createNotificationBellButton() {
     const bellBtn = trIcon("\uEA8F", {
         label: "Notifications",
+        className: "notif-bell",
         onClick: function () {
             pushPage(renderNotificationsPage, {});
         }
     });
-    bellBtn.style.position = "relative";
 
-    const dot = trEl("span", "", "");
+    const dot = trEl("span", "notif-dot hidden", "");
     dot.setAttribute("aria-hidden", "true");
-    dot.style.position = "absolute";
-    dot.style.top = "6px";
-    dot.style.right = "6px";
-    dot.style.width = "8px";
-    dot.style.height = "8px";
-    dot.style.borderRadius = "50%";
-    dot.style.backgroundColor = "#ff453a";
-    dot.style.display = "none";
     bellBtn.appendChild(dot);
 
     apiListNotifications().then(function (data) {
         if (data && data.unreadCount > 0) {
-            dot.style.display = "block";
+            dot.classList.remove("hidden");
         }
     }).catch(function () {
         /* ignore if offline or unauthenticated */
