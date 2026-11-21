@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRIDE</title>
+    <meta name="theme-color" content="#101010">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Tride</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="assets/icons/Tride.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
     <link rel="stylesheet" href="components/style.css">
     <link rel="stylesheet" href="components/responsive-experimental.css">
     <link rel="stylesheet" href="components/distortion-wave.css">
@@ -20,5 +27,12 @@
     <script src="pages/units.js"></script>
     <script src="pages/notifications.js"></script>
     <script src="app.js"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", function () {
+                navigator.serviceWorker.register("./sw.js").catch(function () {});
+            });
+        }
+    </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
-# TRIDE Local (`localStorage` Edition)
+# Tride Local (`localStorage` Edition)
 
-1:1 frontend mimic of the TRIDE full-stack web application backed entirely by `localStorage` (`tride_local_db_v1` and `tride_local_notifications_v1`), with no backend server or database required.
+1:1 frontend mimic of the Tride full-stack web application backed entirely by `localStorage` (`tride_local_db_v1` and `tride_local_notifications_v1`), with no backend server or database required.
 
 ## Entrypoints
 

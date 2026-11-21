@@ -1,0 +1,41 @@
+{
+  "name": "Tride",
+  "short_name": "Tride",
+  "description": "Tricycle Drivers & Operators Federation Management",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#101010",
+  "theme_color": "#101010",
+  "icons": [
+    {
+      "src": "./assets/icons/Tride.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Member App",
+      "url": "./index.html"
+    },
+    {
+      "name": "Admin Portal",
+      "url": "./admin.html"
+    }
+  ]
+}
