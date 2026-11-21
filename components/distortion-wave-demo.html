@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIDE Fullscreen Distortion Wave</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- based on responsive-experimental.txt, remove link tag, drop link tag to remove wave style -->
+    <link rel="stylesheet" href="distortion-wave.css">
+</head>
+<body>
+    <div id="app" class="app"></div>
+    <script src="components.js"></script>
+    <!-- based on responsive-experimental.txt, remove link tag, drop script tag to remove wave logic -->
+    <script src="distortion-wave.js"></script>
+    <script>
+        /* tunable fullscreen demo settings */
+        const DEFAULT_WAVE_TYPE = "center";
+        const DEFAULT_WAVE_PALETTE = "colorful";
+        const DEFAULT_WAVE_SPEED = 1;
+        const CARD_MAX_WIDTH = "360px";
+        const PANEL_MAX_WIDTH = "420px";
+        const LABEL_TRIGGER = "Trigger Wave";
+        const LABEL_REVERSE = "Reverse Wave";
+
+        const appEl = document.getElementById("app");
+
+        // based on COMPONENTS.md, trBrandCard, build first fullscreen scene with centered brand card
+        const logoOpts = { text: "TRIDE", subtext: "WAVE ENGINE" };
+        const standbyLogo = trBrandLogo(logoOpts);
+        const standbyTitle = trEl("p", "as-big bold text-center", "Ready to transmit");
+        const standbySub = trEl("small", "text-center", "Tap the button below to send a fullscreen wave");
+
+        const cardOpts = {
+            logoText: "TRIDE",
+            subtext: "NODE 04",
+            topRight: "STANDBY",
+            title: "$2,480.00",
+            subtitle: "Vault Balance",
+            bottomRight: "VERIFIED"
+        };
+        const focusCard = trBrandCard(cardOpts);
+        focusCard.style.maxWidth = CARD_MAX_WIDTH;
+
+        const standbyScene = trEl("div", "fullscreen-stage has-hud vbox center gap-m");
+        const standbyItems = [standbyLogo, standbyTitle, standbySub, focusCard];
+        trAppend(standbyScene, standbyItems);
+
+        // based on COMPONENTS.md, trStatGroup, build second fullscreen scene with metric tile row
+        const activeBanner = trBanner("Transmission confirmed across all nodes");
+        activeBanner.style.width = "100%";
+        activeBanner.style.maxWidth = PANEL_MAX_WIDTH;
+
+        const activeTitle = trEl("p", "as-big bold text-center", "Transfer complete");
+        const activeSub = trEl("small", "text-center", "Wave settled across the full screen");
+
+        const statOne = { value: "$2,480", label: "Sent" };
+        const statTwo = { value: "60 FPS", label: "WebGL2" };
+        const statThree = { value: "0.0 ms", label: "Lag" };
+        const statList = [statOne, statTwo, statThree];
+        const statsRow = trStatGroup(statList);
+        statsRow.style.width = "100%";
+        statsRow.style.maxWidth = PANEL_MAX_WIDTH;
+
+        const activeScene = trEl("div", "fullscreen-stage has-hud vbox center gap-m");
+        const activeItems = [activeBanner, activeTitle, activeSub, statsRow];
+        trAppend(activeScene, activeItems);
+
+        let waveCtrl = null;
+        let isSent = false;
+
+        function onActionClick(event) {
+            if (!waveCtrl) {
+                return;
+            }
+            if (!isSent) {
+                isSent = true;
+                actionBtn.textContent = LABEL_REVERSE;
+                waveCtrl.play(event);
+            } else {
+                isSent = false;
+                actionBtn.textContent = LABEL_TRIGGER;
+                waveCtrl.reverse(event);
+            }
+        }
+
+        const actionBtnOpts = {
+            label: LABEL_TRIGGER,
+            variant: "primary",
+            onClick: onActionClick
+        };
+        const actionBtn = trButton(actionBtnOpts);
+
+        const typeOptCenter = { key: "center", label: "Center" };
+        const typeOptVertical = { key: "vertical", label: "Vertical" };
+        const typeOptHorizontal = { key: "horizontal", label: "Horizontal" };
+        const typeItems = [typeOptCenter, typeOptVertical, typeOptHorizontal];
+
+        function onTypeChange(key) {
+            waveCtrl.setType(key);
+        }
+
+        const typeTabOpts = {
+            equal: true,
+            activeKey: DEFAULT_WAVE_TYPE,
+            items: typeItems,
+            onChange: onTypeChange
+        };
+        const typeTabs = trTabs(typeTabOpts);
+
+        const paletteOptColorful = { key: "colorful", label: "Colorful" };
+        const paletteOptMetal = { key: "metal", label: "Metal" };
+        const paletteOptGreen = { key: "green", label: "Green" };
+        const paletteOptMono = { key: "monochromatic", label: "Monochromatic" };
+        const paletteItems = [paletteOptColorful, paletteOptMetal, paletteOptGreen, paletteOptMono];
+
+        function onPaletteChange(key) {
+            waveCtrl.setPalette(key);
+        }
+
+        const paletteTabOpts = {
+            equal: true,
+            activeKey: DEFAULT_WAVE_PALETTE,
+            items: paletteItems,
+            onChange: onPaletteChange
+        };
+        const paletteTabs = trTabs(paletteTabOpts);
+
+        const speedOptQuarter = { key: "0.25", label: "0.25x" };
+        const speedOptHalf = { key: "0.5", label: "0.5x" };
+        const speedOptNormal = { key: "1", label: "1x" };
+        const speedItems = [speedOptQuarter, speedOptHalf, speedOptNormal];
+
+        function onSpeedChange(key) {
+            const numericSpeed = parseFloat(key);
+            waveCtrl.setSpeed(numericSpeed);
+        }
+
+        const speedTabOpts = {
+            equal: true,
+            activeKey: String(DEFAULT_WAVE_SPEED),
+            items: speedItems,
+            onChange: onSpeedChange
+        };
+        const speedTabs = trTabs(speedTabOpts);
+
+        const hudDock = trEl("div", "distortion-wave-hud vbox gap-s");
+        const hudItems = [typeTabs, paletteTabs, speedTabs, actionBtn];
+        trAppend(hudDock, hudItems);
+
+        // based on COMPONENTS.md, trDistortionWave, mount fullscreen wave across entire viewport
+        const waveOpts = {
+            children: standbyScene,
+            revealedContent: activeScene,
+            source: actionBtn,
+            overlay: hudDock,
+            type: DEFAULT_WAVE_TYPE,
+            palette: DEFAULT_WAVE_PALETTE,
+            speed: DEFAULT_WAVE_SPEED,
+            className: "is-fullscreen",
+            cornerRadius: 0
+        };
+        waveCtrl = trDistortionWave(waveOpts);
+
+        appEl.appendChild(waveCtrl.el);
+    </script>
+</body>
+</html>

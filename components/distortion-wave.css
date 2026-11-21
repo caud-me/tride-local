@@ -1,0 +1,122 @@
+/* distortion wave transition and success overlay styles */
+/* based on style.css, isolation, stack child layer inside box without leak */
+.distortion-wave {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    border-radius: var(--tr-m);
+    overflow: hidden;
+}
+
+.distortion-wave-view {
+    grid-area: 1 / 1;
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+    background-color: var(--tr-dark);
+}
+
+/* ive looked up on the internet on this one, hide inactive view to keep box size for picture */
+.distortion-wave-view.is-hidden {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.distortion-wave-canvas {
+    grid-area: 1 / 1;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 120ms ease;
+}
+
+.distortion-wave-canvas.is-active {
+    opacity: 1;
+}
+
+.distortion-wave-overlay {
+    grid-area: 1 / 1;
+    position: relative;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.distortion-wave-overlay > * {
+    pointer-events: auto;
+}
+
+
+/*  */
+
+/* <patch-3> */
+/* based on style.css, position, pin wave container across full screen without outer scroll */
+.distortion-wave.is-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    width: 100vw;
+    height: 100dvh;
+    grid-template-columns: minmax(0, 100%);
+    grid-template-rows: minmax(0, 100%);
+    border-radius: 0;
+    opacity: 1;
+    transition: opacity 180ms ease;
+}
+
+.distortion-wave.is-fullscreen > .distortion-wave-view {
+    min-height: 0;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.distortion-wave.is-fullscreen.is-closing {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.fullscreen-backdrop {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--tr-dark);
+}
+
+.fullscreen-stage {
+    width: 100%;
+    min-height: 100%;
+    background-color: var(--tr-dark);
+    padding: var(--tr-l);
+}
+
+.fullscreen-stage.has-hud {
+    padding-bottom: calc(var(--tr-xxl) + var(--tr-xxl) + var(--tr-l));
+}
+
+.fullscreen-stage-card,
+.fullscreen-stage-actions {
+    width: 100%;
+    max-width: 440px;
+}
+
+.fullscreen-stage-actions {
+    margin-top: var(--tr-s);
+}
+
+/* based on style.css, --tr-dark1, float control dock above wave canvas at screen bottom */
+.distortion-wave-hud {
+    position: fixed;
+    left: 50%;
+    bottom: var(--tr-l);
+    transform: translateX(-50%);
+    width: calc(100% - var(--tr-l));
+    max-width: 440px;
+    padding: var(--tr-m);
+    background-color: var(--tr-dark1);
+    border: 1px solid var(--tr-mid-op40);
+    border-radius: var(--tr-l);
+    box-shadow: var(--tr-shadow);
+}
+/* </patch-3> */

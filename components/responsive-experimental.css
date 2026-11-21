@@ -1,0 +1,51 @@
+/* experimental tablet and desktop layout (remove link tag to revert to mobile shell) */
+
+.app {
+    width: 100%;
+    max-width: 1080px;
+}
+
+.app:has(.content.justify-center) {
+    max-width: 440px;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+    gap: var(--tr-m);
+    align-items: start;
+}
+
+.card-grid > .empty-state,
+.card-grid > .banner {
+    grid-column: 1 / -1;
+}
+
+@media (min-width: 520px) {
+    .app {
+        padding-inline: var(--tr-m);
+    }
+}
+
+@media (min-width: 640px) {
+    .sheet-backdrop {
+        align-items: center;
+        padding: var(--tr-m);
+    }
+
+    .sheet {
+        max-width: 480px;
+        border-bottom: 1px solid var(--tr-mid-op20);
+        border-radius: var(--tr-l);
+        transform: scale(1);
+        transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms ease;
+    }
+
+    .sheet-backdrop.hidden .sheet {
+        transform: scale(0.96);
+    }
+
+    .sheet-handle {
+        display: none;
+    }
+}
