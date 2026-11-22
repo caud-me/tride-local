@@ -60,7 +60,7 @@ function trArrayBufferToBase64(buffer) {
     return btoa(binary);
 }
 
-async function trInlineFontUrls(cssText) {
+async function trInlineFontUrls(cssText, baseHref) {
     const matches = cssText.match(/url\(([^)]+\.(?:ttf|woff2?|otf)[^)]*)\)/gi);
     if (!matches || matches.length === 0) {
         return cssText;
@@ -77,7 +77,8 @@ async function trInlineFontUrls(cssText) {
         }
         seen[inner] = true;
         try {
-            const res = await fetch(inner);
+            const fetchUrl = baseHref ? new URL(inner, baseHref).href : inner;
+            const res = await fetch(fetchUrl);
             if (!res.ok) {
                 continue;
             }
@@ -101,24 +102,26 @@ function trCollectDocumentCss() {
     if (cachedCssPromise !== null) {
         return cachedCssPromise;
     }
-    let combined = "";
+    const jobs = [];
     const sheets = document.styleSheets;
     const sheetCount = sheets.length;
     for (let i = 0; i < sheetCount; i += 1) {
         const sheet = sheets[i];
+        let sheetCss = "";
         try {
             const rules = sheet.cssRules;
             const ruleCount = rules.length;
             for (let j = 0; j < ruleCount; j += 1) {
-                combined = combined + rules[j].cssText + "\n";
+                sheetCss = sheetCss + rules[j].cssText + "\n";
             }
+            jobs.push(trInlineFontUrls(sheetCss, sheet.href || window.location.href));
         } catch (err) {
             /* skip external sheet that block script read */
         }
     }
-    cachedCssPromise = trInlineFontUrls(combined).then(function (inlined) {
-        cachedDocCss = inlined;
-        return inlined;
+    cachedCssPromise = Promise.all(jobs).then(function (parts) {
+        cachedDocCss = parts.join("\n");
+        return cachedDocCss;
     });
     return cachedCssPromise;
 }

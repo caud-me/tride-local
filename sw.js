@@ -1,4 +1,4 @@
-const TRIDE_CACHE_NAME = "tride-local-v5";
+const TRIDE_CACHE_NAME = "tride-local-v6";
 const PRECACHE_URLS = [
     "./",
     "./index.html",
@@ -79,19 +79,16 @@ self.addEventListener("fetch", function (event) {
     }
 
     event.respondWith(
-        caches.match(req).then(function (cached) {
-            if (cached) {
-                return cached;
+        fetch(req).then(function (res) {
+            if (res && res.status === 200 && res.type === "basic") {
+                const copy = res.clone();
+                caches.open(TRIDE_CACHE_NAME).then(function (cache) {
+                    cache.put(req, copy);
+                });
             }
-            return fetch(req).then(function (res) {
-                if (res && res.status === 200 && res.type === "basic") {
-                    const copy = res.clone();
-                    caches.open(TRIDE_CACHE_NAME).then(function (cache) {
-                        cache.put(req, copy);
-                    });
-                }
-                return res;
-            });
+            return res;
+        }).catch(function () {
+            return caches.match(req);
         })
     );
 });
