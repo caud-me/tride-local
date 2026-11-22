@@ -1,11 +1,3 @@
-@font-face {
-    font-family: "Segoe Fluent Icons";
-    src: url("../assets/fonts/SegoeIcons.ttf") format("truetype");
-    font-weight: normal;
-    font-style: normal;
-    font-display: block;
-}
-
 /* reset & tokens */
 * {
     padding: 0;
@@ -41,6 +33,10 @@
     --tr-xxl: 96px;
 
     --tr-phone-width: 393px;
+
+    --tr-rise-distance: var(--tr-s);
+    --tr-rise-duration: 240ms;
+    --tr-rise-delay: 2s;
 }
 
 html, body {
@@ -116,6 +112,34 @@ body {
 .app.anim-root > main,
 .app.anim-root > .content {
     animation: trFadeRoot 180ms ease;
+}
+
+@keyframes trRiseUp {
+    from {
+        opacity: 0;
+        transform: translateY(var(--tr-rise-distance));
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.anim-rise-pending {
+    opacity: 0;
+    transform: translateY(var(--tr-rise-distance));
+    pointer-events: none;
+}
+
+.anim-rise {
+    animation: trRiseUp var(--tr-rise-duration) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+button.anim-rise,
+.button-primary.anim-rise,
+.button-regular.anim-rise,
+.anim-rise.anim-delayed {
+    animation-delay: var(--tr-rise-delay);
 }
 
 .navigation-bar, .tab-bar, .content {

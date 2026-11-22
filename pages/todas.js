@@ -137,11 +137,18 @@ function renderTodaDetailPage(params) {
             });
         }
 
-        main.appendChild(trListCard([
+        const todaInfoRows = [
             trPropertyRow({ label: "TODA ID", value: toda.TODA_ID }),
             trPropertyRow({ label: "Route", value: toda.Route }),
             presRow
-        ]));
+        ];
+        if (typeof appendExtraColumnRows === "function") {
+            appendExtraColumnRows(todaInfoRows, toda, [
+                "TODA_ID", "TODA_Name", "Route", "Federation_ID",
+                "President_Member_ID", "Pres_First_Name", "Pres_Last_Name", "Member_Count"
+            ]);
+        }
+        main.appendChild(trListCard(todaInfoRows));
 
         const membersRow = trActionRow({
             label: "Members in " + toda.TODA_Name + " (" + members.length + ")",

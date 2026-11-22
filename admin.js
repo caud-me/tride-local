@@ -26,8 +26,23 @@ function buildPresidentTab(homeData) {
         }
     });
     const navCard = trListCard([membersRow, unitsRow]);
+    const items = [stats, navCard];
 
-    return [stats, navCard];
+    if (typeof renderExportPage === "function") {
+        const exportRow = trActionRow({
+            label: "Export data (Experimental)",
+            onClick: function () {
+                pushPage(renderExportPage, {
+                    role: "president",
+                    scopeTodaId: toda.TODA_ID,
+                    scopeTodaName: toda.TODA_Name
+                });
+            }
+        });
+        items.push(trListCard([exportRow]));
+    }
+
+    return items;
 }
 
 function buildSecretaryTab(homeData) {
@@ -60,7 +75,23 @@ function buildSecretaryTab(homeData) {
     });
 
     const navCard = trListCard([membersRow, unitsRow, todasRow]);
-    return [stats, navCard];
+    const items = [stats, navCard];
+
+    if (typeof renderExportPage === "function") {
+        const exportRow = trActionRow({
+            label: "Export data (Experimental)",
+            onClick: function () {
+                pushPage(renderExportPage, {
+                    role: "secretary",
+                    scopeTodaId: null,
+                    scopeTodaName: null
+                });
+            }
+        });
+        items.push(trListCard([exportRow]));
+    }
+
+    return items;
 }
 
 function renderHomePage(params) {

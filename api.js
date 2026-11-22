@@ -406,6 +406,57 @@ function isNoticeVisible(item, caller) {
     return false;
 }
 
+const TRIDE_LOCAL_SCHEMA = {
+    federation: {
+        tableName: "federation",
+        primaryKey: "Federation_ID",
+        columnNames: ["Federation_ID", "Federation_Name", "Secretary_Member_ID"],
+        columns: [
+            { name: "Federation_ID", position: 1, nullable: false, dataType: "varchar", isPrimary: true },
+            { name: "Federation_Name", position: 2, nullable: false, dataType: "varchar", isPrimary: false },
+            { name: "Secretary_Member_ID", position: 3, nullable: true, dataType: "varchar", isPrimary: false }
+        ]
+    },
+    toda_association: {
+        tableName: "toda_association",
+        primaryKey: "TODA_ID",
+        columnNames: ["TODA_ID", "TODA_Name", "Route", "Federation_ID", "President_Member_ID"],
+        columns: [
+            { name: "TODA_ID", position: 1, nullable: false, dataType: "varchar", isPrimary: true },
+            { name: "TODA_Name", position: 2, nullable: false, dataType: "varchar", isPrimary: false },
+            { name: "Route", position: 3, nullable: false, dataType: "varchar", isPrimary: false },
+            { name: "Federation_ID", position: 4, nullable: false, dataType: "varchar", isPrimary: false },
+            { name: "President_Member_ID", position: 5, nullable: true, dataType: "varchar", isPrimary: false }
+        ]
+    },
+    member: {
+        tableName: "member",
+        primaryKey: "Member_ID",
+        columnNames: ["Member_ID", "First_Name", "Last_Name", "Address", "Contact_Number", "License_Number", "TODA_ID"],
+        columns: [
+            { name: "Member_ID", position: 1, nullable: false, dataType: "varchar", isPrimary: true },
+            { name: "First_Name", position: 2, nullable: false, dataType: "varchar", isPrimary: false },
+            { name: "Last_Name", position: 3, nullable: false, dataType: "varchar", isPrimary: false },
+            { name: "Address", position: 4, nullable: false, dataType: "varchar", isPrimary: false },
+            { name: "Contact_Number", position: 5, nullable: false, dataType: "varchar", isPrimary: false },
+            { name: "License_Number", position: 6, nullable: true, dataType: "varchar", isPrimary: false },
+            { name: "TODA_ID", position: 7, nullable: true, dataType: "varchar", isPrimary: false }
+        ]
+    },
+    tricycle: {
+        tableName: "tricycle",
+        primaryKey: "Body_Number",
+        columnNames: ["Body_Number", "Chassis_Number", "Franchise_Number", "Owner_Member_ID", "Driver_Member_ID"],
+        columns: [
+            { name: "Body_Number", position: 1, nullable: false, dataType: "varchar", isPrimary: true },
+            { name: "Chassis_Number", position: 2, nullable: false, dataType: "varchar", isPrimary: false },
+            { name: "Franchise_Number", position: 3, nullable: false, dataType: "varchar", isPrimary: false },
+            { name: "Owner_Member_ID", position: 4, nullable: false, dataType: "varchar", isPrimary: false },
+            { name: "Driver_Member_ID", position: 5, nullable: true, dataType: "varchar", isPrimary: false }
+        ]
+    }
+};
+
 function routeLocalRequest(method, pathWithQuery, body) {
     const qMark = pathWithQuery.indexOf("?");
     const pathname = qMark !== -1 ? pathWithQuery.slice(0, qMark) : pathWithQuery;
@@ -413,6 +464,11 @@ function routeLocalRequest(method, pathWithQuery, body) {
     const query = new URLSearchParams(queryStr);
     const payload = body || {};
     const dbState = loadLocalDb();
+
+    if (method === "GET" && pathname === "/schema") {
+        resolveLocalCaller(dbState);
+        return { ok: true, tables: TRIDE_LOCAL_SCHEMA };
+    }
 
     if (method === "GET" && pathname === "/status") {
         const needsOobe = dbState.federations.length === 0 && dbState.members.length === 0;
@@ -1406,4 +1462,9 @@ function apiUpdateTricycle(bodyNumber, payload) {
 function apiDeleteTricycle(bodyNumber) {
     const safeBody = encodeURIComponent(bodyNumber);
     return apiRequest("DELETE", "/tricycles/" + safeBody);
+}
+
+function apiGetSchema(refresh) {
+    const suffix = refresh ? "?refresh=1" : "";
+    return apiRequest("GET", "/schema" + suffix);
 }

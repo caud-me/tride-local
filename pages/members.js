@@ -508,14 +508,22 @@ function renderMemberDetailPage(params) {
             });
         }
 
-        const infoCard = trListCard([
+        const infoRows = [
             trPropertyRow({ label: "Member ID", value: member.Member_ID }),
             rolesRow,
             todaRow,
             trPropertyRow({ label: "Address", value: member.Address }),
             trPropertyRow({ label: "Contact No.", value: member.Contact_Number }),
             trPropertyRow({ label: "License No.", value: member.License_Number || "None (Non-driver)" })
-        ]);
+        ];
+        if (typeof appendExtraColumnRows === "function") {
+            appendExtraColumnRows(infoRows, member, [
+                "Member_ID", "First_Name", "Last_Name", "Address",
+                "Contact_Number", "License_Number", "TODA_ID", "TODA_Name",
+                "Route", "isSecretary", "ledTodaId"
+            ]);
+        }
+        const infoCard = trListCard(infoRows);
         main.appendChild(infoCard);
 
         if (targetHome.drivenUnit) {

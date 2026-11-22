@@ -1,5 +1,22 @@
 /* tride reusable ui components (vanilla dom factories) */
 
+const TR_RISE_DELAY_DEFAULT_MS = 2000;
+const TR_RISE_DELAY_MIN_MS = 1000;
+const TR_RISE_DELAY_MAX_MS = 6000;
+
+function trClampRiseDelay(rawDelay) {
+    if (typeof rawDelay !== "number" || Number.isNaN(rawDelay)) {
+        return TR_RISE_DELAY_DEFAULT_MS;
+    }
+    if (rawDelay < TR_RISE_DELAY_MIN_MS) {
+        return TR_RISE_DELAY_MIN_MS;
+    }
+    if (rawDelay > TR_RISE_DELAY_MAX_MS) {
+        return TR_RISE_DELAY_MAX_MS;
+    }
+    return rawDelay;
+}
+
 function trEl(tag, className, text) {
     const node = document.createElement(tag);
     if (className) {
@@ -116,6 +133,25 @@ function trListCard(items) {
     }
     const card = trCard(spaced);
     return card;
+}
+
+function trRise(children, options) {
+    const opts = options || {};
+    const layout = opts.layout || "vbox";
+    let cls = layout + " anim-rise";
+    if (opts.delayed) {
+        cls = cls + " anim-delayed";
+    }
+    if (opts.className) {
+        cls = cls + " " + opts.className;
+    }
+    const wrap = trEl("div", cls);
+    if (opts.delay !== undefined && opts.delay !== null) {
+        const delayVal = typeof opts.delay === "number" ? opts.delay + "ms" : String(opts.delay);
+        wrap.style.animationDelay = delayVal;
+    }
+    trAppend(wrap, children);
+    return wrap;
 }
 
 function trListItem(options) {
@@ -258,8 +294,21 @@ function trButton(options) {
     if (opts.disabled) {
         cls = cls + " disabled";
     }
+    if (opts.animate) {
+        cls = cls + " anim-rise";
+    }
     const btn = trEl("button", cls, opts.label || "");
     btn.type = "button";
+    if (opts.animate && typeof opts.animate === "object" && opts.animate.delay !== undefined) {
+        let delayVal = "";
+        if (typeof opts.animate.delay === "number") {
+            const clampedMs = trClampRiseDelay(opts.animate.delay);
+            delayVal = clampedMs + "ms";
+        } else {
+            delayVal = String(opts.animate.delay);
+        }
+        btn.style.animationDelay = delayVal;
+    }
     if (opts.disabled) {
         btn.disabled = true;
     }
@@ -971,14 +1020,29 @@ function trSuccessWave(options) {
 
     const appClone = appEl.cloneNode(true);
     appClone.removeAttribute("id");
+    appClone.classList.remove("anim-forward", "anim-back", "anim-root");
     trCopyFormState(appEl, appClone);
 
     const fromStage = trEl("div", "fullscreen-backdrop");
     fromStage.appendChild(appClone);
 
-    const stage = trEl("div", "fullscreen-stage vbox center gap-m");
+    const stage = trEl("div", "fullscreen-stage vbox center gap-l");
 
-    const headerWrap = trEl("div", "vbox center gap-s");
+    // 1. optional content
+    const stageContent = opts.content !== undefined ? opts.content : opts.card;
+    if (stageContent) {
+        const contentWrap = trEl("div", "fullscreen-stage-content");
+        trAppend(contentWrap, stageContent);
+        stage.appendChild(contentWrap);
+    }
+
+    // 2. header (icon, big text, supplementary text)
+    const headerWrap = trEl("div", "fullscreen-stage-header vbox center gap-s");
+    const iconGlyph = opts.icon === undefined ? "\uE73E" : opts.icon;
+    if (iconGlyph) {
+        const iconEl = trIcon(iconGlyph, { size: "big" });
+        headerWrap.appendChild(iconEl);
+    }
     const titleText = opts.title || "Saved";
     const titleEl = trEl("p", "hero-title", titleText);
     headerWrap.appendChild(titleEl);
@@ -988,12 +1052,6 @@ function trSuccessWave(options) {
         headerWrap.appendChild(subEl);
     }
     stage.appendChild(headerWrap);
-
-    if (opts.card) {
-        const cardWrap = trEl("div", "fullscreen-stage-card");
-        cardWrap.appendChild(opts.card);
-        stage.appendChild(cardWrap);
-    }
 
     let waveCtrl = null;
     let isClosing = false;
@@ -1015,14 +1073,38 @@ function trSuccessWave(options) {
         }
     }
 
-    const btnLabel = opts.buttonLabel || "Continue";
-    const continueBtn = trButton({
-        label: btnLabel,
-        variant: "primary",
-        onClick: finishTransition
-    });
-    const actionWrap = trEl("div", "fullscreen-stage-actions");
-    actionWrap.appendChild(continueBtn);
+    // 3. buttons
+    const actionWrap = trEl("div", "fullscreen-stage-actions vbox gap-s");
+    const actionButtons = [];
+    if (Array.isArray(opts.buttons) && opts.buttons.length > 0) {
+        const btnCount = opts.buttons.length;
+        for (let i = 0; i < btnCount; i += 1) {
+            const entry = opts.buttons[i];
+            let btnNode = null;
+            if (entry instanceof HTMLElement) {
+                btnNode = entry;
+            } else {
+                const btnOpts = Object.assign({}, entry);
+                if (!btnOpts.onClick) {
+                    btnOpts.onClick = finishTransition;
+                }
+                btnNode = trButton(btnOpts);
+            }
+            btnNode.classList.add("anim-rise-pending");
+            actionWrap.appendChild(btnNode);
+            actionButtons.push(btnNode);
+        }
+    } else {
+        const btnLabel = opts.buttonLabel || "Continue";
+        const continueBtn = trButton({
+            label: btnLabel,
+            variant: "primary",
+            onClick: finishTransition
+        });
+        continueBtn.classList.add("anim-rise-pending");
+        actionWrap.appendChild(continueBtn);
+        actionButtons.push(continueBtn);
+    }
     stage.appendChild(actionWrap);
 
     const waveOpts = {
@@ -1034,7 +1116,17 @@ function trSuccessWave(options) {
         palette: opts.palette || "metal",
         speed: typeof opts.speed === "number" ? opts.speed : 1,
         className: "is-fullscreen",
-        cornerRadius: 0
+        cornerRadius: 0,
+        onFinish: function () {
+            const delayMs = opts.buttonDelay !== undefined ? trClampRiseDelay(opts.buttonDelay) : 0;
+            const totalBtns = actionButtons.length;
+            for (let i = 0; i < totalBtns; i += 1) {
+                const btnNode = actionButtons[i];
+                btnNode.classList.remove("anim-rise-pending");
+                btnNode.style.animationDelay = delayMs + "ms";
+                btnNode.classList.add("anim-rise");
+            }
+        }
     };
     waveCtrl = trDistortionWave(waveOpts);
 
@@ -1061,6 +1153,7 @@ function trTransitionWave(options) {
 
     const fromClone = appEl.cloneNode(true);
     fromClone.removeAttribute("id");
+    fromClone.classList.remove("anim-forward", "anim-back", "anim-root");
     trCopyFormState(appEl, fromClone);
 
     const fromStage = trEl("div", "fullscreen-backdrop");

@@ -95,6 +95,7 @@
     padding-bottom: calc(var(--tr-xxl) + var(--tr-xxl) + var(--tr-l));
 }
 
+.fullscreen-stage-content,
 .fullscreen-stage-card,
 .fullscreen-stage-actions {
     width: 100%;

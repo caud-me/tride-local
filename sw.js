@@ -1,4 +1,4 @@
-const TRIDE_CACHE_NAME = "tride-local-v3";
+const TRIDE_CACHE_NAME = "tride-local-v4";
 const PRECACHE_URLS = [
     "./",
     "./index.html",
@@ -9,12 +9,15 @@ const PRECACHE_URLS = [
     "./api.js",
     "./router.js",
     "./helpers.js",
+    "./schema_bridge.js",
+    "./autofill_helper.js",
     "./components/style.css",
     "./components/responsive-experimental.css",
     "./components/distortion-wave.css",
     "./components/distortion-wave.js",
     "./components/components.js",
     "./pages/auth.js",
+    "./pages/export_page.js",
     "./pages/home.js",
     "./pages/members.js",
     "./pages/notifications.js",

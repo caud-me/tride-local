@@ -11,13 +11,13 @@ Reusable vanilla DOM components in [components.js](components.js) styled by [sty
 - `trBindTap(node, handler)` — bind click plus `Enter`/`Space` keyboard activation with `role="button"` and `tabindex="0"`.
 - `trSpacer()` — horizontal divider line (`1px`) used between rows inside `trListCard`.
 - `trSectionHeading(text)` — lowercase section label above a card group.
-- `trIcon(glyph, options)` — Segoe MDL2 Assets glyph (`options`: `{ label, className, onClick }`).
+- `trIcon(glyph, options)` — Segoe MDL2 Assets glyph (`options`: `{ size: "big", label, className, onClick }`).
 
 ## Containers & Feedback
 
 - `trCard(children, options)` — top-level rounded card (`options`: `{ layout, className, tag, onClick }`).
+- `trRise(children, options)` — entrance wrapper that animates from `var(--tr-s)` (`8px`) below to resting position (`options`: `{ delay, delayed, layout, className }`; `.anim-rise` works on any element, and buttons with `.anim-rise` default to a `2s` delay, clamped between `1s` and `6s`).
 - `trListCard(items)` — wraps flat row components (`trPropertyRow`, `trActionRow`, `trCheckRow`) with `trSpacer()` dividers inside one `.card`. Do **not** pass `trEntityRow` or `trCard` into `trListCard`.
-- `trFlatList(items)` — flat row list with `trSpacer()` dividers and no outer `.card` box (used inside `trSheet`).
 - `trAlphaList(options)` — groups items alphabetically (`A`–`Z`) with `trSectionHeading(letter)` above each `trListCard` (`{ items, getLabel, renderRow }`).
 - `trBanner(text)` — status/loading notice (`role="status"`).
 - `trEmptyState(options)` — centered empty view (`{ icon, title, subtitle }`).
@@ -35,8 +35,9 @@ Reusable vanilla DOM components in [components.js](components.js) styled by [sty
 
 ## Rows, Inputs & Actions
 
-- `trButton(options)` — action button (`{ label, variant: "primary", small, critical, disabled, onClick }`).
+- `trButton(options)` — action button (`{ label, variant: "primary", small, critical, disabled, animate, onClick }`; `animate: true` adds `.anim-rise` with a `2s` delay, or pass `{ delay }`).
 - `trPropertyRow(options)` — label + input/select/display row for `trListCard` (`{ label, value, input, select, onClick }`); returns `{ controlEl, setError(msg), setValue(v) }`.
+- `trListItem(options)` — static `p` + one or more `small` rows for `trListCard` (`{ title, subtitle, subtitles }`).
 - `trActionRow(options)` — clickable list row with optional chevron (`{ label, subtitle, critical, hideChevron, onClick }`).
 - `trCheckRow(options)` — checkbox row (`{ label, checked, onChange }`).
 - `trEntityRow(options)` — standalone clickable `.card` row for lists (`{ title, image, subtitle, metaLines, mutedLast, onClick }`).

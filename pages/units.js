@@ -168,7 +168,16 @@ function renderManageUnitPage(params) {
         });
 
         const bodyRow = trPropertyRow({ label: "Body No.", value: unit.Body_Number });
-        const detailsCard = trListCard([driverRow, bodyRow, chassisRow, franRow]);
+        const detailRows = [driverRow, bodyRow, chassisRow, franRow];
+        if (typeof appendExtraColumnRows === "function") {
+            appendExtraColumnRows(detailRows, unit, [
+                "Body_Number", "Chassis_Number", "Franchise_Number",
+                "Owner_Member_ID", "Driver_Member_ID",
+                "Owner_First_Name", "Owner_Last_Name", "Owner_TODA_ID",
+                "Driver_First_Name", "Driver_Last_Name", "TODA_Name"
+            ]);
+        }
+        const detailsCard = trListCard(detailRows);
 
         const removeDriverRow = trActionRow({
             label: "Remove driver",

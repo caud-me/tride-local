@@ -23,7 +23,7 @@ const WAVE_RIPPLE_FREQ = 14.0;
 const WAVE_RIPPLE_MIX = 0.35;
 const WAVE_ABERRATION = 0.042;
 const WAVE_RIM_WIDTH = 0.14;
-const WAVE_BLUR_AMOUNT = 0.011;
+const WAVE_BLUR_AMOUNT = 0.016;
 const WAVE_GLOW_INTENSITY = 0.72;
 const WAVE_GLOW_SPREAD = 2.4;
 const WAVE_CORE_SPARK = 0.45;
@@ -38,12 +38,13 @@ const WAVE_EDGE_LIGHT_WIDTH = 0.055;
 const WAVE_EDGE_CREST_BOOST = 1.85;
 const WAVE_EDGE_HALO_POWER = 1.4;
 // </patch-2>
-const WAVE_PARTICLE_COUNT = 72;
-const WAVE_PARTICLE_SIZE = 0.0085;
-const WAVE_PARTICLE_HALO = 2.2;
-const WAVE_PARTICLE_GLOW = 1.65;
+const WAVE_PARTICLE_COUNT = 160;
+const WAVE_PARTICLE_SIZE = 0.0018;
+const WAVE_PARTICLE_HALO = 1.35;
+const WAVE_PARTICLE_GLOW = 1.85;
 const WAVE_PARTICLE_DRIFT = 0.24;
 const WAVE_PARTICLE_EASE = 2.4;
+const WAVE_PARTICLE_TAIL_MS = 1000;
 // </patch-1>
 // </patch-1>
 let cachedDocCss = null;
@@ -210,6 +211,8 @@ function trBuildFragmentSource() {
     src = src + "uniform float u_particleGlow;\n";
     src = src + "uniform float u_particleDrift;\n";
     src = src + "uniform float u_particleEase;\n";
+    src = src + "uniform float u_particleTail;\n";
+    src = src + "uniform float u_particleTime;\n";
     src = src + "out vec4 outColor;\n";
 
     src = src + "float hash11(float p) {\n";
@@ -362,15 +365,18 @@ function trBuildFragmentSource() {
     src = src + "  }\n";
     src = src + "  vec3 particleLight = vec3(0.0);\n";
     // ive looked up on the internet on this one, trail bright sparkle dot behind wave crest so tiny speck stand out
-    src = src + "  float wakeBehind = smoothstep(-w * 3.6, -w * 0.15, delta) * (1.0 - smoothstep(-w * 0.1, w * 0.9, delta));\n";
-    src = src + "  float pZone = clamp(halo * 1.35 + wakeBehind * 1.15, 0.0, 1.0) * envelope;\n";
+    src = src + "  float pClamped = clamp(u_progress, 0.0, 1.0);\n";
+    src = src + "  float swept = 1.0 - smoothstep(-w * 0.1, w * 0.9, delta);\n";
+    src = src + "  float tailFade = 1.0 - smoothstep(0.0, 1.0, clamp(u_particleTail, 0.0, 1.0));\n";
+    src = src + "  float pFade = smoothstep(0.0, 0.08, pClamped) * tailFade;\n";
+    src = src + "  float pZone = clamp(halo * 1.35 + swept, 0.0, 1.0) * pFade;\n";
     src = src + "  if (pZone > 0.02 && u_particleCount > 0) {\n";
-    src = src + "    float pClamped = clamp(u_progress, 0.0, 1.0);\n";
+    src = src + "    float pTotal = clamp(u_particleTime, 0.0, 1.0);\n";
     src = src + "    float pExp = max(u_particleEase, 1.0);\n";
-    src = src + "    float pEase = 1.0 - pow(1.0 - pClamped, pExp);\n";
+    src = src + "    float pEase = 1.0 - pow(1.0 - pTotal, pExp);\n";
     src = src + "    float maxBaseRad = max(u_particleSize, 0.001) * 1.1 * max(u_particleHalo, 1.0) * 2.2;\n";
     src = src + "    float maxBaseRadSq = maxBaseRad * maxBaseRad;\n";
-    src = src + "    for (int i = 0; i < 96; i++) {\n";
+    src = src + "    for (int i = 0; i < 180; i++) {\n";
     src = src + "      if (i >= u_particleCount) { break; }\n";
     src = src + "      float fi = float(i) + 1.0;\n";
     src = src + "      vec2 seed = vec2(hash11(fi * 13.17), hash11(fi * 29.53));\n";
@@ -527,7 +533,9 @@ function trCreateWaveRenderer(canvas) {
         // </patch-1>
         particleGlow: gl.getUniformLocation(program, "u_particleGlow"),
         particleDrift: gl.getUniformLocation(program, "u_particleDrift"),
-        particleEase: gl.getUniformLocation(program, "u_particleEase")
+        particleEase: gl.getUniformLocation(program, "u_particleEase"),
+        particleTail: gl.getUniformLocation(program, "u_particleTail"),
+        particleTime: gl.getUniformLocation(program, "u_particleTime")
     };
 
     // ive looked up on the internet on this one, draw one warped wave frame between old and new view texture
@@ -585,6 +593,8 @@ function trCreateWaveRenderer(canvas) {
         gl.uniform1f(uniforms.particleGlow, state.particleGlow);
         gl.uniform1f(uniforms.particleDrift, state.particleDrift);
         gl.uniform1f(uniforms.particleEase, state.particleEase);
+        gl.uniform1f(uniforms.particleTail, state.particleTail || 0);
+        gl.uniform1f(uniforms.particleTime, state.particleTime || 0);
 
         gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
@@ -866,6 +876,8 @@ function trDistortionWave(options) {
     let imgTo = null;
     let rafId = 0;
     let progress = isRevealed ? 1 : 0;
+    let particleTail = 0;
+    let particleTime = 0;
     let activeSource = opts.source || null;
     let activeOrigin = opts.origin || null;
     let activeType = opts.type || "center";
@@ -1013,6 +1025,8 @@ function trDistortionWave(options) {
             frameState.texFrom = texFrom;
             frameState.texTo = texTo;
             frameState.progress = progress;
+            frameState.particleTail = particleTail;
+            frameState.particleTime = particleTime;
             renderer.drawFrame(frameState);
         } else if (ctx2d) {
             trDrawWaveFallback2D(ctx2d, canvas, imgFrom, imgTo, progress);
@@ -1088,24 +1102,38 @@ function trDistortionWave(options) {
                 const scaledDt = dt * safeSpeed;
                 elapsed = elapsed + scaledDt;
                 const rawT = baseDuration > 0 ? elapsed / baseDuration : 1;
-                // <patch-1>
-                const easedT = trEaseWaveProgress(rawT, bx1, by1, bx2, by2);
-                // </patch-1>
-                const travel = targetProgress - startProgress;
-                const offset = travel * easedT;
-                progress = startProgress + offset;
-                drawFrameWithState(cachedState);
+                const totalDuration = baseDuration + WAVE_PARTICLE_TAIL_MS;
+                particleTime = totalDuration > 0 ? Math.min(1, elapsed / totalDuration) : 1;
 
                 if (rawT < 1) {
+                    // <patch-1>
+                    const easedT = trEaseWaveProgress(rawT, bx1, by1, bx2, by2);
+                    // </patch-1>
+                    const travel = targetProgress - startProgress;
+                    const offset = travel * easedT;
+                    progress = startProgress + offset;
+                    particleTail = 0;
+                    drawFrameWithState(cachedState);
                     rafId = requestAnimationFrame(step);
                 } else {
-                    rafId = 0;
                     progress = targetProgress;
-                    isRevealed = targetRevealed;
-                    syncDomVisibility(isRevealed);
-                    canvas.classList.remove("is-active");
-                    if (opts.onFinish) {
-                        opts.onFinish(isRevealed);
+                    const tailElapsed = elapsed - baseDuration;
+                    const tailRatio = WAVE_PARTICLE_TAIL_MS > 0 ? tailElapsed / WAVE_PARTICLE_TAIL_MS : 1;
+                    particleTail = tailRatio < 1 ? tailRatio : 1;
+                    drawFrameWithState(cachedState);
+
+                    if (tailRatio < 1) {
+                        rafId = requestAnimationFrame(step);
+                    } else {
+                        rafId = 0;
+                        particleTail = 0;
+                        particleTime = 0;
+                        isRevealed = targetRevealed;
+                        syncDomVisibility(isRevealed);
+                        canvas.classList.remove("is-active");
+                        if (opts.onFinish) {
+                            opts.onFinish(isRevealed);
+                        }
                     }
                 }
             }
