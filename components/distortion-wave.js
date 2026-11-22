@@ -48,11 +48,58 @@ const WAVE_PARTICLE_TAIL_MS = 1000;
 // </patch-1>
 // </patch-1>
 let cachedDocCss = null;
+let cachedCssPromise = null;
+
+function trArrayBufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i += 1) {
+        binary = binary + String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+}
+
+async function trInlineFontUrls(cssText) {
+    const matches = cssText.match(/url\(([^)]+\.(?:ttf|woff2?|otf)[^)]*)\)/gi);
+    if (!matches || matches.length === 0) {
+        return cssText;
+    }
+
+    let result = cssText;
+    const seen = {};
+    const count = matches.length;
+    for (let i = 0; i < count; i += 1) {
+        const rawMatch = matches[i];
+        const inner = rawMatch.slice(4, -1).trim().replace(/^["']|["']$/g, "");
+        if (!inner || inner.indexOf("data:") === 0 || seen[inner]) {
+            continue;
+        }
+        seen[inner] = true;
+        try {
+            const res = await fetch(inner);
+            if (!res.ok) {
+                continue;
+            }
+            const buf = await res.arrayBuffer();
+            const b64 = trArrayBufferToBase64(buf);
+            const mime = inner.indexOf(".woff2") !== -1 ? "font/woff2" : "font/ttf";
+            const dataUri = "url(\"data:" + mime + ";base64," + b64 + "\")";
+            result = result.split(rawMatch).join(dataUri);
+        } catch (err) {
+            /* keep original url if font fetch fail */
+        }
+    }
+    return result;
+}
 
 // ive looked up on the internet on this one, gather page css text once so svg snapshot keep original look without walking every node
 function trCollectDocumentCss() {
     if (cachedDocCss !== null) {
-        return cachedDocCss;
+        return Promise.resolve(cachedDocCss);
+    }
+    if (cachedCssPromise !== null) {
+        return cachedCssPromise;
     }
     let combined = "";
     const sheets = document.styleSheets;
@@ -69,8 +116,11 @@ function trCollectDocumentCss() {
             /* skip external sheet that block script read */
         }
     }
-    cachedDocCss = combined;
-    return combined;
+    cachedCssPromise = trInlineFontUrls(combined).then(function (inlined) {
+        cachedDocCss = inlined;
+        return inlined;
+    });
+    return cachedCssPromise;
 }
 
 function copyComputedStyles(sourceEl, targetEl) {
@@ -113,47 +163,48 @@ function trCaptureNodeToImage(sourceNode, width, height) {
     clone.style.width = String(width) + "px";
     clone.style.height = String(height) + "px";
 
-    const docCss = trCollectDocumentCss();
-    const wrapper = document.createElement("div");
-    wrapper.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-    wrapper.style.width = String(width) + "px";
-    wrapper.style.height = String(height) + "px";
+    return trCollectDocumentCss().then(function (docCss) {
+        const wrapper = document.createElement("div");
+        wrapper.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+        wrapper.style.width = String(width) + "px";
+        wrapper.style.height = String(height) + "px";
 
-    const bodyStyle = window.getComputedStyle(document.body);
-    wrapper.style.fontFamily = bodyStyle.fontFamily;
-    wrapper.style.fontSize = bodyStyle.fontSize;
-    wrapper.style.color = bodyStyle.color;
-    wrapper.style.backgroundColor = bodyStyle.backgroundColor;
+        const bodyStyle = window.getComputedStyle(document.body);
+        wrapper.style.fontFamily = bodyStyle.fontFamily;
+        wrapper.style.fontSize = bodyStyle.fontSize;
+        wrapper.style.color = bodyStyle.color;
+        wrapper.style.backgroundColor = bodyStyle.backgroundColor;
 
-    if (docCss) {
-        const styleEl = document.createElement("style");
-        styleEl.textContent = docCss;
-        wrapper.appendChild(styleEl);
-    } else {
-        syncTreeStyles(sourceNode, clone);
-    }
-    wrapper.appendChild(clone);
+        if (docCss) {
+            const styleEl = document.createElement("style");
+            styleEl.textContent = docCss;
+            wrapper.appendChild(styleEl);
+        } else {
+            syncTreeStyles(sourceNode, clone);
+        }
+        wrapper.appendChild(clone);
 
-    const serializer = new XMLSerializer();
-    const xhtml = serializer.serializeToString(wrapper);
-    const wStr = String(width);
-    const hStr = String(height);
-    let svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + wStr + "\" height=\"" + hStr + "\">";
-    svg = svg + "<foreignObject width=\"100%\" height=\"100%\">";
-    svg = svg + xhtml;
-    svg = svg + "</foreignObject></svg>";
-    const encoded = encodeURIComponent(svg);
-    const dataUrl = "data:image/svg+xml;charset=utf-8," + encoded;
+        const serializer = new XMLSerializer();
+        const xhtml = serializer.serializeToString(wrapper);
+        const wStr = String(width);
+        const hStr = String(height);
+        let svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + wStr + "\" height=\"" + hStr + "\">";
+        svg = svg + "<foreignObject width=\"100%\" height=\"100%\">";
+        svg = svg + xhtml;
+        svg = svg + "</foreignObject></svg>";
+        const encoded = encodeURIComponent(svg);
+        const dataUrl = "data:image/svg+xml;charset=utf-8," + encoded;
 
-    return new Promise(function (resolve, reject) {
-        const img = new Image();
-        img.onload = function () {
-            resolve(img);
-        };
-        img.onerror = function (err) {
-            reject(err);
-        };
-        img.src = dataUrl;
+        return new Promise(function (resolve, reject) {
+            const img = new Image();
+            img.onload = function () {
+                resolve(img);
+            };
+            img.onerror = function (err) {
+                reject(err);
+            };
+            img.src = dataUrl;
+        });
     });
 }
 
