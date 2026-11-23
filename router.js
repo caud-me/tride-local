@@ -99,6 +99,7 @@ function renderTopPage(direction) {
 
     const screenOutput = renderFn(entryParams);
     trAppend(appRoot, screenOutput);
+    appRoot.scrollTop = 0;
     if (typeof window !== "undefined" && typeof window.scrollTo === "function") {
         window.scrollTo(0, 0);
     }

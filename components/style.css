@@ -114,7 +114,10 @@ body {
     max-width:              var(--tr-phone-width); /* iPhone 16 */
     height:                 100%;
     margin:                 0 auto;
-    overflow:               hidden;
+    overflow-y:             auto;
+    overflow-x:             hidden;
+    overscroll-behavior-y:  contain;
+    -webkit-overflow-scrolling: touch;
     display:                flex;
     flex-direction:         column;
 }
@@ -202,36 +205,22 @@ button.anim-rise,
     top: 0;
     z-index: 20;
     min-height: 54px;
-    background-color: var(--tr-solid-dark-1);
-}
-.navigation-bar::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 100%;
-    height: calc(var(--tr-space-l) + var(--tr-space-m));
     background: linear-gradient(
         to bottom,
         var(--tr-solid-dark-1) 0%,
-        color-mix(in srgb, var(--tr-solid-dark-1) 74%, transparent) 22%,
-        color-mix(in srgb, var(--tr-solid-dark-1) 42%, transparent) 50%,
-        color-mix(in srgb, var(--tr-solid-dark-1) 14%, transparent) 78%,
+        var(--tr-solid-dark-1) 36%,
+        color-mix(in srgb, var(--tr-solid-dark-1) 86%, transparent) 58%,
+        color-mix(in srgb, var(--tr-solid-dark-1) 52%, transparent) 78%,
+        color-mix(in srgb, var(--tr-solid-dark-1) 18%, transparent) 92%,
         transparent 100%
     );
-    pointer-events: none;
 }
 .navigation-bar > h1 {
     font-size: inherit;
     font-weight: inherit;
 }
 .content {
-    flex: 1 1 0;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    overscroll-behavior-y: contain;
-    -webkit-overflow-scrolling: touch;
+    flex: 1 0 auto;
 }
 .content > * {
     flex-shrink: 0;
@@ -329,6 +318,7 @@ button.anim-rise,
 .vbox.scroll > * {
     flex: 0 0 auto;
 }
+.app,
 .scroll,
 .content,
 .sheet,
@@ -336,6 +326,7 @@ button.anim-rise,
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
+.app::-webkit-scrollbar,
 .scroll::-webkit-scrollbar,
 .content::-webkit-scrollbar,
 .sheet::-webkit-scrollbar,

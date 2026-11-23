@@ -15,18 +15,24 @@
     align-self: center;
 }
 
-.card-grid {
+.card-grid,
+.trAlphaList {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
     gap: var(--tr-space-l);
     align-items: start;
 }
 
+.sheet .trAlphaList {
+    display: flex;
+}
+
 .card-grid:has(> .trEmptyState) {
     display: flex;
 }
 
-.card-grid > * {
+.card-grid > *,
+.trAlphaList > * {
     min-width: 0;
 }
 
