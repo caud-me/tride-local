@@ -445,90 +445,82 @@ function renderMemberDetailPage(params) {
             sheetCtrl.open();
         }
 
-        const rolesRow = trPropertyRow({ label: "Roles (Tap to manage)", value: roleText });
-        trBindTap(rolesRow, openManageRolesSheet);
-
-        const todaValue = member.TODA_Name || (viewerHome.isSecretary ? "None (Tap to join a TODA)" : "None");
-        const todaRow = trPropertyRow({ label: "TODA Group", value: todaValue });
-        if (viewerHome.isSecretary) {
-            trBindTap(todaRow, async function () {
-                let todaSheet = null;
-                try {
-                    const todaRes = await apiListTodas();
-                    const todas = todaRes.todas || [];
-                    if (todas.length === 0) {
-                        pushPage(renderTodasPage, {});
-                        return;
-                    }
-                    const rows = [];
-                    if (member.TODA_ID && member.Member_ID === viewerHome.member.Member_ID) {
-                        rows.push(trActionRow({
-                            label: "None (Leave TODA group)",
-                            critical: true,
-                            hideChevron: true,
-                            onClick: function () {
-                                if (todaSheet) {
-                                    todaSheet.close();
-                                }
-                                trConfirm({
-                                    title: "Leave " + member.TODA_Name + "?",
-                                    message: "Your TODA group will be set to None.",
-                                    confirmLabel: "Leave group",
-                                    critical: true,
-                                    onConfirm: async function () {
-                                        try {
-                                            await apiUpdateMemberToda(member.Member_ID, null);
-                                            refreshPage();
-                                        } catch (err) {
-                                            trAlert({ title: "Cannot leave group", message: err.message });
-                                        }
-                                    }
-                                });
-                            }
-                        }));
-                    }
-                    for (let i = 0; i < todas.length; i += 1) {
-                        const t = todas[i];
-                        rows.push(trActionRow({
-                            label: t.TODA_Name + " (" + t.TODA_ID + ")",
-                            hideChevron: true,
-                            onClick: async function () {
-                                if (todaSheet) {
-                                    todaSheet.close();
-                                }
-                                try {
-                                    await apiUpdateMemberToda(member.Member_ID, t.TODA_ID);
-                                    refreshPage();
-                                } catch (err) {
-                                    trAlert({ title: "Cannot change TODA", message: err.message });
-                                }
-                            }
-                        }));
-                    }
-                    todaSheet = trSheet({
-                        title: "Select TODA group",
-                        body: trListCard(rows),
-                        footer: trButton({
-                            label: "Cancel",
-                            onClick: function () {
-                                if (todaSheet) {
-                                    todaSheet.close();
-                                }
-                            }
-                        }),
-                        removeOnClose: true
-                    });
-                    todaSheet.open();
-                } catch (err) {
-                    trAlert({ title: "Error", message: err.message });
+        async function openTodaPickerSheet() {
+            let todaSheet = null;
+            try {
+                const todaRes = await apiListTodas();
+                const todas = todaRes.todas || [];
+                if (todas.length === 0) {
+                    pushPage(renderTodasPage, {});
+                    return;
                 }
-            });
+                const rows = [];
+                if (member.TODA_ID && member.Member_ID === viewerHome.member.Member_ID) {
+                    rows.push(trActionRow({
+                        label: "None (Leave TODA group)",
+                        critical: true,
+                        hideChevron: true,
+                        onClick: function () {
+                            if (todaSheet) {
+                                todaSheet.close();
+                            }
+                            trConfirm({
+                                title: "Leave " + member.TODA_Name + "?",
+                                message: "Your TODA group will be set to None.",
+                                confirmLabel: "Leave group",
+                                critical: true,
+                                onConfirm: async function () {
+                                    try {
+                                        await apiUpdateMemberToda(member.Member_ID, null);
+                                        refreshPage();
+                                    } catch (err) {
+                                        trAlert({ title: "Cannot leave group", message: err.message });
+                                    }
+                                }
+                            });
+                        }
+                    }));
+                }
+                for (let i = 0; i < todas.length; i += 1) {
+                    const t = todas[i];
+                    rows.push(trActionRow({
+                        label: t.TODA_Name + " (" + t.TODA_ID + ")",
+                        hideChevron: true,
+                        onClick: async function () {
+                            if (todaSheet) {
+                                todaSheet.close();
+                            }
+                            try {
+                                await apiUpdateMemberToda(member.Member_ID, t.TODA_ID);
+                                refreshPage();
+                            } catch (err) {
+                                trAlert({ title: "Cannot change TODA", message: err.message });
+                            }
+                        }
+                    }));
+                }
+                todaSheet = trSheet({
+                    title: "Select TODA group",
+                    body: trListCard(rows),
+                    footer: trButton({
+                        label: "Cancel",
+                        onClick: function () {
+                            if (todaSheet) {
+                                todaSheet.close();
+                            }
+                        }
+                    }),
+                    removeOnClose: true
+                });
+                todaSheet.open();
+            } catch (err) {
+                trAlert({ title: "Error", message: err.message });
+            }
         }
 
+        const isSelfMember = member.Member_ID === viewerHome.member.Member_ID;
         const infoRows = [
             trPropertyRow({ label: "Member ID", value: member.Member_ID }),
-            rolesRow,
-            todaRow,
             trPropertyRow({ label: "Address", value: member.Address }),
             trPropertyRow({ label: "Contact No.", value: member.Contact_Number }),
             trPropertyRow({ label: "License No.", value: member.License_Number || "None (Non-driver)" })
@@ -537,15 +529,48 @@ function renderMemberDetailPage(params) {
             appendExtraColumnRows(infoRows, member, [
                 "Member_ID", "First_Name", "Last_Name", "Address",
                 "Contact_Number", "License_Number", "TODA_ID", "TODA_Name",
-                "Route", "isSecretary", "ledTodaId"
+                "President_Member_ID", "Route", "isSecretary", "ledTodaId"
             ]);
         }
         const infoCard = trListCard(infoRows);
+        const infoFootnote = isSelfMember
+            ? "Read-only here. Update your contact and license details in Edit profile."
+            : "Personal contact and license details belong to " + member.First_Name + ".";
         main.appendChild(trSection(trCardGroup({
             headline: "Member details",
             card: infoCard,
-            footnote: "Tap roles or TODA assignment to update this member's access."
+            footnote: infoFootnote
         })));
+
+        const rolesGroup = trCardGroup({
+            headline: "Roles",
+            card: trListCard([
+                trPropertyRow({ label: "Assigned roles", value: roleText }),
+                trActionRow({ label: "Manage roles", onClick: openManageRolesSheet })
+            ]),
+            footnote: viewerHome.isSecretary
+                ? "Federation Secretary assigns TODA President; units and driver licenses cover the rest."
+                : "Drivers hold a license, operators own units, and the Federation Secretary assigns TODA President."
+        });
+
+        const todaRows = [
+            trPropertyRow({ label: "Association", value: member.TODA_Name || "None" })
+        ];
+        if (viewerHome.isSecretary) {
+            todaRows.push(trActionRow({
+                label: member.TODA_ID ? "Change TODA group" : "Assign TODA group",
+                onClick: openTodaPickerSheet
+            }));
+        }
+        const todaGroup = trCardGroup({
+            headline: "TODA group",
+            card: trListCard(todaRows),
+            footnote: viewerHome.isSecretary
+                ? "Federation Secretary can assign or move this member's TODA group."
+                : "Only the Federation Secretary can change TODA group assignments."
+        });
+
+        main.appendChild(trSection([rolesGroup, todaGroup]));
 
         const unitGroups = [];
         if (targetHome.drivenUnit) {

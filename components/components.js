@@ -138,7 +138,7 @@ function trSpacer() {
 
 // params: text (required)
 function trSectionHeading(text) {
-    const p = trEl("p", "as-cardheadline as-secondary as-gray as-bold", text);
+    const p = trEl("p", "as-cardheadline as-tertiary as-gray as-bold", text);
     p.setAttribute("role", "heading");
     p.setAttribute("aria-level", "2");
     return p;
@@ -260,7 +260,7 @@ function trTabbed(options) {
         const tab = list[i];
         const tabVal = tab.key !== undefined ? tab.key : tab.value;
         const isActive = tabVal === activeVal;
-        let btnCls = "as-tabbed thickness-m";
+        let btnCls = "as-tabbed as-bold thickness-m";
         if (isStretch) {
             btnCls = btnCls + " flex1";
         }
@@ -331,7 +331,7 @@ function trMenu(options) {
     const sections = opts.sections || opts.groups || [];
     for (let s = 0; s < sections.length; s += 1) {
         const section = sections[s];
-        const groupWrap = trEl("div", "group vbox space-l");
+        const groupWrap = trEl("div", "group vbox space-m");
         if (section.title) {
             const groupTitle = trEl("p", "as-tertiary as-gray", section.title);
             groupWrap.appendChild(groupTitle);
@@ -448,7 +448,7 @@ function trCard(children, options) {
 // params: options (required: { card (required: node), headline (optional), footnote (optional) })
 function trCardGroup(options) {
     const opts = options || {};
-    const group = trEl("div", "trCardGroup group vbox space-l");
+    const group = trEl("div", "trCardGroup group vbox space-m");
     if (opts.headline) {
         const headEl = trSectionHeading(opts.headline);
         group.appendChild(headEl);
@@ -663,15 +663,18 @@ function trProfileCard(data) {
 function trStatGroup(items, options) {
     const opts = options || {};
     const list = items || [];
-    const wrap = trEl("div", "trStatGroup hbox space-m");
+    const wrap = trCard([], {
+        layout: "standard hbox space-m border-l",
+        className: "trStatGroup"
+    });
     if (opts.label) {
         wrap.setAttribute("aria-label", opts.label);
     }
     for (let i = 0; i < list.length; i += 1) {
         const entry = list[i];
-        const cell = trEl("div", "vbox flex1 space-s");
-        const valEl = trEl("p", "as-large-title as-bold", entry.value);
-        const lblEl = trEl("p", "as-secondary as-gray", entry.label);
+        const cell = trEl("div", "vbox flex1 space-m");
+        const valEl = trEl("p", "as-title lh-1", entry.value);
+        const lblEl = trEl("p", "as-tertiary as-bold as-midgray lh-1", entry.label);
         cell.appendChild(valEl);
         cell.appendChild(lblEl);
         wrap.appendChild(cell);
@@ -830,17 +833,17 @@ function trCheckRow(options) {
 // params: options (required: { title (required), subtitle (optional), icon (optional) })
 function trEmptyState(options) {
     const opts = options || {};
-    const wrap = trEl("div", "trEmptyState group vbox center justify-center flex1 space-l");
+    const wrap = trEl("div", "trEmptyState group vbox center justify-center flex1 space-m");
     wrap.setAttribute("role", "status");
     const glyph = opts.icon || TR_ICON_EMPTY;
     const iconEl = trIcon(glyph, { className: "as-display as-centered as-gray" });
     wrap.appendChild(iconEl);
     if (opts.title) {
-        const titleEl = trEl("p", "as-headline as-bold as-centered", opts.title);
+        const titleEl = trEl("p", "as-secondary as-bold as-centered", opts.title);
         wrap.appendChild(titleEl);
     }
     if (opts.subtitle) {
-        const subEl = trEl("p", "as-secondary as-gray as-centered", opts.subtitle);
+        const subEl = trEl("p", "as-tertiary as-gray as-centered", opts.subtitle);
         wrap.appendChild(subEl);
     }
     return wrap;

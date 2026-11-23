@@ -485,9 +485,14 @@ function renderLoginPage() {
             window.location.href = footerTarget;
         }
     });
-    const footer = trEl("footer", "vbox space-m");
-    trAppend(footer, [footerCaption, footerBtn]);
+    const heroSection = trSection(hero);
+    const formSection = trSection([loginCard, loginBtn]);
 
-    trAppend(main, [hero, loginCard, loginBtn, footer]);
+    const footerGroup = trEl("div", "group vbox space-m");
+    trAppend(footerGroup, [footerCaption, footerBtn]);
+    const footer = trEl("footer", "trSection section vbox space-l");
+    footer.appendChild(footerGroup);
+
+    trAppend(main, [heroSection, formSection, footer]);
     return [main];
 }
