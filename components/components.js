@@ -99,7 +99,7 @@ function trIcon(glyph, options) {
     }
 
     if (opts.onClick) {
-        let btnCls = "thickness-m border-m";
+        let btnCls = "trIcon thickness-m border-m";
         if (opts.className) {
             btnCls = btnCls + " " + opts.className;
         }
@@ -116,6 +116,7 @@ function trIcon(glyph, options) {
         return btn;
     }
 
+    iconCls = "trIcon " + iconCls;
     if (opts.className) {
         iconCls = iconCls + " " + opts.className;
     }
@@ -131,14 +132,14 @@ function trIcon(glyph, options) {
 
 // params: none
 function trSpacer() {
-    const div = trEl("div", "spacer");
+    const div = trEl("div", "trSpacer spacer");
     div.setAttribute("role", "separator");
     return div;
 }
 
 // params: text (required)
 function trSectionHeading(text) {
-    const p = trEl("p", "as-cardheadline as-tertiary as-gray as-bold", text);
+    const p = trEl("p", "trSectionHeading as-cardheadline as-tertiary as-gray as-bold", text);
     p.setAttribute("role", "heading");
     p.setAttribute("aria-level", "2");
     return p;
@@ -147,7 +148,7 @@ function trSectionHeading(text) {
 // params: children (required: node | array), options (optional: { delay (optional: number | string), className (optional) })
 function trRise(children, options) {
     const opts = options || {};
-    let cls = "anim-rise";
+    let cls = "trRise anim-rise";
     if (opts.className) {
         cls = cls + " " + opts.className;
     }
@@ -202,7 +203,7 @@ function trNavBar(options) {
         opts.titleNode.classList.add("push-right");
         bar.appendChild(opts.titleNode);
     } else {
-        const titleBox = trEl("div", "vbox push-right space-m");
+        const titleBox = trEl("div", "vbox push-right space-s");
         const titleEl = trEl("h1", "as-headline lh-1 as-bold", opts.title || "");
         titleBox.appendChild(titleEl);
         if (opts.subtitle) {
@@ -315,15 +316,33 @@ function trMenu(options) {
     const trigIcon = trIcon(opts.icon || TR_ICON_FILTER);
     triggerBtn.appendChild(trigIcon);
 
+    function closeMenu() {
+        panel.classList.add("hidden");
+        triggerBtn.setAttribute("aria-expanded", "false");
+    }
+
     function toggleMenu(event) {
         event.stopPropagation();
         const isHidden = panel.classList.contains("hidden");
         if (isHidden) {
+            const openPanels = document.querySelectorAll(".trMenuPanel:not(.hidden)");
+            for (let p = 0; p < openPanels.length; p += 1) {
+                const otherPanel = openPanels[p];
+                if (otherPanel !== panel) {
+                    otherPanel.classList.add("hidden");
+                    const parentAnchor = otherPanel.parentElement;
+                    if (parentAnchor) {
+                        const otherBtn = parentAnchor.querySelector("button[aria-expanded]");
+                        if (otherBtn) {
+                            otherBtn.setAttribute("aria-expanded", "false");
+                        }
+                    }
+                }
+            }
             panel.classList.remove("hidden");
             triggerBtn.setAttribute("aria-expanded", "true");
         } else {
-            panel.classList.add("hidden");
-            triggerBtn.setAttribute("aria-expanded", "false");
+            closeMenu();
         }
     }
     triggerBtn.addEventListener("click", toggleMenu);
@@ -395,11 +414,17 @@ function trMenu(options) {
 
     function handleOutsideClick(event) {
         if (!anchor.contains(event.target)) {
-            panel.classList.add("hidden");
-            triggerBtn.setAttribute("aria-expanded", "false");
+            closeMenu();
+        }
+    }
+    function handleMenuKeyDown(event) {
+        if (event.key === "Escape" && !panel.classList.contains("hidden")) {
+            closeMenu();
+            triggerBtn.focus();
         }
     }
     document.addEventListener("click", handleOutsideClick);
+    document.addEventListener("keydown", handleMenuKeyDown);
 
     anchor.appendChild(triggerBtn);
     anchor.appendChild(panel);
@@ -485,7 +510,7 @@ function trListCard(items) {
 // params: options (required: { title (required), subtitle (optional: string | array) })
 function trListItem(options) {
     const opts = options || {};
-    const item = trEl("div", "trListItem vbox space-t");
+    const item = trEl("div", "trListItem vbox space-s");
     if (opts.title) {
         const titleEl = trEl("p", "as-primary", opts.title);
         item.appendChild(titleEl);
@@ -494,7 +519,7 @@ function trListItem(options) {
         const isArr = Array.isArray(opts.subtitle);
         const subs = isArr ? opts.subtitle : [opts.subtitle];
         for (let i = 0; i < subs.length; i += 1) {
-            const subEl = trEl("p", "as-tertiary as-gray", subs[i]);
+            const subEl = trEl("p", "as-secondary as-gray", subs[i]);
             item.appendChild(subEl);
         }
     }
@@ -573,7 +598,13 @@ function trBrandCard(options) {
 // params: options (required: { heading (required), cards (required: array of nodes) })
 function trCardStack(options) {
     const opts = options || {};
-    const cards = opts.cards || [];
+    const rawCards = opts.cards || [];
+    const cards = [];
+    for (let i = 0; i < rawCards.length; i += 1) {
+        if (rawCards[i]) {
+            cards.push(rawCards[i]);
+        }
+    }
     const wrap = trEl("div", "trCardStack group vbox space-l");
     if (opts.heading) {
         const head = trSectionHeading(opts.heading);
@@ -587,9 +618,6 @@ function trCardStack(options) {
 
     for (let i = 0; i < cards.length; i += 1) {
         const card = cards[i];
-        if (!card) {
-            continue;
-        }
         card.style.zIndex = String(cards.length - i);
         stack.appendChild(card);
     }
@@ -693,11 +721,11 @@ function trActionRow(options) {
     if (opts.disabled) {
         lblCls = lblCls + " disabled";
     }
-    const textWrap = trEl("div", "vbox push-right space-t");
+    const textWrap = trEl("div", "vbox push-right space-s");
     const lbl = trEl("p", lblCls, opts.label || "");
     textWrap.appendChild(lbl);
     if (opts.subtitle) {
-        const sub = trEl("p", "as-tertiary as-gray", opts.subtitle);
+        const sub = trEl("p", "as-secondary as-gray", opts.subtitle);
         textWrap.appendChild(sub);
     }
     row.appendChild(textWrap);
@@ -721,7 +749,7 @@ function trEntityRow(options) {
     const titleEl = trEl("p", "as-large-title as-bold", opts.title || "");
     left.appendChild(titleEl);
     if (opts.subtitle) {
-        const subEl = trEl("p", "as-tertiary as-gray", opts.subtitle);
+        const subEl = trEl("p", "as-secondary as-gray", opts.subtitle);
         left.appendChild(subEl);
     }
 
@@ -814,11 +842,11 @@ function trCheckRow(options) {
         box.addEventListener("change", handleCheck);
     }
 
-    const textWrap = trEl("div", "vbox push-right space-t");
+    const textWrap = trEl("div", "vbox push-right space-s");
     const titleEl = trEl("p", "as-primary", opts.title || "");
     textWrap.appendChild(titleEl);
     if (opts.subtitle) {
-        const subEl = trEl("p", "as-tertiary as-gray", opts.subtitle);
+        const subEl = trEl("p", "as-secondary as-gray", opts.subtitle);
         textWrap.appendChild(subEl);
     }
 
@@ -871,7 +899,7 @@ function trStoryBar(options) {
 // params: options (required: { title (required), logoText (optional) })
 function trHero(options) {
     const opts = options || {};
-    const box = trEl("div", "trHero vbox center space-m");
+    const box = trEl("div", "trHero group vbox center space-m");
     const logo = trBrandLogo({ text: opts.logoText || "TRIDE" });
     const titleEl = trEl("p", "as-title as-bold as-centered");
     const lines = String(opts.title || "").split("\n");
@@ -897,6 +925,9 @@ function trButton(options) {
     const isSmall = opts.small || opts.size === "m";
     const pad = isSmall ? "thickness-m" : "thickness-l";
     let cls = "trButton " + variant + " " + pad + " border-l";
+    if (opts.icon && opts.label) {
+        cls = cls + " space-m";
+    }
     if (opts.critical) {
         cls = cls + " as-critical";
     }
@@ -989,6 +1020,9 @@ function trPropertyRow(options) {
     if (opts.input) {
         if (opts.input instanceof Node) {
             controlEl = opts.input;
+            if (!controlEl.id) {
+                controlEl.id = fieldId;
+            }
         } else {
             const cfg = opts.input;
             const input = trEl("input");
@@ -1327,29 +1361,30 @@ function trSuccessWave(options) {
     const fromStage = trEl("div", "fullscreen-backdrop");
     fromStage.appendChild(appClone);
 
-    const stage = trEl("div", "fullscreen-stage vbox center space-xl");
+    const stage = trEl("div", "fullscreen-stage vbox center justify-center");
+    const stageBody = trEl("div", "fullscreen-stage-body trSection section vbox space-xl");
 
-    const stageContent = opts.content !== undefined ? opts.content : opts.card;
-    if (stageContent) {
-        const contentWrap = trEl("div", "fullscreen-stage-content");
-        trAppend(contentWrap, stageContent);
-        stage.appendChild(contentWrap);
-    }
-
-    const headerWrap = trEl("div", "fullscreen-stage-header vbox center space-m");
+    const headerWrap = trEl("div", "fullscreen-stage-header group vbox center space-m");
     const iconGlyph = opts.icon === undefined ? TR_ICON_CHECK : opts.icon;
     if (iconGlyph) {
         const iconEl = trIcon(iconGlyph, { className: "as-display as-centered" });
         headerWrap.appendChild(iconEl);
     }
-    const titleEl = trEl("p", "as-title as-bold as-centered", opts.title || "Saved");
+    const titleEl = trEl("p", "as-headline as-bold as-centered", opts.title || "Saved");
     headerWrap.appendChild(titleEl);
 
     if (opts.subtitle) {
         const subEl = trEl("p", "as-secondary as-gray as-centered", opts.subtitle);
         headerWrap.appendChild(subEl);
     }
-    stage.appendChild(headerWrap);
+    stageBody.appendChild(headerWrap);
+
+    const stageContent = opts.content !== undefined ? opts.content : opts.card;
+    if (stageContent) {
+        const contentWrap = trEl("div", "fullscreen-stage-content group vbox space-l");
+        trAppend(contentWrap, stageContent);
+        stageBody.appendChild(contentWrap);
+    }
 
     let waveCtrl = null;
     let isClosing = false;
@@ -1371,7 +1406,7 @@ function trSuccessWave(options) {
         }
     }
 
-    const actionWrap = trEl("div", "fullscreen-stage-actions vbox space-m");
+    const actionWrap = trEl("div", "fullscreen-stage-actions group vbox space-l");
     const actionButtons = [];
     if (Array.isArray(opts.buttons) && opts.buttons.length > 0) {
         for (let i = 0; i < opts.buttons.length; i += 1) {
@@ -1400,7 +1435,8 @@ function trSuccessWave(options) {
         actionWrap.appendChild(continueBtn);
         actionButtons.push(continueBtn);
     }
-    stage.appendChild(actionWrap);
+    stageBody.appendChild(actionWrap);
+    stage.appendChild(stageBody);
 
     const waveOpts = {
         children: fromStage,

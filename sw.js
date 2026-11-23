@@ -1,4 +1,4 @@
-const TRIDE_CACHE_NAME = "tride-local-v16";
+const TRIDE_CACHE_NAME = "tride-local-v20";
 const PRECACHE_URLS = [
     "./",
     "./index.html",

@@ -95,6 +95,7 @@
     padding-bottom: calc(var(--tr-space-xxxl) + var(--tr-space-xxxl) + var(--tr-space-xl));
 }
 
+.fullscreen-stage-body,
 .fullscreen-stage-content,
 .fullscreen-stage-card,
 .fullscreen-stage-actions {
@@ -102,8 +103,8 @@
     max-width: 440px;
 }
 
-.fullscreen-stage-actions {
-    margin-top: var(--tr-space-m);
+.fullscreen-stage-body {
+    margin: auto 0;
 }
 
 /* based on style.css, --tr-solid-dark-4, float control dock above wave canvas at screen bottom */

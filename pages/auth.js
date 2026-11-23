@@ -15,12 +15,12 @@ function createOobeDraft() {
 }
 
 function buildOobeIntroNodes(iconGlyph, titleText, descText) {
-    const wrap = trEl("div", "vbox center space-m");
+    const wrap = trEl("div", "group vbox center space-l");
     if (iconGlyph) {
-        const icon = trIcon(iconGlyph, { size: "big" });
+        const icon = trIcon(iconGlyph, { size: "big", className: "as-centered" });
         wrap.appendChild(icon);
     }
-    const titleEl = trEl("p", "as-title as-bold as-centered", titleText);
+    const titleEl = trEl("p", "as-headline as-bold as-centered", titleText);
     wrap.appendChild(titleEl);
     if (descText) {
         const descEl = trEl("p", "as-secondary as-gray as-centered", descText);
@@ -126,12 +126,14 @@ function renderOobeStep(params) {
     const items = [];
 
     if (step === 1) {
-        const welcomeWrap = trEl("div", "vbox center space-xl");
-        const logo = trBrandLogo("TRIDE");
-        const heroTitle = trEl("p", "as-title as-bold as-centered", "Madali na lang\nyan sa tride.");
-        const desc = trEl("p", "as-gray as-centered", "Set up your tricycle federation in a few quick steps.");
-        trAppend(welcomeWrap, [logo, heroTitle, desc]);
-        main.appendChild(welcomeWrap);
+        const welcomeWrap = trEl("div", "group vbox center space-l");
+        const hero = trHero({
+            logoText: "TRIDE",
+            title: "Madali na lang\nyan sa tride."
+        });
+        const desc = trEl("p", "as-secondary as-gray as-centered", "Set up your tricycle federation in a few quick steps.");
+        trAppend(welcomeWrap, [hero, desc]);
+        main.appendChild(trSection(welcomeWrap));
 
         const startBtn = trButton({
             label: "Get started",
@@ -140,10 +142,11 @@ function renderOobeStep(params) {
                 pushPage(renderOobeStep, { step: 2, draft: draft });
             }
         });
-        items.push(startBtn);
+        const step1Actions = trEl("div", "group vbox space-l");
+        step1Actions.appendChild(startBtn);
 
         if (typeof apiSeedSampleData === "function") {
-            const seedLink = trEl("p", "as-secondary as-gray as-centered", "...or you can try demo mode");
+            const seedLink = trEl("p", "as-tertiary as-gray as-centered", "...or you can try demo mode");
             trBindTap(seedLink, async function () {
                 try {
                     await apiSeedSampleData();
@@ -160,11 +163,12 @@ function renderOobeStep(params) {
                     trAlert({ title: "Error", message: err.message });
                 }
             });
-            items.push(seedLink);
+            step1Actions.appendChild(seedLink);
         }
+        main.appendChild(trSection(step1Actions));
     } else if (step === 2) {
         const intro = buildOobeIntroNodes("\uE8F1", "Get to know Tride", "Manage TODAs, tricycle units, and member records in one place.");
-        trAppend(main, intro);
+        main.appendChild(trSection(intro));
 
         const r1 = trListItem({ title: "TODAs & associations", subtitle: "Organize local tricycle associations and their officers." });
         const r2 = trListItem({ title: "Tricycle units", subtitle: "Track plate numbers, body numbers, and unit assignments." });
@@ -181,7 +185,7 @@ function renderOobeStep(params) {
         items.push(infoCard, nextBtn);
     } else if (step === 3) {
         const intro = buildOobeIntroNodes("\uE707", "Built for Naga City", "Designed around local TODAs and the Naga City Tricycle Federation.");
-        trAppend(main, intro);
+        main.appendChild(trSection(intro));
 
         const r1 = trListItem({ title: "Federation-first", subtitle: "Structured around the Naga City Tricycle Federation." });
         const r2 = trListItem({ title: "Role-based access", subtitle: "Separate views for Secretary, President, and Members." });
@@ -198,7 +202,7 @@ function renderOobeStep(params) {
         items.push(infoCard, nextBtn);
     } else if (step === 4) {
         const intro = buildOobeIntroNodes(null, "Federation setup", "Enter your federation ID and official name.");
-        trAppend(main, intro);
+        main.appendChild(trSection(intro));
 
         const fedIdRow = trPropertyRow({
             label: "Federation ID",
@@ -233,7 +237,7 @@ function renderOobeStep(params) {
         items.push(fedCard, nextBtn);
     } else if (step === 5) {
         const intro = buildOobeIntroNodes(null, "Who is the secretary?", "Enter your secretary ID and full name.");
-        trAppend(main, intro);
+        main.appendChild(trSection(intro));
 
         const secIdRow = trPropertyRow({
             label: "Secretary Member ID",
@@ -276,7 +280,7 @@ function renderOobeStep(params) {
         items.push(secCard, nextBtn);
     } else if (step === 6) {
         const intro = buildOobeIntroNodes(null, "What's your address?", "Enter your current residential address.");
-        trAppend(main, intro);
+        main.appendChild(trSection(intro));
 
         const addrRow = trPropertyRow({
             label: "Address",
@@ -303,7 +307,7 @@ function renderOobeStep(params) {
         items.push(addrCard, nextBtn);
     } else if (step === 7) {
         const intro = buildOobeIntroNodes(null, "Enter your contact number", "We use this for federation notices.");
-        trAppend(main, intro);
+        main.appendChild(trSection(intro));
 
         const contactRow = trPropertyRow({
             label: "Contact Number",
@@ -330,7 +334,7 @@ function renderOobeStep(params) {
         items.push(contactCard, nextBtn);
     } else if (step === 8) {
         const intro = buildOobeIntroNodes(null, "Are you a driver?", "Let us know if you also operate a tricycle unit.");
-        trAppend(main, intro);
+        main.appendChild(trSection(intro));
 
         const errorEl = trEl("p", "as-secondary as-critical as-centered hidden", "");
         let yesRow = null;
@@ -388,7 +392,7 @@ function renderOobeStep(params) {
         items.push(driverCard, errorEl, nextBtn);
     } else if (step === 9) {
         const intro = buildOobeIntroNodes(null, "Enter your license no.", "Provide your driver's license number.");
-        trAppend(main, intro);
+        main.appendChild(trSection(intro));
 
         const licenseRow = trPropertyRow({
             label: "License Number",
@@ -415,7 +419,9 @@ function renderOobeStep(params) {
         items.push(licenseCard, nextBtn);
     }
 
-    trAppend(main, items);
+    if (items.length > 0) {
+        main.appendChild(trSection(items));
+    }
     output.push(main);
     return output;
 }

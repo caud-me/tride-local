@@ -102,9 +102,9 @@ function renderNotificationsPage() {
             for (let i = 0; i < items.length; i += 1) {
                 const item = items[i];
                 const row = trEl("div", "vbox space-s");
-                const titleCls = item.isRead ? "as-gray" : "";
+                const titleCls = item.isRead ? "as-primary as-gray" : "as-primary";
                 row.appendChild(trEl("p", titleCls, item.title));
-                row.appendChild(trEl("p", "as-tertiary as-gray", item.message));
+                row.appendChild(trEl("p", "as-secondary as-gray", item.message));
 
                 if (!item.isRead) {
                     trBindTap(row, async function () {
