@@ -210,8 +210,15 @@ button.anim-rise,
     left: 0;
     right: 0;
     top: 100%;
-    height: var(--tr-space-l);
-    background: linear-gradient(to bottom, var(--tr-solid-dark-1), transparent);
+    height: calc(var(--tr-space-l) + var(--tr-space-m));
+    background: linear-gradient(
+        to bottom,
+        var(--tr-solid-dark-1) 0%,
+        color-mix(in srgb, var(--tr-solid-dark-1) 74%, transparent) 22%,
+        color-mix(in srgb, var(--tr-solid-dark-1) 42%, transparent) 50%,
+        color-mix(in srgb, var(--tr-solid-dark-1) 14%, transparent) 78%,
+        transparent 100%
+    );
     pointer-events: none;
 }
 .navigation-bar > h1 {
