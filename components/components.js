@@ -434,7 +434,7 @@ function trSection(children, options) {
 // params: children (required: node | array), options (optional: { layout (optional), className (optional), tag (optional), onClick (optional) })
 function trCard(children, options) {
     const opts = options || {};
-    const base = opts.layout ? "trCard card " + opts.layout : "trCard card standard vbox space-l border-l";
+    const base = opts.layout ? "trCard card " + opts.layout : "trCard card standard vbox space-m border-l";
     const cls = opts.className ? base + " " + opts.className : base;
     const tag = opts.tag || "div";
     const card = trEl(tag, cls);
