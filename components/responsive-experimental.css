@@ -23,12 +23,10 @@
     align-items: start;
 }
 
-.sheet .trAlphaList {
-    display: flex;
-}
-
+.sheet .trAlphaList,
 .card-grid:has(> .trEmptyState) {
     display: flex;
+    align-items: stretch;
 }
 
 .card-grid > *,
