@@ -99,6 +99,9 @@ function renderTopPage(direction) {
 
     const screenOutput = renderFn(entryParams);
     trAppend(appRoot, screenOutput);
+    if (typeof window !== "undefined" && typeof window.scrollTo === "function") {
+        window.scrollTo(0, 0);
+    }
 
     if (direction && direction !== "none") {
         // ive looked up on the internet on this one, offsetWidth read force browser reflow so CSS animation replay on each step

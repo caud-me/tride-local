@@ -211,6 +211,7 @@ function trCaptureNodeToImage(sourceNode, width, height, pixelWidth, pixelHeight
     return trCollectDocumentCss().then(function (docCss) {
         const wrapper = document.createElement("body");
         wrapper.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+        wrapper.style.position = "relative";
         wrapper.style.width = String(width) + "px";
         wrapper.style.height = String(height) + "px";
         wrapper.style.margin = "0";

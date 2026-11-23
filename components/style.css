@@ -19,10 +19,14 @@ html {
     -webkit-tap-highlight-color: transparent;
 }
 html, body {
-    height: 100dvh;
+    height: 100%;
     width: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
 }
 body {
+    position: fixed;
+    inset: 0;
     line-height: 1.4;
     -webkit-font-smoothing: antialiased;
 }
@@ -194,7 +198,11 @@ button.anim-rise,
     flex-shrink: 0;
 }
 .navigation-bar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
     min-height: 54px;
+    background-color: var(--tr-solid-dark-1);
     border-bottom: solid 1px var(--tr-elevation-op20);
 }
 .navigation-bar > h1 {
@@ -202,9 +210,12 @@ button.anim-rise,
     font-weight: inherit;
 }
 .content {
-    flex: 1;
+    flex: 1 1 0;
     min-height: 0;
     overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
 }
 .content > * {
     flex-shrink: 0;
