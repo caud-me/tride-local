@@ -64,14 +64,14 @@ function buildTricycleCard(unit, options) {
         }
     }
 
-    const fromLine = trEl("small", "");
+    const fromLine = trEl("p", "as-tertiary as-gray");
     fromLine.appendChild(document.createTextNode("from "));
-    fromLine.appendChild(trEl("span", "bold", fromName));
+    fromLine.appendChild(trEl("span", "as-bold", fromName));
 
-    const assignLine = trEl("small", "");
+    const assignLine = trEl("p", "as-tertiary as-gray");
     assignLine.appendChild(document.createTextNode(rightPrefix));
     if (rightHighlight) {
-        assignLine.appendChild(trEl("span", "bold", rightHighlight));
+        assignLine.appendChild(trEl("span", "as-bold", rightHighlight));
     }
 
     const card = trBrandCard({
@@ -89,11 +89,11 @@ function buildAssociationCard(toda, options) {
     const memberCount = Number(toda.Member_Count) || 0;
     const countText = memberCount + " " + pluralLabel(memberCount, "member", "members");
 
-    const presLine = trEl("small", "");
+    const presLine = trEl("p", "as-tertiary as-gray");
     if (toda.President_Member_ID) {
         const presName = formatFullName(toda.Pres_First_Name, toda.Pres_Last_Name);
         presLine.appendChild(document.createTextNode("Pres: "));
-        presLine.appendChild(trEl("span", "bold", presName));
+        presLine.appendChild(trEl("span", "as-bold", presName));
     } else {
         presLine.textContent = "No president";
     }
@@ -145,7 +145,7 @@ async function openDriverPicker(options) {
 
         let searchQuery = "";
         let activeToda = "all";
-        const bodyWrap = trEl("div", "vbox gap-m");
+        const bodyWrap = trEl("div", "vbox space-l");
 
         function renderDriverList() {
             bodyWrap.replaceChildren();
@@ -232,9 +232,10 @@ async function openDriverPicker(options) {
                 const todaTabs = trTabs({
                     items: todaItems,
                     activeKey: "all",
-                    onChange: function (key) {
+                    onChange: function (key, tabObj, direction) {
                         activeToda = key;
                         renderDriverList();
+                        trAnimateTabSwitch(bodyWrap, direction);
                     }
                 });
                 headerControls.push(todaTabs);

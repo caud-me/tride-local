@@ -2,6 +2,8 @@
 
 function renderMembersPage(params) {
     const scopeTodaId = params.scopeTodaId || null;
+    const scopeTodaName = params.scopeTodaName || null;
+    const scopeSubtitle = scopeTodaId ? ("for " + (scopeTodaName || "your TODA")) : "for all TODAs";
     let searchQuery = "";
     let activeTab = params.activeTab || "all";
     const tabFilters = {
@@ -19,7 +21,7 @@ function renderMembersPage(params) {
     const addIcon = trIcon("\uE710", {
         label: "Add member",
         onClick: function () {
-            pushPage(renderAddMemberPage, { scopeTodaId: scopeTodaId });
+            pushPage(renderAddMemberPage, { scopeTodaId: scopeTodaId, scopeTodaName: scopeTodaName });
         }
     });
 
@@ -29,8 +31,8 @@ function renderMembersPage(params) {
         actions: [addIcon]
     });
 
-    const main = trEl("main", "content vbox gap-m");
-    const searchRow = trEl("div", "hbox gap-m align-center");
+    const main = trEl("main", "content vbox space-xl");
+    const searchRow = trEl("div", "hbox space-l");
     const searchBox = trSearchBox({
         placeholder: "Find a member",
         onInput: function (val) {
@@ -71,16 +73,16 @@ function renderMembersPage(params) {
             { key: "all", label: "All" },
             { key: "norole", label: "No-role members" }
         ],
-        onChange: function (nextKey) {
+        onChange: function (nextKey, tabObj, direction) {
             activeTab = nextKey;
             params.activeTab = nextKey;
             syncFilterVisibility();
-            loadMembers();
+            loadMembers(direction);
         }
     });
-    const listWrap = trEl("div", "vbox gap-m");
+    const listWrap = trEl("div", "vbox flex1 space-l");
 
-    async function loadMembers() {
+    async function loadMembers(animDirection) {
         listWrap.replaceChildren();
         try {
             const activeCfg = activeTab === "norole" ? tabFilters.norole : tabFilters.all;
@@ -98,6 +100,9 @@ function renderMembersPage(params) {
                     title: "No members found",
                     subtitle: searchQuery ? "Try a different name or Member ID." : "Tap + to register a member."
                 }));
+                if (animDirection) {
+                    trAnimateTabSwitch(listWrap, animDirection);
+                }
                 return;
             }
 
@@ -117,6 +122,9 @@ function renderMembersPage(params) {
                     }
                 });
                 listWrap.appendChild(alphaList);
+                if (animDirection) {
+                    trAnimateTabSwitch(listWrap, animDirection);
+                }
                 return;
             }
 
@@ -132,8 +140,15 @@ function renderMembersPage(params) {
                 }));
             }
             listWrap.appendChild(trListCard(rows));
+            if (animDirection) {
+                trAnimateTabSwitch(listWrap, animDirection);
+            }
         } catch (err) {
-            listWrap.appendChild(trBanner(err.message));
+            listWrap.appendChild(trEmptyState({
+                icon: "\uE783",
+                title: "Could not load members",
+                subtitle: err.message
+            }));
         }
     }
 
@@ -232,7 +247,8 @@ function renderMembersPage(params) {
 
     setupFilterMenus();
     loadMembers();
-    trAppend(main, [tabs, searchRow, listWrap]);
+    const listSection = trSection([tabs, searchRow, listWrap], { flex: true });
+    main.appendChild(listSection);
     return [navBar, main];
 }
 
@@ -242,8 +258,8 @@ function renderMemberDetailPage(params) {
         onBack: popPage
     });
 
-    const main = trEl("main", "content vbox gap-m");
-    main.appendChild(trBanner("Loading member..."));
+    const main = trEl("main", "content vbox space-xl");
+    main.appendChild(trEl("p", "as-tertiary as-gray", "Loading member..."));
 
     Promise.all([
         apiGetMember(params.memberId),
@@ -257,7 +273,8 @@ function renderMemberDetailPage(params) {
 
         const targetFullName = formatFullName(member.First_Name, member.Last_Name);
         const updatedNav = trNavBar({
-            title: targetFullName,
+            title: "Member details",
+            subtitle: "for " + member.First_Name,
             onBack: popPage
         });
         navBar.replaceWith(updatedNav);
@@ -524,18 +541,29 @@ function renderMemberDetailPage(params) {
             ]);
         }
         const infoCard = trListCard(infoRows);
-        main.appendChild(infoCard);
+        main.appendChild(trSection(trCardGroup({
+            headline: "Member details",
+            card: infoCard,
+            footnote: "Tap roles or TODA assignment to update this member's access."
+        })));
 
+        const unitGroups = [];
         if (targetHome.drivenUnit) {
             const du = targetHome.drivenUnit;
-            main.appendChild(trSectionHeading("Driven tricycle"));
             const drivenCard = buildTricycleCard(du, {
                 mode: "driver",
                 onClick: function () {
-                    pushPage(renderManageUnitPage, { bodyNumber: du.Body_Number });
+                    pushPage(renderManageUnitPage, {
+                        bodyNumber: du.Body_Number,
+                        ownerFirstName: du.Owner_First_Name,
+                        ownerId: du.Owner_Member_ID
+                    });
                 }
             });
-            main.appendChild(drivenCard);
+            unitGroups.push(trCardGroup({
+                headline: "Driven tricycle",
+                card: drivenCard
+            }));
         }
 
         if (owned.length > 0) {
@@ -548,12 +576,16 @@ function renderMemberDetailPage(params) {
                 const ownedCard = buildTricycleCard(ou, {
                     mode: "operator",
                     onClick: function () {
-                        pushPage(renderManageUnitPage, { bodyNumber: ou.Body_Number });
+                        pushPage(renderManageUnitPage, {
+                            bodyNumber: ou.Body_Number,
+                            ownerFirstName: member.First_Name,
+                            ownerId: member.Member_ID
+                        });
                     }
                 });
                 ownedCards.push(ownedCard);
             }
-            main.appendChild(trCardStack({
+            unitGroups.push(trCardStack({
                 heading: ownedHeading,
                 cards: ownedCards
             }));
@@ -562,11 +594,20 @@ function renderMemberDetailPage(params) {
                 const addUnitRow = trActionRow({
                     label: "Add tricycle for " + targetFullName,
                     onClick: function () {
-                        pushPage(renderAddMyUnitPage, { ownerId: member.Member_ID, ownerName: targetFullName });
+                        pushPage(renderAddMyUnitPage, {
+                            ownerId: member.Member_ID,
+                            ownerName: targetFullName,
+                            ownerFirstName: member.First_Name
+                        });
                     }
                 });
-                main.appendChild(trCard([addUnitRow]));
+                unitGroups.push(trCardGroup({
+                    card: trCard([addUnitRow])
+                }));
             }
+        }
+        if (unitGroups.length > 0) {
+            main.appendChild(trSection(unitGroups));
         }
 
         const removeRow = trActionRow({
@@ -590,10 +631,18 @@ function renderMemberDetailPage(params) {
                 });
             }
         });
-        main.appendChild(trCard([removeRow]));
+        main.appendChild(trSection(trCardGroup({
+            headline: "Danger zone",
+            card: trCard([removeRow]),
+            footnote: "A member must have no owned units, assigned tricycle, or leadership role before removal."
+        })));
     }).catch(function (err) {
         main.replaceChildren();
-        main.appendChild(trBanner(err.message));
+        main.appendChild(trSection(trEmptyState({
+            icon: "\uE783",
+            title: "Could not load member",
+            subtitle: err.message
+        }), { flex: true }));
     });
 
     return [navBar, main];
@@ -606,8 +655,8 @@ function renderAddMemberPage(params) {
         onBack: popPage
     });
 
-    const main = trEl("main", "content vbox gap-m");
-    main.appendChild(trBanner("Loading TODA groups..."));
+    const main = trEl("main", "content vbox space-xl");
+    main.appendChild(trEl("p", "as-tertiary as-gray", "Loading TODA groups..."));
 
     apiListTodas().then(function (res) {
         main.replaceChildren();
@@ -622,11 +671,11 @@ function renderAddMemberPage(params) {
         }
 
         if (todaOptions.length === 0) {
-            main.appendChild(trEmptyState({
+            main.appendChild(trSection(trEmptyState({
                 icon: "\uE82F",
                 title: "No TODA groups yet",
                 subtitle: "Register a TODA group first before adding members."
-            }));
+            }), { flex: true }));
             return;
         }
 
@@ -721,10 +770,18 @@ function renderAddMemberPage(params) {
         navBar.replaceWith(updatedNav);
 
         const formCard = trListCard([idRow, firstRow, lastRow, addrRow, contactRow, licenseRow, todaRow]);
-        main.appendChild(formCard);
+        main.appendChild(trSection(trCardGroup({
+            headline: "New member",
+            card: formCard,
+            footnote: "Leave License No. blank if this member is not an active driver."
+        })));
     }).catch(function (err) {
         main.replaceChildren();
-        main.appendChild(trBanner(err.message));
+        main.appendChild(trSection(trEmptyState({
+            icon: "\uE783",
+            title: "Could not load TODA groups",
+            subtitle: err.message
+        }), { flex: true }));
     });
 
     return [navBar, main];

@@ -4,7 +4,7 @@
     position: relative;
     isolation: isolate;
     display: grid;
-    border-radius: var(--tr-m);
+    border-radius: var(--tr-border-m);
     overflow: hidden;
 }
 
@@ -13,7 +13,7 @@
     position: relative;
     z-index: 1;
     min-width: 0;
-    background-color: var(--tr-dark);
+    background-color: var(--tr-solid-dark-1);
 }
 
 /* ive looked up on the internet on this one, hide inactive view to keep box size for picture */
@@ -81,18 +81,18 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background-color: var(--tr-dark);
+    background-color: var(--tr-solid-dark-1);
 }
 
 .fullscreen-stage {
     width: 100%;
     min-height: 100%;
-    background-color: var(--tr-dark);
-    padding: var(--tr-l);
+    background-color: var(--tr-solid-dark-1);
+    padding: var(--tr-space-xl);
 }
 
 .fullscreen-stage.has-hud {
-    padding-bottom: calc(var(--tr-xxl) + var(--tr-xxl) + var(--tr-l));
+    padding-bottom: calc(var(--tr-space-xxxl) + var(--tr-space-xxxl) + var(--tr-space-xl));
 }
 
 .fullscreen-stage-content,
@@ -103,21 +103,21 @@
 }
 
 .fullscreen-stage-actions {
-    margin-top: var(--tr-s);
+    margin-top: var(--tr-space-m);
 }
 
-/* based on style.css, --tr-dark1, float control dock above wave canvas at screen bottom */
+/* based on style.css, --tr-solid-dark-4, float control dock above wave canvas at screen bottom */
 .distortion-wave-hud {
     position: fixed;
     left: 50%;
-    bottom: var(--tr-l);
+    bottom: var(--tr-space-xl);
     transform: translateX(-50%);
-    width: calc(100% - var(--tr-l));
+    width: calc(100% - var(--tr-space-xl));
     max-width: 440px;
-    padding: var(--tr-m);
-    background-color: var(--tr-dark1);
-    border: 1px solid var(--tr-mid-op40);
-    border-radius: var(--tr-l);
+    padding: var(--tr-space-l);
+    background-color: var(--tr-solid-dark-4);
+    border: 1px solid var(--tr-elevation-op40);
+    border-radius: var(--tr-border-l);
     box-shadow: var(--tr-shadow);
 }
 /* </patch-3> */

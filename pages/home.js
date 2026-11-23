@@ -3,15 +3,19 @@
 function buildDriverTab(homeData) {
     const unit = homeData.drivenUnit;
     if (!unit) {
-        const emptyMsg = trEl("small", "", "You are not assigned to any tricycle right now");
-        const emptyCard = trCard([emptyMsg]);
-        emptyCard.setAttribute("role", "status");
-        return [emptyCard];
+        return [trEmptyState({
+            icon: "\uE7EC",
+            title: "No assigned tricycle",
+            subtitle: "You are not assigned to any tricycle right now."
+        })];
     }
 
-    const heading = trSectionHeading("assigned tricycle");
     const unitCard = buildTricycleCard(unit, { mode: "driver" });
-    return [heading, unitCard];
+    return [trCardGroup({
+        headline: "Assigned tricycle",
+        card: unitCard,
+        footnote: "Contact your operator if you need unit updates."
+    })];
 }
 
 function buildOperatorTab(homeData) {
@@ -36,9 +40,13 @@ function buildOperatorTab(homeData) {
             pushPage(renderOperatorUnitsPage, {});
         }
     });
-    const manageCard = trCard([manageRow]);
+    const manageGroup = trCardGroup({
+        headline: "Ownership",
+        card: trCard([manageRow]),
+        footnote: "View, register, or assign drivers to your tricycles."
+    });
 
-    return [stats, manageCard];
+    return [stats, manageGroup];
 }
 
 function renderHomePage(params) {
@@ -64,8 +72,8 @@ function renderHomePage(params) {
         actions: navActions
     });
 
-    const main = trEl("main", "content vbox gap-m");
-    main.appendChild(trBanner("Loading..."));
+    const main = trEl("main", "content vbox space-xl");
+    main.appendChild(trEl("p", "as-tertiary as-gray", "Loading..."));
 
     apiGetHome(memberId).then(function (data) {
         main.replaceChildren();
@@ -86,6 +94,7 @@ function renderHomePage(params) {
                 pushPage(renderEditProfilePage, { member: member });
             }
         });
+        const profileSection = trSection([profileCard, editBtn]);
 
         const allRoles = data.roles || [];
         const roles = [];
@@ -102,7 +111,7 @@ function renderHomePage(params) {
                 title: "No driver or operator roles yet",
                 subtitle: "Add your driver's license in Edit profile to drive, or ask an officer to assign you a unit."
             });
-            trAppend(main, [profileCard, editBtn, noRoleState]);
+            trAppend(main, [profileSection, trSection(noRoleState, { flex: true })]);
             if (params && typeof params.onReady === "function") {
                 params.onReady();
             }
@@ -120,7 +129,7 @@ function renderHomePage(params) {
             activeRole = roles[0].key;
         }
 
-        const tabPanel = trEl("div", "vbox gap-m");
+        const tabPanel = trEl("div", "vbox flex1 space-l");
 
         function showTab(roleKey) {
             tabPanel.replaceChildren();
@@ -134,20 +143,26 @@ function renderHomePage(params) {
         const tabs = trTabs({
             items: roles,
             activeKey: activeRole,
-            onChange: function (nextKey) {
+            onChange: function (nextKey, tabObj, direction) {
                 params.activeRole = nextKey;
                 showTab(nextKey);
+                trAnimateTabSwitch(tabPanel, direction);
             }
         });
 
         showTab(activeRole);
-        trAppend(main, [profileCard, editBtn, tabs, tabPanel]);
+        const roleSection = trSection([tabs, tabPanel], { flex: true });
+        trAppend(main, [profileSection, roleSection]);
         if (params && typeof params.onReady === "function") {
             params.onReady();
         }
     }).catch(function (err) {
         main.replaceChildren();
-        main.appendChild(trBanner(err.message));
+        main.appendChild(trSection(trEmptyState({
+            icon: "\uE783",
+            title: "Could not load profile",
+            subtitle: err.message
+        }), { flex: true }));
         if (err.message.indexOf("not found") !== -1) {
             setSessionMemberId(null);
             setRootPage(renderLoginPage, {});
@@ -205,13 +220,17 @@ function renderEditProfilePage(params) {
 
     const navBar = trNavBar({
         title: "Edit profile",
+        subtitle: "for " + member.First_Name,
         onBack: popPage,
         actions: [doneBtn]
     });
 
-    const main = trEl("main", "content vbox gap-m");
-    main.appendChild(trListCard([addrRow, contactRow, licenseRow]));
-    main.appendChild(trEl("small", "text-center as-gray", "Changes save straight to tride-0.1."));
+    const main = trEl("main", "content vbox space-xl");
+    main.appendChild(trSection(trCardGroup({
+        headline: "Contact & license",
+        card: trListCard([addrRow, contactRow, licenseRow]),
+        footnote: "Updates save directly to your member record."
+    })));
     return [navBar, main];
 }
 
@@ -221,7 +240,7 @@ function renderSettingsPage() {
         onBack: popPage
     });
 
-    const main = trEl("main", "content vbox gap-m");
+    const main = trEl("main", "content vbox space-xl");
     const logoutRow = trActionRow({
         label: "Log out",
         hideChevron: true,
@@ -230,7 +249,11 @@ function renderSettingsPage() {
             setRootPage(renderLoginPage, {});
         }
     });
-    main.appendChild(trCard([logoutRow]));
+    main.appendChild(trSection(trCardGroup({
+        headline: "Session",
+        card: trCard([logoutRow]),
+        footnote: "You can sign back in anytime using your Member ID."
+    })));
 
     return [navBar, main];
 }

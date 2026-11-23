@@ -33,12 +33,23 @@ function syncHistoryState(mode) {
 
 if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
     window.addEventListener("popstate", function (event) {
+        const openSheet = document.querySelector(".sheet-backdrop:not(.hidden)");
+        if (openSheet) {
+            openSheet.classList.add("hidden");
+            setTimeout(function () {
+                if (openSheet.parentNode) {
+                    openSheet.parentNode.removeChild(openSheet);
+                }
+            }, 220);
+            syncHistoryState("push");
+            return;
+        }
         const st = event.state;
         if (pageStack.length <= 1) {
             return;
         }
         if (!st || st.trideEpoch !== navEpoch) {
-            pageStack.length = 1;
+            pageStack.pop();
             renderTopPage("back");
             syncHistoryState("replace");
             return;
@@ -69,6 +80,11 @@ function renderTopPage(direction) {
     const appRoot = getAppRoot();
     if (!appRoot) {
         return;
+    }
+
+    const lingeringSheets = document.querySelectorAll(".sheet-backdrop");
+    for (let i = 0; i < lingeringSheets.length; i += 1) {
+        lingeringSheets[i].remove();
     }
 
     const topIndex = stackCount - 1;

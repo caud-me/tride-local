@@ -14,40 +14,36 @@
 .card-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-    gap: var(--tr-m);
+    gap: var(--tr-space-l);
     align-items: start;
 }
 
-.card-grid > .empty-state,
+.card-grid > .trEmptyState,
 .card-grid > .banner {
     grid-column: 1 / -1;
 }
 
 @media (min-width: 520px) {
     .app {
-        padding-inline: var(--tr-m);
+        padding-inline: var(--tr-space-l);
     }
 }
 
 @media (min-width: 640px) {
     .sheet-backdrop {
         align-items: center;
-        padding: var(--tr-m);
+        padding: var(--tr-space-l);
     }
 
-    .sheet {
+    .sheet-backdrop > .sheet {
         max-width: 480px;
-        border-bottom: 1px solid var(--tr-mid-op20);
-        border-radius: var(--tr-l);
+        border-bottom: 1px solid var(--tr-elevation-op20);
+        border-radius: var(--tr-border-l);
         transform: scale(1);
         transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms ease;
     }
 
-    .sheet-backdrop.hidden .sheet {
+    .sheet-backdrop.hidden > .sheet {
         transform: scale(0.96);
-    }
-
-    .sheet-handle {
-        display: none;
     }
 }

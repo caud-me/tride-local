@@ -169,15 +169,14 @@ function renderExportPage(params) {
     const opts = params || {};
     const isSecretary = opts.role === "secretary";
     const scopeTodaId = isSecretary ? null : (opts.scopeTodaId || null);
-    const scopeLabel = isSecretary ? "All TODAs" : (opts.scopeTodaName || scopeTodaId || "My TODA");
+    const scopeLabel = isSecretary ? "all TODAs" : (opts.scopeTodaName || "your TODA");
 
     const navBar = trNavBar({
         title: "Export data",
         onBack: popPage
     });
 
-    const main = trEl("main", "content vbox gap-m");
-    main.appendChild(trBanner("Experimental: export records for " + scopeLabel + "."));
+    const main = trEl("main", "content vbox space-xl");
 
     const selected = {
         todas: isSecretary,
@@ -232,7 +231,15 @@ function renderExportPage(params) {
         }
     });
 
-    const statusWrap = trEl("div", "vbox gap-s");
+    const statusWrap = trEl("div", "vbox space-m");
+
+    function setExportStatus(message, isCritical) {
+        statusWrap.replaceChildren();
+        const cls = isCritical ? "as-tertiary as-critical" : "as-tertiary as-gray";
+        const msgEl = trEl("p", cls, message);
+        msgEl.setAttribute("role", "status");
+        statusWrap.appendChild(msgEl);
+    }
 
     const exportBtn = trButton({
         label: "Export",
@@ -241,11 +248,11 @@ function renderExportPage(params) {
             statusWrap.replaceChildren();
             const hasSelection = selected.todas || selected.members || selected.units;
             if (!hasSelection) {
-                statusWrap.appendChild(trBanner("Select at least one dataset to export."));
+                setExportStatus("Select at least one dataset to export.", true);
                 return;
             }
 
-            statusWrap.appendChild(trBanner("Preparing export..."));
+            setExportStatus("Preparing export...", false);
             try {
                 const schemaRes = typeof apiGetSchema === "function" ? await apiGetSchema() : null;
                 const schemaTables = schemaRes && schemaRes.tables ? schemaRes.tables : null;
@@ -302,7 +309,7 @@ function renderExportPage(params) {
                         const filename = EXPORT_FILE_PREFIX + "-" + scopeSlug + "-" + sec.key + ".csv";
                         triggerFileDownload(filename, "\uFEFF" + csvText, "text/csv;charset=utf-8");
                     }
-                    statusWrap.replaceChildren(trBanner("Downloaded " + secCount + " Excel (.csv) file(s)."));
+                    setExportStatus("Downloaded " + secCount + " Excel (.csv) file(s).", false);
                 } else if (activeFormat === "sql") {
                     sqlBlocks.push("-- Tride SQL export (" + scopeLabel + ")");
                     sqlBlocks.push("-- Generated " + new Date().toISOString());
@@ -314,24 +321,31 @@ function renderExportPage(params) {
                     }
                     const sqlName = EXPORT_FILE_PREFIX + "-" + scopeSlug + ".sql";
                     triggerFileDownload(sqlName, sqlBlocks.join("\n"), "application/sql;charset=utf-8");
-                    statusWrap.replaceChildren(trBanner("Downloaded " + sqlName + "."));
+                    setExportStatus("Downloaded " + sqlName + ".", false);
                 } else {
                     openPrintPdfReport("Tride Export - " + scopeLabel, sections);
-                    statusWrap.replaceChildren(trBanner("Opened PDF print view."));
+                    setExportStatus("Opened PDF print view.", false);
                 }
             } catch (err) {
-                statusWrap.replaceChildren(trBanner(err.message));
+                setExportStatus(err.message, true);
             }
         }
     });
 
     trAppend(main, [
-        trSectionHeading("What to export"),
-        trListCard(checkRows),
-        trSectionHeading("Format"),
-        trListCard([formatRow]),
-        statusWrap,
-        exportBtn
+        trSection([
+            trCardGroup({
+                headline: "What to export",
+                card: trListCard(checkRows),
+                footnote: "Select one or more tables to include in the export."
+            }),
+            trCardGroup({
+                headline: "Format",
+                card: trListCard([formatRow]),
+                footnote: "SQL exports raw insert statements; PDF opens a printable report."
+            })
+        ]),
+        trSection([exportBtn, statusWrap])
     ]);
 
     return [navBar, main];

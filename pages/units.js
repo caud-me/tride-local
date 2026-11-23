@@ -1,5 +1,16 @@
 /* operator units, manage unit, units list, and add tricycle screens */
 
+function formatUnitSubtitle(bodyNumber, ownerFirstName, ownerId) {
+    const isSelfOwner = Boolean(ownerId && ownerId === getSessionMemberId());
+    if (isSelfOwner) {
+        return "for your unit " + bodyNumber;
+    }
+    if (ownerFirstName) {
+        return "for " + ownerFirstName + "'s unit " + bodyNumber;
+    }
+    return "for unit " + bodyNumber;
+}
+
 function renderOperatorUnitsPage() {
     const memberId = getSessionMemberId();
     let ownedCount = 0;
@@ -25,8 +36,8 @@ function renderOperatorUnitsPage() {
         actions: [addIcon]
     });
 
-    const main = trEl("main", "content vbox gap-m");
-    main.appendChild(trBanner("Loading units..."));
+    const main = trEl("main", "content vbox space-xl");
+    main.appendChild(trEl("p", "as-tertiary as-gray", "Loading units..."));
 
     apiListTricycles({ ownerId: memberId }).then(function (data) {
         main.replaceChildren();
@@ -44,6 +55,7 @@ function renderOperatorUnitsPage() {
             }
         }
 
+        const unitGroups = [];
         if (active.length > 0) {
             const activeCards = [];
             for (let i = 0; i < active.length; i += 1) {
@@ -51,12 +63,16 @@ function renderOperatorUnitsPage() {
                 const card = buildTricycleCard(u, {
                     mode: "operator",
                     onClick: function () {
-                        pushPage(renderManageUnitPage, { bodyNumber: u.Body_Number });
+                        pushPage(renderManageUnitPage, {
+                            bodyNumber: u.Body_Number,
+                            ownerFirstName: u.Owner_First_Name,
+                            ownerId: memberId
+                        });
                     }
                 });
                 activeCards.push(card);
             }
-            main.appendChild(trCardStack({
+            unitGroups.push(trCardStack({
                 heading: "Actively used",
                 cards: activeCards
             }));
@@ -69,27 +85,37 @@ function renderOperatorUnitsPage() {
                 const card = buildTricycleCard(u, {
                     mode: "operator",
                     onClick: function () {
-                        pushPage(renderManageUnitPage, { bodyNumber: u.Body_Number });
+                        pushPage(renderManageUnitPage, {
+                            bodyNumber: u.Body_Number,
+                            ownerFirstName: u.Owner_First_Name,
+                            ownerId: memberId
+                        });
                     }
                 });
                 unassignedCards.push(card);
             }
-            main.appendChild(trCardStack({
+            unitGroups.push(trCardStack({
                 heading: "Unassigned",
                 cards: unassignedCards
             }));
         }
 
         if (units.length === 0) {
-            main.appendChild(trEmptyState({
+            main.appendChild(trSection(trEmptyState({
                 icon: "\uE7EC",
                 title: "No tricycle units yet",
                 subtitle: "Tap + to register your first tricycle unit (up to 3)."
-            }));
+            }), { flex: true }));
+        } else {
+            main.appendChild(trSection(unitGroups));
         }
     }).catch(function (err) {
         main.replaceChildren();
-        main.appendChild(trBanner(err.message));
+        main.appendChild(trSection(trEmptyState({
+            icon: "\uE783",
+            title: "Could not load units",
+            subtitle: err.message
+        }), { flex: true }));
     });
 
     return [navBar, main];
@@ -97,12 +123,13 @@ function renderOperatorUnitsPage() {
 
 function renderManageUnitPage(params) {
     const navBar = trNavBar({
-        title: "Manage " + params.bodyNumber,
+        title: "Manage unit",
+        subtitle: formatUnitSubtitle(params.bodyNumber, params.ownerFirstName, params.ownerId),
         onBack: popPage
     });
 
-    const main = trEl("main", "content vbox gap-m");
-    main.appendChild(trBanner("Loading unit..."));
+    const main = trEl("main", "content vbox space-xl");
+    main.appendChild(trEl("p", "as-tertiary as-gray", "Loading unit..."));
 
     apiGetTricycle(params.bodyNumber).then(function (data) {
         const unit = data.tricycle;
@@ -135,7 +162,8 @@ function renderManageUnitPage(params) {
         });
 
         const updatedNav = trNavBar({
-            title: "Manage " + unit.Body_Number,
+            title: "Manage unit",
+            subtitle: formatUnitSubtitle(unit.Body_Number, unit.Owner_First_Name, unit.Owner_Member_ID),
             onBack: popPage,
             actions: [doneBtn]
         });
@@ -226,15 +254,27 @@ function renderManageUnitPage(params) {
             }
         });
 
+        const detailsGroup = trCardGroup({
+            headline: "Tricycle details",
+            card: detailsCard,
+            footnote: "Tap the driver row to assign or switch who drives this unit."
+        });
         const dangerCard = trListCard([removeDriverRow, removeUnitRow]);
-        trAppend(main, [detailsCard, dangerCard]);
-        if (hasDriver) {
-            const removeNote = trEl("small", "text-center as-gray", "Remove the assigned driver before deleting this tricycle.");
-            main.appendChild(removeNote);
-        }
+        const dangerGroup = trCardGroup({
+            headline: "Danger zone",
+            card: dangerCard,
+            footnote: hasDriver
+                ? "Remove the assigned driver before deleting this tricycle."
+                : "Removing this tricycle permanently deletes its registration."
+        });
+        trAppend(main, [trSection(detailsGroup), trSection(dangerGroup)]);
     }).catch(function (err) {
         main.replaceChildren();
-        main.appendChild(trBanner(err.message));
+        main.appendChild(trSection(trEmptyState({
+            icon: "\uE783",
+            title: "Could not load unit",
+            subtitle: err.message
+        }), { flex: true }));
     });
 
     return [navBar, main];
@@ -242,19 +282,20 @@ function renderManageUnitPage(params) {
 
 function renderUnitsPage(params) {
     const scopeTodaId = params.scopeTodaId || null;
+    const pageTitle = scopeTodaId ? "Units" : "All units";
     let filterTodaId = scopeTodaId || "all";
 
     const navBar = trNavBar({
-        title: scopeTodaId ? "Units" : "All units",
+        title: pageTitle,
         onBack: popPage
     });
 
-    const main = trEl("main", "content vbox gap-m");
-    const listWrap = trEl("div", "vbox gap-m card-grid");
+    const main = trEl("main", "content vbox space-xl");
+    const listWrap = trEl("div", "vbox flex1 space-l card-grid");
 
     async function loadUnits() {
         listWrap.replaceChildren();
-        listWrap.appendChild(trBanner("Loading units..."));
+        listWrap.appendChild(trEl("p", "as-tertiary as-gray", "Loading units..."));
 
         try {
             const unitsRes = await apiListTricycles({ todaId: filterTodaId });
@@ -301,7 +342,11 @@ function renderUnitsPage(params) {
                     const card = buildTricycleCard(u, {
                         mode: "unit",
                         onClick: function () {
-                            pushPage(renderManageUnitPage, { bodyNumber: u.Body_Number });
+                            pushPage(renderManageUnitPage, {
+                                bodyNumber: u.Body_Number,
+                                ownerFirstName: u.Owner_First_Name,
+                                ownerId: u.Owner_Member_ID
+                            });
                         }
                     });
                     groupCards.push(card);
@@ -314,7 +359,11 @@ function renderUnitsPage(params) {
             }
         } catch (err) {
             listWrap.replaceChildren();
-            listWrap.appendChild(trBanner(err.message));
+            listWrap.appendChild(trEmptyState({
+                icon: "\uE783",
+                title: "Could not load units",
+                subtitle: err.message
+            }));
         }
     }
 
@@ -339,7 +388,7 @@ function renderUnitsPage(params) {
                 }]
             });
             const updatedNav = trNavBar({
-                title: "All units",
+                title: pageTitle,
                 onBack: popPage,
                 actions: [menu]
             });
@@ -348,7 +397,7 @@ function renderUnitsPage(params) {
     }
 
     loadUnits();
-    main.appendChild(listWrap);
+    main.appendChild(trSection(listWrap, { flex: true }));
     return [navBar, main];
 }
 
@@ -387,7 +436,8 @@ function buildDriverPickerField() {
 function renderAddMyUnitPage(params) {
     const ownerId = params.ownerId || getSessionMemberId();
     const isSelf = ownerId === getSessionMemberId();
-    const title = isSelf ? "Add my tricycle" : "Add tricycle";
+    const firstOwnerName = params.ownerFirstName || (params.ownerName ? params.ownerName.split(" ")[0] : "this member");
+    const ownerSubtitle = isSelf ? "for your units" : ("for " + firstOwnerName);
 
     const bodyRow = trPropertyRow({ label: "Body Number", input: { placeholder: "e.g. 0235" } });
     if (bodyRow.controlEl) {
@@ -459,12 +509,13 @@ function renderAddMyUnitPage(params) {
     });
 
     const navBar = trNavBar({
-        title: title,
+        title: isSelf ? "Add my tricycle" : "Add tricycle",
+        subtitle: isSelf ? undefined : ownerSubtitle,
         onBack: popPage,
         actions: [saveBtn]
     });
 
-    const main = trEl("main", "content vbox gap-m");
+    const main = trEl("main", "content vbox space-xl");
     const fields = [];
     if (!isSelf && params.ownerName) {
         const lockedRow = trPropertyRow({
@@ -474,8 +525,11 @@ function renderAddMyUnitPage(params) {
         fields.push(lockedRow);
     }
     fields.push(bodyRow, chasRow, franRow, driverPicker.row);
-    main.appendChild(trListCard(fields));
-    main.appendChild(trEl("small", "text-center as-gray", "They can only add up to three tricycles per member operator."));
+    main.appendChild(trSection(trCardGroup({
+        headline: "Unit registration",
+        card: trListCard(fields),
+        footnote: "Operators can register up to 3 tricycles. Driver assignment is optional."
+    })));
 
     return [navBar, main];
 }

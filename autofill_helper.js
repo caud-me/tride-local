@@ -147,13 +147,13 @@
             return;
         }
 
-        const rows = appRoot.querySelectorAll(".property-row");
+        const rows = appRoot.querySelectorAll("[data-tr-field]");
         const rowCount = rows.length;
         let filledAny = false;
 
         for (let i = 0; i < rowCount; i += 1) {
             const row = rows[i];
-            const labelNode = row.querySelector("label small");
+            const labelNode = row.querySelector("label");
             let labelText = "";
             if (labelNode && labelNode.textContent) {
                 labelText = labelNode.textContent.trim();
@@ -196,7 +196,7 @@
             return false;
         }
 
-        const inputs = appRoot.querySelectorAll(".property-row input");
+        const inputs = appRoot.querySelectorAll("[data-tr-field] input");
         const inputCount = inputs.length;
         for (let i = 0; i < inputCount; i += 1) {
             const inputEl = inputs[i];
@@ -219,7 +219,7 @@
 
         const fallbackBtn = document.createElement("button");
         fallbackBtn.type = "button";
-        fallbackBtn.className = "button-regular";
+        fallbackBtn.className = "as-standard thickness-m border-l";
         fallbackBtn.textContent = "Autofill";
         fallbackBtn.addEventListener("click", fillVisibleForm);
         return fallbackBtn;
@@ -231,8 +231,8 @@
             wrap = document.createElement("div");
             wrap.id = HELPER_WRAP_ID;
             wrap.style.position = "fixed";
-            wrap.style.right = "var(--tr-m, 16px)";
-            wrap.style.bottom = "var(--tr-m, 16px)";
+            wrap.style.right = "var(--tr-space-l, 16px)";
+            wrap.style.bottom = "var(--tr-space-l, 16px)";
             wrap.style.zIndex = "9999";
             wrap.style.display = "none";
             wrap.style.borderRadius = "999px";

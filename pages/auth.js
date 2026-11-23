@@ -15,15 +15,15 @@ function createOobeDraft() {
 }
 
 function buildOobeIntroNodes(iconGlyph, titleText, descText) {
-    const wrap = trEl("div", "vbox center gap-s");
+    const wrap = trEl("div", "vbox center space-m");
     if (iconGlyph) {
         const icon = trIcon(iconGlyph, { size: "big" });
         wrap.appendChild(icon);
     }
-    const titleEl = trEl("p", "hero-title", titleText);
+    const titleEl = trEl("p", "as-title as-bold as-centered", titleText);
     wrap.appendChild(titleEl);
     if (descText) {
-        const descEl = trEl("p", "as-small as-gray text-center", descText);
+        const descEl = trEl("p", "as-secondary as-gray as-centered", descText);
         wrap.appendChild(descEl);
     }
     return wrap;
@@ -41,7 +41,7 @@ function openOobeConfirmSheet(draft) {
     const rContact = trPropertyRow({ label: "Contact", value: draft.Contact_Number });
     const rLicense = trPropertyRow({ label: "License No.", value: licenseDisplay });
 
-    const errorEl = trEl("p", "as-small critical text-center hidden", "");
+    const errorEl = trEl("p", "as-secondary as-critical as-centered hidden", "");
 
     let sheetCtrl = null;
 
@@ -122,15 +122,14 @@ function renderOobeStep(params) {
         output.push(navBar);
     }
 
-    const main = trEl("main", "content vbox justify-center gap-l flex1");
+    const main = trEl("main", "content vbox justify-center space-xl flex1");
     const items = [];
 
     if (step === 1) {
-        const welcomeWrap = trEl("div", "vbox center gap-s");
+        const welcomeWrap = trEl("div", "vbox center space-xl");
         const logo = trBrandLogo("TRIDE");
-        const heroTitle = trEl("p", "hero-title", "Madali na lang\nyan sa tride.");
-        heroTitle.style.whiteSpace = "pre-line";
-        const desc = trEl("small", "as-gray text-center", "Set up your tricycle federation in a few quick steps.");
+        const heroTitle = trEl("p", "as-title as-bold as-centered", "Madali na lang\nyan sa tride.");
+        const desc = trEl("p", "as-gray as-centered", "Set up your tricycle federation in a few quick steps.");
         trAppend(welcomeWrap, [logo, heroTitle, desc]);
         main.appendChild(welcomeWrap);
 
@@ -144,12 +143,11 @@ function renderOobeStep(params) {
         items.push(startBtn);
 
         if (typeof apiSeedSampleData === "function") {
-            const seedLink = trEl("p", "as-small as-gray text-center clickable", "...or you can try demo mode");
+            const seedLink = trEl("p", "as-secondary as-gray as-centered", "...or you can try demo mode");
             trBindTap(seedLink, async function () {
                 try {
                     await apiSeedSampleData();
                     presentSuccessScreen({
-                        badge: "SAMPLE",
                         title: "Sample data loaded",
                         subtitle: "Sign in with ID 1 for Secretary, 2 for President, or 3-96 for Members.",
                         buttonLabel: "Go to Login",
@@ -187,8 +185,8 @@ function renderOobeStep(params) {
 
         const r1 = trListItem({ title: "Federation-first", subtitle: "Structured around the Naga City Tricycle Federation." });
         const r2 = trListItem({ title: "Role-based access", subtitle: "Separate views for Secretary, President, and Members." });
-        // const r3 = trListItem({ title: "Works offline", subtitle: "Designed to stay fast and usable even on mobile data." });
-        const infoCard = trListCard([r1, r2]);
+        const r3 = trListItem({ title: "Works offline", subtitle: "Designed to stay fast and usable even on mobile data." });
+        const infoCard = trListCard([r1, r2, r3]);
 
         const nextBtn = trButton({
             label: "Next",
@@ -334,7 +332,7 @@ function renderOobeStep(params) {
         const intro = buildOobeIntroNodes(null, "Are you a driver?", "Let us know if you also operate a tricycle unit.");
         trAppend(main, intro);
 
-        const errorEl = trEl("p", "as-small critical text-center hidden", "");
+        const errorEl = trEl("p", "as-secondary as-critical as-centered hidden", "");
         let yesRow = null;
         let noRow = null;
 
@@ -431,7 +429,7 @@ function renderOobePage(params) {
 }
 
 function renderLoginPage() {
-    const main = trEl("main", "content vbox justify-center gap-m");
+    const main = trEl("main", "content vbox justify-center space-xl");
     const isAdminPortal = window.location.pathname.indexOf("admin") !== -1;
     const heroHeading = isAdminPortal ? "Ready for takeoff." : "Madali na lang yan\nsa tride.";
 
@@ -444,7 +442,10 @@ function renderLoginPage() {
         label: "ID",
         input: { placeholder: "Enter your ID" }
     });
-    const loginCard = trCard([idRow]);
+    const loginCard = trCardGroup({
+        card: trCard([idRow]),
+        footnote: "Use the Member ID or Secretary ID issued by your federation."
+    });
 
     async function handleLoginSubmit() {
         const memberId = idRow.controlEl.value.trim();
@@ -477,14 +478,14 @@ function renderLoginPage() {
         : "Sign in at Admin Portal";
     const footerTarget = isAdminPortal ? "index.html" : "admin.html";
 
-    const footerCaption = trEl("small", "text-center as-gray", footerNote);
+    const footerCaption = trEl("p", "as-tertiary as-centered as-gray", footerNote);
     const footerBtn = trButton({
         label: footerBtnLabel,
         onClick: function () {
             window.location.href = footerTarget;
         }
     });
-    const footer = trEl("footer", "vbox gap-s");
+    const footer = trEl("footer", "vbox space-m");
     trAppend(footer, [footerCaption, footerBtn]);
 
     trAppend(main, [hero, loginCard, loginBtn, footer]);

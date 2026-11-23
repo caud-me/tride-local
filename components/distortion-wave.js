@@ -45,9 +45,11 @@ const WAVE_PARTICLE_GLOW = 1.85;
 const WAVE_PARTICLE_DRIFT = 0.24;
 const WAVE_PARTICLE_EASE = 2.4;
 const WAVE_PARTICLE_TAIL_MS = 1000;
+const WAVE_MAX_DPR = 2;
+const WAVE_MAX_TEXTURE_DIM = 4096;
 // </patch-1>
 // </patch-1>
-let cachedDocCss = null;
+let cachedRuleGroups = null;
 let cachedCssPromise = null;
 
 function trArrayBufferToBase64(buffer) {
@@ -94,10 +96,24 @@ async function trInlineFontUrls(cssText, baseHref) {
     return result;
 }
 
-// ive looked up on the internet on this one, gather page css text once so svg snapshot keep original look without walking every node
+function trResolveActiveCss(entries) {
+    let out = "";
+    const count = entries.length;
+    for (let i = 0; i < count; i += 1) {
+        const entry = entries[i];
+        if (!entry.media) {
+            out = out + entry.css;
+        } else if (typeof window.matchMedia === "function" && window.matchMedia(entry.media).matches) {
+            out = out + entry.css;
+        }
+    }
+    return out;
+}
+
+// ive looked up on the internet on this one, gather page css text once and filter active media rule for crisp exact snapshot
 function trCollectDocumentCss() {
-    if (cachedDocCss !== null) {
-        return Promise.resolve(cachedDocCss);
+    if (cachedRuleGroups !== null) {
+        return Promise.resolve(trResolveActiveCss(cachedRuleGroups));
     }
     if (cachedCssPromise !== null) {
         return cachedCssPromise;
@@ -107,21 +123,47 @@ function trCollectDocumentCss() {
     const sheetCount = sheets.length;
     for (let i = 0; i < sheetCount; i += 1) {
         const sheet = sheets[i];
-        let sheetCss = "";
+        const baseHref = sheet.href || window.location.href;
         try {
             const rules = sheet.cssRules;
             const ruleCount = rules.length;
+            let plainCss = "";
             for (let j = 0; j < ruleCount; j += 1) {
-                sheetCss = sheetCss + rules[j].cssText + "\n";
+                const rule = rules[j];
+                const isMedia = typeof CSSMediaRule !== "undefined" && rule instanceof CSSMediaRule;
+                if (isMedia) {
+                    if (plainCss) {
+                        jobs.push(trInlineFontUrls(plainCss, baseHref).then(function (resolved) {
+                            return { media: null, css: resolved };
+                        }));
+                        plainCss = "";
+                    }
+                    let innerCss = "";
+                    const subRules = rule.cssRules;
+                    const subCount = subRules.length;
+                    for (let k = 0; k < subCount; k += 1) {
+                        innerCss = innerCss + subRules[k].cssText + "\n";
+                    }
+                    const mediaExpr = rule.conditionText || rule.media.mediaText;
+                    jobs.push(trInlineFontUrls(innerCss, baseHref).then(function (resolved) {
+                        return { media: mediaExpr, css: resolved };
+                    }));
+                } else {
+                    plainCss = plainCss + rule.cssText + "\n";
+                }
             }
-            jobs.push(trInlineFontUrls(sheetCss, sheet.href || window.location.href));
+            if (plainCss) {
+                jobs.push(trInlineFontUrls(plainCss, baseHref).then(function (resolved) {
+                    return { media: null, css: resolved };
+                }));
+            }
         } catch (err) {
             /* skip external sheet that block script read */
         }
     }
-    cachedCssPromise = Promise.all(jobs).then(function (parts) {
-        cachedDocCss = parts.join("\n");
-        return cachedDocCss;
+    cachedCssPromise = Promise.all(jobs).then(function (entries) {
+        cachedRuleGroups = entries;
+        return trResolveActiveCss(cachedRuleGroups);
     });
     return cachedCssPromise;
 }
@@ -158,8 +200,8 @@ function syncTreeStyles(sourceRoot, cloneRoot) {
     }
 }
 
-// ive looked up on the internet on this one, wrap cloned html and sheet css inside svg foreignobject for fast picture load
-function trCaptureNodeToImage(sourceNode, width, height) {
+// ive looked up on the internet on this one, wrap cloned html and body style inside high-dpi svg foreignobject for sharp 1-to-1 picture load
+function trCaptureNodeToImage(sourceNode, width, height, pixelWidth, pixelHeight) {
     const clone = sourceNode.cloneNode(true);
     clone.style.visibility = "visible";
     clone.style.margin = "0";
@@ -167,14 +209,17 @@ function trCaptureNodeToImage(sourceNode, width, height) {
     clone.style.height = String(height) + "px";
 
     return trCollectDocumentCss().then(function (docCss) {
-        const wrapper = document.createElement("div");
+        const wrapper = document.createElement("body");
         wrapper.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
         wrapper.style.width = String(width) + "px";
         wrapper.style.height = String(height) + "px";
+        wrapper.style.margin = "0";
+        wrapper.style.overflow = "hidden";
 
         const bodyStyle = window.getComputedStyle(document.body);
         wrapper.style.fontFamily = bodyStyle.fontFamily;
         wrapper.style.fontSize = bodyStyle.fontSize;
+        wrapper.style.lineHeight = bodyStyle.lineHeight;
         wrapper.style.color = bodyStyle.color;
         wrapper.style.backgroundColor = bodyStyle.backgroundColor;
 
@@ -191,8 +236,10 @@ function trCaptureNodeToImage(sourceNode, width, height) {
         const xhtml = serializer.serializeToString(wrapper);
         const wStr = String(width);
         const hStr = String(height);
-        let svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + wStr + "\" height=\"" + hStr + "\">";
-        svg = svg + "<foreignObject width=\"100%\" height=\"100%\">";
+        const pxWStr = String(pixelWidth || width);
+        const pxHStr = String(pixelHeight || height);
+        let svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + pxWStr + "\" height=\"" + pxHStr + "\" viewBox=\"0 0 " + wStr + " " + hStr + "\">";
+        svg = svg + "<foreignObject width=\"" + wStr + "\" height=\"" + hStr + "\">";
         svg = svg + xhtml;
         svg = svg + "</foreignObject></svg>";
         const encoded = encodeURIComponent(svg);
@@ -698,7 +745,7 @@ function trParseHexRgb(hexText) {
     return [rInt / 255, gInt / 255, bInt / 255];
 }
 
-// based on style.css, --tr-light, read active light token color or pick default gray
+// based on style.css, --tr-solid-light-1, read active light token color or pick default gray
 function trResolveWavePalette(palette) {
     if (palette === "colorful") {
         return { colorMode: 1, rgb: [1.0, 1.0, 1.0] };
@@ -726,7 +773,7 @@ function trResolveWavePalette(palette) {
     }
     const rootEl = document.documentElement;
     const rootStyle = getComputedStyle(rootEl);
-    let lightToken = rootStyle.getPropertyValue("--tr-light");
+    let lightToken = rootStyle.getPropertyValue("--tr-solid-light-1");
     lightToken = lightToken.trim();
     if (lightToken) {
         const monoRgb = trParseHexRgb(lightToken);
@@ -976,9 +1023,14 @@ function trDistortionWave(options) {
         const rawW = rect.width > 0 ? rect.width : 320;
         const rawH = rect.height > 0 ? rect.height : 240;
         const dprRaw = window.devicePixelRatio || 1;
-        const isFull = root.classList.contains("is-fullscreen");
-        const dprCap = isFull ? 1.25 : 1.5;
-        const dpr = dprRaw > dprCap ? dprCap : dprRaw;
+        let dpr = dprRaw > WAVE_MAX_DPR ? WAVE_MAX_DPR : dprRaw;
+        if (dpr < 1) {
+            dpr = 1;
+        }
+        const maxSide = Math.max(rawW, rawH);
+        if (maxSide * dpr > WAVE_MAX_TEXTURE_DIM) {
+            dpr = WAVE_MAX_TEXTURE_DIM / maxSide;
+        }
         const scaledW = rawW * dpr;
         const scaledH = rawH * dpr;
         const pxW = Math.round(scaledW);
@@ -993,9 +1045,9 @@ function trDistortionWave(options) {
             }
         }
 
-        const fromPromise = trCaptureNodeToImage(fromView, rawW, rawH);
+        const fromPromise = trCaptureNodeToImage(fromView, rawW, rawH, pxW, pxH);
         const toTarget = toView || fromView;
-        const toPromise = trCaptureNodeToImage(toTarget, rawW, rawH);
+        const toPromise = trCaptureNodeToImage(toTarget, rawW, rawH, pxW, pxH);
         const pair = [fromPromise, toPromise];
         const allCaptured = Promise.all(pair);
 

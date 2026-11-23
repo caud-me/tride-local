@@ -4,7 +4,11 @@ function buildPresidentTab(homeData) {
     const toda = homeData.ledToda;
     const statsData = homeData.presidentStats;
     if (!toda || !statsData) {
-        return [trBanner("No TODA assigned.")];
+        return [trEmptyState({
+            icon: "\uE82F",
+            title: "No TODA assigned",
+            subtitle: "Ask the Federation Secretary to assign your TODA leadership role."
+        })];
     }
 
     const stats = trStatGroup([
@@ -16,7 +20,7 @@ function buildPresidentTab(homeData) {
     const membersRow = trActionRow({
         label: "Manage my members",
         onClick: function () {
-            pushPage(renderMembersPage, { scopeTodaId: toda.TODA_ID });
+            pushPage(renderMembersPage, { scopeTodaId: toda.TODA_ID, scopeTodaName: toda.TODA_Name });
         }
     });
     const unitsRow = trActionRow({
@@ -25,8 +29,12 @@ function buildPresidentTab(homeData) {
             pushPage(renderUnitsPage, { scopeTodaId: toda.TODA_ID, scopeTodaName: toda.TODA_Name });
         }
     });
-    const navCard = trListCard([membersRow, unitsRow]);
-    const items = [stats, navCard];
+    const navGroup = trCardGroup({
+        headline: "Management",
+        card: trListCard([membersRow, unitsRow]),
+        footnote: "Manage members and tricycle units registered under your TODA."
+    });
+    const items = [stats, navGroup];
 
     if (typeof renderExportPage === "function") {
         const exportRow = trActionRow({
@@ -39,7 +47,11 @@ function buildPresidentTab(homeData) {
                 });
             }
         });
-        items.push(trListCard([exportRow]));
+        items.push(trCardGroup({
+            headline: "Reports",
+            card: trListCard([exportRow]),
+            footnote: "Download a snapshot of your TODA records as SQL or PDF."
+        }));
     }
 
     return items;
@@ -74,8 +86,12 @@ function buildSecretaryTab(homeData) {
         }
     });
 
-    const navCard = trListCard([membersRow, unitsRow, todasRow]);
-    const items = [stats, navCard];
+    const navGroup = trCardGroup({
+        headline: "Federation",
+        card: trListCard([membersRow, unitsRow, todasRow]),
+        footnote: "View and manage every member, tricycle unit, and TODA association."
+    });
+    const items = [stats, navGroup];
 
     if (typeof renderExportPage === "function") {
         const exportRow = trActionRow({
@@ -88,7 +104,11 @@ function buildSecretaryTab(homeData) {
                 });
             }
         });
-        items.push(trListCard([exportRow]));
+        items.push(trCardGroup({
+            headline: "Reports",
+            card: trListCard([exportRow]),
+            footnote: "Export federation-wide records as SQL or PDF."
+        }));
     }
 
     return items;
@@ -117,8 +137,8 @@ function renderHomePage(params) {
         actions: navActions
     });
 
-    const main = trEl("main", "content vbox gap-m");
-    main.appendChild(trBanner("Loading..."));
+    const main = trEl("main", "content vbox space-xl");
+    main.appendChild(trEl("p", "as-tertiary as-gray", "Loading..."));
 
     apiGetHome(memberId).then(function (data) {
         main.replaceChildren();
@@ -145,7 +165,7 @@ function renderHomePage(params) {
                     window.location.href = "index.html";
                 }
             });
-            trAppend(main, [blockedState, backBtn]);
+            main.appendChild(trSection([blockedState, backBtn], { flex: true }));
             if (params && typeof params.onReady === "function") {
                 params.onReady();
             }
@@ -160,6 +180,7 @@ function renderHomePage(params) {
             todaName: member.TODA_Name || "Federation Office",
             license: member.License_Number || "No license"
         });
+        const profileSection = trSection([profileCard]);
 
         let activeRole = params.activeRole || adminRoles[0].key;
         let found = false;
@@ -172,7 +193,7 @@ function renderHomePage(params) {
             activeRole = adminRoles[0].key;
         }
 
-        const tabPanel = trEl("div", "vbox gap-m");
+        const tabPanel = trEl("div", "vbox flex1 space-l");
 
         function showTab(roleKey) {
             tabPanel.replaceChildren();
@@ -186,20 +207,26 @@ function renderHomePage(params) {
         const tabs = trTabs({
             items: adminRoles,
             activeKey: activeRole,
-            onChange: function (nextKey) {
+            onChange: function (nextKey, tabObj, direction) {
                 params.activeRole = nextKey;
                 showTab(nextKey);
+                trAnimateTabSwitch(tabPanel, direction);
             }
         });
 
         showTab(activeRole);
-        trAppend(main, [profileCard, tabs, tabPanel]);
+        const roleSection = trSection([tabs, tabPanel], { flex: true });
+        trAppend(main, [profileSection, roleSection]);
         if (params && typeof params.onReady === "function") {
             params.onReady();
         }
     }).catch(function (err) {
         main.replaceChildren();
-        main.appendChild(trBanner(err.message));
+        main.appendChild(trSection(trEmptyState({
+            icon: "\uE783",
+            title: "Could not load admin portal",
+            subtitle: err.message
+        }), { flex: true }));
         if (err.message.indexOf("not found") !== -1) {
             setSessionMemberId(null);
             setRootPage(renderLoginPage, {});
@@ -218,7 +245,7 @@ function renderAdminSettingsPage() {
         onBack: popPage
     });
 
-    const main = trEl("main", "content vbox gap-m");
+    const main = trEl("main", "content vbox space-xl");
     const appRow = trActionRow({
         label: "Open Member App",
         onClick: function () {
@@ -233,7 +260,11 @@ function renderAdminSettingsPage() {
             setRootPage(renderLoginPage, {});
         }
     });
-    main.appendChild(trListCard([appRow, logoutRow]));
+    main.appendChild(trSection(trCardGroup({
+        headline: "Account",
+        card: trListCard([appRow, logoutRow]),
+        footnote: "Switch back to the member view or sign out of this session."
+    })));
 
     const memberId = getSessionMemberId();
     if (memberId) {
@@ -263,7 +294,11 @@ function renderAdminSettingsPage() {
                     });
                 }
             });
-            main.appendChild(trCard([resetRow]));
+            main.appendChild(trSection(trCardGroup({
+                headline: "Danger zone",
+                card: trCard([resetRow]),
+                footnote: "Truncating wipes all federation, TODA, member, and unit records permanently."
+            })));
         }).catch(function () {
             /* ignore if offline */
         });
@@ -289,7 +324,11 @@ async function startAdminApp() {
     } catch (err) {
         const appRoot = document.getElementById("app");
         appRoot.replaceChildren();
-        appRoot.appendChild(trBanner("Cannot reach backend: " + err.message));
+        appRoot.appendChild(trEmptyState({
+            icon: "\uE783",
+            title: "Cannot reach backend",
+            subtitle: err.message
+        }));
     }
 }
 

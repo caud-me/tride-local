@@ -16,22 +16,22 @@ function renderTodasPage(params) {
         actions: [addIcon]
     });
 
-    const main = trEl("main", "content vbox gap-m");
-    main.appendChild(trBanner("Loading TODA associations..."));
+    const main = trEl("main", "content vbox space-xl");
+    main.appendChild(trEl("p", "as-tertiary as-gray", "Loading TODA associations..."));
 
     apiListTodas().then(function (res) {
         main.replaceChildren();
         const todas = res.todas || [];
         if (todas.length === 0) {
-            main.appendChild(trEmptyState({
+            main.appendChild(trSection(trEmptyState({
                 icon: "\uE82F",
                 title: "No TODA associations yet",
                 subtitle: "Tap + to register the first TODA group."
-            }));
+            }), { flex: true }));
             return;
         }
 
-        const tabPanel = trEl("div", "vbox gap-m");
+        const tabPanel = trEl("div", "vbox flex1 space-l");
 
         function showTab(tabKey) {
             tabPanel.replaceChildren();
@@ -54,7 +54,7 @@ function renderTodasPage(params) {
                 return;
             }
 
-            const grid = trEl("div", "vbox gap-m card-grid");
+            const grid = trEl("div", "vbox space-l card-grid");
             for (let i = 0; i < visibleTodas.length; i += 1) {
                 const t = visibleTodas[i];
                 grid.appendChild(buildAssociationCard(t, {
@@ -73,18 +73,24 @@ function renderTodasPage(params) {
                 { key: "all", label: "All" },
                 { key: "empty", label: "Empty TODAs" }
             ],
-            onChange: function (nextKey) {
+            onChange: function (nextKey, tabObj, direction) {
                 activeTab = nextKey;
                 safeParams.activeTab = nextKey;
                 showTab(nextKey);
+                trAnimateTabSwitch(tabPanel, direction);
             }
         });
 
         showTab(activeTab);
-        trAppend(main, [tabs, tabPanel]);
+        const listSection = trSection([tabs, tabPanel], { flex: true });
+        main.appendChild(listSection);
     }).catch(function (err) {
         main.replaceChildren();
-        main.appendChild(trBanner(err.message));
+        main.appendChild(trSection(trEmptyState({
+            icon: "\uE783",
+            title: "Could not load TODAs",
+            subtitle: err.message
+        }), { flex: true }));
     });
 
     return [navBar, main];
@@ -96,8 +102,8 @@ function renderTodaDetailPage(params) {
         onBack: popPage
     });
 
-    const main = trEl("main", "content vbox gap-m");
-    main.appendChild(trBanner("Loading TODA..."));
+    const main = trEl("main", "content vbox space-xl");
+    main.appendChild(trEl("p", "as-tertiary as-gray", "Loading TODA..."));
 
     Promise.all([
         apiListTodas(),
@@ -118,7 +124,8 @@ function renderTodaDetailPage(params) {
 
         main.replaceChildren();
         const updatedNav = trNavBar({
-            title: toda.TODA_Name,
+            title: "TODA details",
+            subtitle: "for " + toda.TODA_Name,
             onBack: popPage
         });
         navBar.replaceWith(updatedNav);
@@ -148,7 +155,11 @@ function renderTodaDetailPage(params) {
                 "President_Member_ID", "Pres_First_Name", "Pres_Last_Name", "Member_Count"
             ]);
         }
-        main.appendChild(trListCard(todaInfoRows));
+        const detailsGroup = trCardGroup({
+            headline: "Association details",
+            card: trListCard(todaInfoRows),
+            footnote: "Tap the president row to assign or replace the TODA president."
+        });
 
         const membersRow = trActionRow({
             label: "Members in " + toda.TODA_Name + " (" + members.length + ")",
@@ -162,7 +173,11 @@ function renderTodaDetailPage(params) {
                 pushPage(renderUnitsPage, { scopeTodaId: toda.TODA_ID, scopeTodaName: toda.TODA_Name });
             }
         });
-        main.appendChild(trListCard([membersRow, unitsRow]));
+        const directoryGroup = trCardGroup({
+            headline: "Directory",
+            card: trListCard([membersRow, unitsRow]),
+            footnote: "Browse members and tricycle units assigned to this association."
+        });
 
         const removeTodaRow = trActionRow({
             label: "Remove " + toda.TODA_Name,
@@ -185,10 +200,22 @@ function renderTodaDetailPage(params) {
                 });
             }
         });
-        main.appendChild(trCard([removeTodaRow]));
+        const dangerGroup = trCardGroup({
+            headline: "Danger zone",
+            card: trCard([removeTodaRow]),
+            footnote: "Remove all members and unassign the president before deleting this TODA."
+        });
+        trAppend(main, [
+            trSection([detailsGroup, directoryGroup]),
+            trSection(dangerGroup)
+        ]);
     }).catch(function (err) {
         main.replaceChildren();
-        main.appendChild(trBanner(err.message));
+        main.appendChild(trSection(trEmptyState({
+            icon: "\uE783",
+            title: "Could not load TODA",
+            subtitle: err.message
+        }), { flex: true }));
     });
 
     return [navBar, main];
@@ -247,7 +274,11 @@ function renderAddTodaPage() {
         actions: [saveBtn]
     });
 
-    const main = trEl("main", "content vbox gap-m");
-    main.appendChild(trListCard([idRow, nameRow, routeRow]));
+    const main = trEl("main", "content vbox space-xl");
+    main.appendChild(trSection(trCardGroup({
+        headline: "New association",
+        card: trListCard([idRow, nameRow, routeRow]),
+        footnote: "Each TODA needs a unique ID, name, and primary route."
+    })));
     return [navBar, main];
 }

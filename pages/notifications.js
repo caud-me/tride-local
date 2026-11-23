@@ -70,7 +70,7 @@ function buildHeaderMoreMenu(allRead, onMarkedRead) {
 }
 
 function renderNotificationsPage() {
-    const main = trEl("main", "content vbox gap-m");
+    const main = trEl("main", "content vbox space-xl");
     const menuSlot = trEl("div", "hbox align-center");
 
     function updateHeaderMenu(allRead) {
@@ -80,7 +80,7 @@ function renderNotificationsPage() {
 
     function loadFeed() {
         main.replaceChildren();
-        main.appendChild(trBanner("Loading notifications..."));
+        main.appendChild(trEl("p", "as-tertiary as-gray", "Loading notifications..."));
 
         apiListNotifications().then(function (data) {
             main.replaceChildren();
@@ -94,17 +94,17 @@ function renderNotificationsPage() {
                     title: "No notifications yet",
                     subtitle: "Updates such as tricycle assignments will appear here."
                 });
-                main.appendChild(emptyView);
+                main.appendChild(trSection(emptyView, { flex: true }));
                 return;
             }
 
             const rows = [];
             for (let i = 0; i < items.length; i += 1) {
                 const item = items[i];
-                const row = trEl("div", "vbox gap-xs");
+                const row = trEl("div", "vbox space-s");
                 const titleCls = item.isRead ? "as-gray" : "";
                 row.appendChild(trEl("p", titleCls, item.title));
-                row.appendChild(trEl("small", "as-gray", item.message));
+                row.appendChild(trEl("p", "as-tertiary as-gray", item.message));
 
                 if (!item.isRead) {
                     trBindTap(row, async function () {
@@ -118,10 +118,18 @@ function renderNotificationsPage() {
                 }
                 rows.push(row);
             }
-            main.appendChild(trListCard(rows));
+            main.appendChild(trSection(trCardGroup({
+                headline: "Recent updates",
+                card: trListCard(rows),
+                footnote: "Tap an unread notification to mark it as read."
+            })));
         }).catch(function (err) {
             main.replaceChildren();
-            main.appendChild(trBanner(err.message));
+            main.appendChild(trSection(trEmptyState({
+                icon: "\uE783",
+                title: "Could not load notifications",
+                subtitle: err.message
+            }), { flex: true }));
         });
     }
 

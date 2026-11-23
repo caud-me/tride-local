@@ -17,7 +17,11 @@ async function startApp() {
     } catch (err) {
         const appRoot = document.getElementById("app");
         appRoot.replaceChildren();
-        appRoot.appendChild(trBanner("Cannot reach backend: " + err.message));
+        appRoot.appendChild(trEmptyState({
+            icon: "\uE783",
+            title: "Cannot reach backend",
+            subtitle: err.message
+        }));
     }
 }
 
