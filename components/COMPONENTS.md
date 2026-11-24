@@ -1,60 +1,62 @@
 # TRIDE UI Components Reference
 
-Reusable vanilla DOM components in [components.js](components.js) styled by [style.css](style.css).
+Reusable vanilla DOM components in [components.js](components.js) styled by [styleNext.css](styleNext.css) (or `style.css` in synced projects).
 
-> **Rule:** Never nest a card inside another card (`trCard`, `trListCard`, `trEntityRow`, `trProfileCard` all render `.card` containers).
+> **Rule:** Never nest a `.card` inside another `.card` (`trCard`, `trListCard`, `trEntityRow`, `trProfileCard`, `trBrandCard`, and `trStatGroup` all render `.card` containers). Never place a `trButton` inside a `trCard`.
 
 ## DOM & Layout Helpers
 
 - `trEl(tag, className, text)` — create an element with optional CSS class and text content.
-- `trAppend(parent, children)` — append a single node or array of nodes safely.
+- `trAppend(parent, children)` — append a single node, nested array, or string (`<p>`) safely.
 - `trBindTap(node, handler)` — bind click plus `Enter`/`Space` keyboard activation with `role="button"` and `tabindex="0"`.
-- `trSpacer()` — horizontal divider line (`1px`) used between rows inside `trListCard`.
-- `trSectionHeading(text)` — lowercase section label above a card group.
-- `trIcon(glyph, options)` — Segoe MDL2 Assets glyph (`options`: `{ size: "big", label, className, onClick }`).
+- `trSpacer()` — horizontal divider line (`1px`, `role="separator"`) used between rows inside `trListCard`.
+- `trSectionHeading(text)` — `.as-cardheadline.as-tertiary.as-gray.as-bold` label above a card group.
+- `trIcon(glyph, options)` — Segoe Fluent / MDL2 glyph (`{ size: "big", label, className, onClick }`); wraps in `<button type="button">` when `onClick` is supplied.
+- `trClampRiseDelay(rawDelay)` — clamps entrance rise delay within safe bounds.
 
 ## Containers & Feedback
 
-- `trCard(children, options)` — top-level rounded card (`options`: `{ layout, className, tag, onClick }`).
-- `trRise(children, options)` — entrance wrapper that animates from `var(--tr-s)` (`8px`) below to resting position (`options`: `{ delay, delayed, layout, className }`; `.anim-rise` works on any element, and buttons with `.anim-rise` default to a `2s` delay, clamped between `1s` and `6s`).
-- `trListCard(items)` — wraps flat row components (`trPropertyRow`, `trActionRow`, `trCheckRow`) with `trSpacer()` dividers inside one `.card`. Do **not** pass `trEntityRow` or `trCard` into `trListCard`.
-- `trAlphaList(options)` — groups items alphabetically (`A`–`Z`) with `trSectionHeading(letter)` above each `trListCard` (`{ items, getLabel, renderRow }`).
-- `trBanner(text)` — status/loading notice (`role="status"`).
-- `trEmptyState(options)` — centered empty view (`{ icon, title, subtitle }`).
-- `trHero(options)` — auth/OOBE header (`{ logoText, title }`).
-- `trBrandLogo(options)` — standalone brand logo (`{ text, subtext, className }` or string, `24px` logo + optional `12px` subtext with `--tr-s` gap).
-- `trBrandCard(options)` — `196px` 2x2 brand card for `DRIVER`, `OPERATOR`, `UNIT`, and `ASSOCIATION` (`{ logoText, subtext, topRight, title, subtitle, bottomRight, className, onClick }`).
-- `trCardStack(options)` — overlapped card stack with required section heading (`{ heading, cards }`); expands on first tap and resets on re-render.
+- `trSection(children, options)` — top-level `<section class="trSection section vbox space-l">` inside `.content.vbox.space-xl` (`{ flex, className, label }`).
+- `trCard(children, options)` — base `.card` container (`{ layout, className, tag, onClick }`).
+- `trCardGroup(options)` — wraps a card in `.group.vbox.space-m` with optional headline and footnote (`{ headline, card, footnote }`).
+- `trRise(children, options)` — entrance wrapper animating from `--tr-rise-distance` below (`{ delay, className }`).
+- `trListCard(items)` — wraps flat rows (`trPropertyRow`, `trActionRow`, `trCheckRow`, `trListItem`) separated by `trSpacer()` inside one `.card`.
+- `trAlphaList(options)` — groups items alphabetically (`A`–`Z`, `#` fallback) into `trCardGroup` + `trListCard` (`{ items, getLabel, renderRow, onItemClick }`).
+- `trStoryBar(options)` — segmented progress bar (`{ total, current }`, clamped to `[0, total]`).
+- `trEmptyState(options)` — centered empty/loading/error state (`{ icon, title, subtitle }`).
+- `trBrandLogo(options)` — standalone brand wordmark (`{ text, subtext, sub, className }` or string). Use strictly for the brand name.
+- `trBrandCard(options)` — `196px` 2x2 brand card (`{ logoText, subtext, topRight, title, subtitle, bottomRight, big, className, onClick }`).
+- `trCardStack(options)` — stacked expandable card list (`{ heading, cards }`).
 
 ## Navigation & Menus
 
-- `trNavBar(options)` — sticky top bar (`{ title, titleNode, onBack, actions }`).
-- `trMenu(options)` — popover menu triggered by an icon button (`{ icon, label, sections: [{ name, title, items: [{ value, label, checked }], onChange }] }`).
-- `trTabs(options)` — horizontal role/filter tabs (`{ items: [{ key, label }], activeKey, equal, onChange }`; `equal: true` removes scroll and gives each tab `flex: 1`).
-- `trSearchBox(options)` — search input (`{ placeholder, value, onInput }`).
+- `trNavBar(options)` — sticky top bar (`{ title, subtitle, titleNode, onBack, actions }`).
+- `trMenu(options)` / `trPopupMenu(options)` — anchored radio popover menu (`{ icon, label, sections, groups }`), auto-cleans detached listeners and closes on `Escape`.
+- `trTabbed(options)` / `trTabs(options)` — horizontal tab strip strictly for switching page views or panels (`{ items, tabs, activeKey, activeValue, equal, stretch, label, onChange }`); pairs with `trAnimateTabSwitch(panel, direction)`.
+- `trSearchBox(options)` — pill search card (`{ placeholder, value, label, onInput }`).
 
 ## Rows, Inputs & Actions
 
-- `trButton(options)` — action button (`{ label, variant: "primary", small, critical, disabled, animate, onClick }`; `animate: true` adds `.anim-rise` with a `2s` delay, or pass `{ delay }`).
-- `trPropertyRow(options)` — label + input/select/display row for `trListCard` (`{ label, value, input, select, onClick }`); returns `{ controlEl, setError(msg), setValue(v) }`.
-- `trListItem(options)` — static `p` + one or more `small` rows for `trListCard` (`{ title, subtitle, subtitles }`).
-- `trActionRow(options)` — clickable list row with optional chevron (`{ label, subtitle, critical, hideChevron, onClick }`).
-- `trCheckRow(options)` — checkbox row (`{ label, checked, onChange }`).
-- `trEntityRow(options)` — standalone clickable `.card` row for lists (`{ title, image, subtitle, metaLines, mutedLast, onClick }`).
-- `trProfileCard(data)` — member profile summary card (`{ firstName, lastName, address, contact, todaName, license }`).
-- `trStatGroup(stats)` — row of metric tiles (`[{ value, label }]`).
-- `trStoryBar(options)` — horizontal quick-select strip (`{ items, activeKey, onSelect }`).
+- `trButton(options)` — action button (`{ label, icon, variant: "standard" | "primary", size: "m" | "l", small, critical, disabled, animate, className, onClick }`). Place outside cards as sibling controls or in sheet footers.
+- `trPropertyRow(options)` — label + input/select/display row for `trListCard` (`{ id, label, value, input, select, error }`); returns `{ controlEl, setError(msg) }`.
+- `trListItem(options)` — static `.as-primary` + `.as-secondary.as-gray` row for `trListCard` (`{ title, subtitle, index, step, onClick }`); pass `index` or `step` for a vertically centered `.hbox.space-m` numbered row with `.list-index`.
+- `trActionRow(options)` — clickable list row with optional chevron (`{ label, subtitle, hideChevron, critical, disabled, onClick }`).
+- `trCheckRow(options)` — checkbox row (`{ title, subtitle, checked, disabled, onChange }`).
+- `trRadioGroup(options)` — mutually exclusive radio `trListCard` (`{ items: [{ value, title, subtitle, disabled }], value, name, label, onChange }`); returns `{ getValue(), setValue(val) }`. Use instead of `trTabbed` for form or setup option selection.
+- `trEntityRow(options)` — standalone clickable `.card` row (`{ title, subtitle, metaLines, mutedLast, onClick }`).
+- `trProfileCard(options)` — `196px` 2-column summary card (`{ greeting, name, leftDetails, rightDetails }`).
+- `trStatGroup(stats, options)` — row of metric tiles (`[{ value, label }]`, `{ label }`).
 
 ## Modals & Sheets
 
-- `trSheet(options)` — modal/bottom sheet with pinned header, scrollable body, and pinned footer (`{ title, description, headerExtra, body, footer, removeOnClose, onClose }`); returns `{ el, open(), close() }`.
-- `trConfirm(options)` — confirmation dialog (`{ title, message, confirmLabel, critical, onConfirm }`).
-- `trAlert(options)` — single-button alert dialog (`{ title, message }`).
+- `trSheet(options)` — 4-part bottom sheet / desktop dialog (`{ title, description, footnote, icon, headerExtra, body, content, footer, buttons, children, removeOnClose, onClose }`); supports `Escape` close and double-close guard; returns `{ el, open(), close() }`.
+- `trConfirm(options)` — confirm/cancel sheet (`{ title, description, footnote, confirmLabel, cancelLabel, critical, onConfirm, onCancel }`).
+- `trAlert(options)` — single-button notice sheet (`{ title, description, footnote, okLabel, onOk }`).
 
 ## Distortion Wave Transitions
 
-Styled by [distortion-wave.css](distortion-wave.css) and implemented in [distortion-wave.js](distortion-wave.js):
+Styled by [distortion-wave.css](distortion-wave.css) and implemented in [distortion-wave.js](distortion-wave.js) (tuner available in `playground.html`):
 
-- `trDistortionWave(options)` — WebGL2 refractive wave transition container (`{ children, revealedContent, source, origin: { x, y }, type: "center" | "vertical" | "horizontal", palette: "colorful" | "metal" | "monochromatic" | "green" | "ocean" | "sunset" | "#hex", speed, className, cornerRadius, onFinish }`); returns `{ el, play(event), reverse(event), reset(), prepare(), setRevealed(), setType(), setPalette(), setOrigin(), setSpeed(), setStyle() }`.
-- `trSuccessWave(options)` — fullscreen confirmation stage (`{ badge, title, subtitle, card, buttonLabel, palette, type, speed, source, pointerEvent, onDone }`) revealing a newly created record card before running `onDone`.
-- `trTransitionWave(options)` — morphs directly from the active screen into the next route (`{ palette, type, speed, source, pointerEvent, navigate(onReady), onFinish }`) with no intermediate gate.
+- `trDistortionWave(options)` — WebGL2 refractive reveal (`{ children, revealedContent, source, origin: { x, y }, type: "center" | "vertical" | "horizontal", palette: "colorful" | "metal" | "monochromatic" | "green" | "ocean" | "sunset" | "#hex", speed, waveStyle, className, cornerRadius, onFinish }`); returns `{ el, play(event), reverse(event), reset(), prepare(), setRevealed(), setType(), setPalette(), setOrigin(), setSpeed(), setStyle() }`.
+- `trSuccessWave(options)` — fullscreen confirmation stage (`{ title, subtitle, icon, content, card, buttons, buttonLabel, buttonDelay, palette, type, speed, source, origin, pointerEvent, onDone }`); uses zero-flicker DOM-to-WebGL handoff (`<html xmlns>` snapshot + instant canvas cut) and supports reversible `WAVE_AIRDROP_EXPERIMENTAL` motion.
+- `trTransitionWave(options)` — morphs directly from the active screen into the next route (`{ palette, type, speed, source, origin, pointerEvent, navigate(onReady), onFinish }`).

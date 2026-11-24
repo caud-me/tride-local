@@ -1,7 +1,8 @@
 /* tunable wave variables (adjust or keyframe any value below) */
 const WAVE_DURATION = 2300;
 const WAVE_ORIGIN_X = 0.5;
-const WAVE_ORIGIN_Y = 0.96;
+const WAVE_ORIGIN_Y = 0.04;
+const WAVE_FOLLOW_CURSOR = false;
 let lastCursorPos = null;
 
 if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
@@ -13,6 +14,13 @@ if (typeof document !== "undefined" && typeof document.addEventListener === "fun
     }, true);
 }
 // <patch-1>
+const WAVE_AIRDROP_EXPERIMENTAL = true;
+const WAVE_AIRDROP_BEZIER_X1 = 0.76;
+const WAVE_AIRDROP_BEZIER_Y1 = 0.0;
+const WAVE_AIRDROP_BEZIER_X2 = 0.14;
+const WAVE_AIRDROP_BEZIER_Y2 = 1.0;
+const WAVE_AIRDROP_PULL_SCALE = 0.018;
+const WAVE_AIRDROP_BLOOM_SCALE = 0.022;
 const WAVE_BEZIER_X1 = 0.5;
 const WAVE_BEZIER_Y1 = 0.0;
 const WAVE_BEZIER_X2 = 0.0;
@@ -209,8 +217,21 @@ function trCaptureNodeToImage(sourceNode, width, height, pixelWidth, pixelHeight
     clone.style.height = String(height) + "px";
 
     return trCollectDocumentCss().then(function (docCss) {
+        const htmlWrap = document.createElement("html");
+        htmlWrap.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+        const docAttrs = document.documentElement.attributes;
+        for (let a = 0; a < docAttrs.length; a += 1) {
+            const attr = docAttrs[a];
+            if (attr && attr.name !== "xmlns") {
+                htmlWrap.setAttribute(attr.name, attr.value);
+            }
+        }
+        htmlWrap.style.width = String(width) + "px";
+        htmlWrap.style.height = String(height) + "px";
+        htmlWrap.style.margin = "0";
+        htmlWrap.style.overflow = "hidden";
+
         const wrapper = document.createElement("body");
-        wrapper.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
         wrapper.style.position = "relative";
         wrapper.style.width = String(width) + "px";
         wrapper.style.height = String(height) + "px";
@@ -232,9 +253,10 @@ function trCaptureNodeToImage(sourceNode, width, height, pixelWidth, pixelHeight
             syncTreeStyles(sourceNode, clone);
         }
         wrapper.appendChild(clone);
+        htmlWrap.appendChild(wrapper);
 
         const serializer = new XMLSerializer();
-        const xhtml = serializer.serializeToString(wrapper);
+        const xhtml = serializer.serializeToString(htmlWrap);
         const wStr = String(width);
         const hStr = String(height);
         const pxWStr = String(pixelWidth || width);
@@ -810,13 +832,17 @@ function trResolveSourceRect(source) {
     return null;
 }
 
-// ive looked up on the internet on this one, measure wave start from cursor position or trigger box inside container
-function trMeasureWaveOrigin(rootEl, source, pointerEvent, explicitOrigin) {
+// ive looked up on the internet on this one, measure wave start from fixed default or cursor when follow mode active
+function trMeasureWaveOrigin(rootEl, source, pointerEvent, explicitOrigin, followCursor) {
     if (explicitOrigin && typeof explicitOrigin.x === "number" && typeof explicitOrigin.y === "number") {
         return {
             x: trClampUnit(explicitOrigin.x),
             y: trClampUnit(explicitOrigin.y)
         };
+    }
+    const useCursor = typeof followCursor === "boolean" ? followCursor : WAVE_FOLLOW_CURSOR;
+    if (!useCursor) {
+        return { x: WAVE_ORIGIN_X, y: WAVE_ORIGIN_Y };
     }
     const rootRect = rootEl.getBoundingClientRect();
     const w = rootRect.width;
@@ -903,6 +929,32 @@ function trEaseWaveProgress(t, x1, y1, x2, y2) {
     const easedY = trSampleCubicBezier(mid, y1, y2);
     return easedY;
 }
+
+// ive looked up on the internet on this one, mimic iphone airdrop gather pull then outward bloom before settling back to normal size
+function trComputeAirdropScale(rawT) {
+    const t = trClampUnit(rawT);
+    if (t <= 0 || t >= 1) {
+        return 1;
+    }
+    if (t < 0.22) {
+        const local = t / 0.22;
+        const s = Math.sin(local * Math.PI * 0.5);
+        return 1 - WAVE_AIRDROP_PULL_SCALE * s;
+    }
+    if (t < 0.50) {
+        const local = (t - 0.22) / 0.28;
+        const smooth = local * local * (3 - 2 * local);
+        const startVal = 1 - WAVE_AIRDROP_PULL_SCALE;
+        const peakVal = 1 + WAVE_AIRDROP_BLOOM_SCALE;
+        const span = peakVal - startVal;
+        return startVal + span * smooth;
+    }
+    const local = (t - 0.50) / 0.50;
+    const inv = 1 - local;
+    const easeOut = 1 - inv * inv * inv;
+    const peakVal = 1 + WAVE_AIRDROP_BLOOM_SCALE;
+    return peakVal - WAVE_AIRDROP_BLOOM_SCALE * easeOut;
+}
 // </patch-1>
 
 // ive looked up on the internet on this one, draw simple fade on standard canvas when webgl2 fail
@@ -982,6 +1034,7 @@ function trDistortionWave(options) {
     let particleTime = 0;
     let activeSource = opts.source || null;
     let activeOrigin = opts.origin || null;
+    let activeFollowCursor = typeof opts.followCursor === "boolean" ? opts.followCursor : WAVE_FOLLOW_CURSOR;
     let activeType = opts.type || "center";
     let activePalette = opts.palette || "monochromatic";
     const initialSpeed = typeof opts.speed === "number" ? opts.speed : 1;
@@ -1145,6 +1198,8 @@ function trDistortionWave(options) {
             cancelAnimationFrame(rafId);
             rafId = 0;
         }
+        canvas.style.transform = "";
+        canvas.style.transformOrigin = "";
     }
 
     function isReducedMotion() {
@@ -1179,20 +1234,30 @@ function trDistortionWave(options) {
             return;
         }
 
-        const origin = trMeasureWaveOrigin(root, activeSource, pointerEvent, activeOrigin);
+        const origin = trMeasureWaveOrigin(root, activeSource, pointerEvent, activeOrigin, activeFollowCursor);
         const hasCustomDuration = typeof waveStyle.duration === "number";
         const baseDuration = hasCustomDuration ? waveStyle.duration : WAVE_DURATION;
         // <patch-1>
-        const bx1 = typeof waveStyle.bezierX1 === "number" ? waveStyle.bezierX1 : WAVE_BEZIER_X1;
-        const by1 = typeof waveStyle.bezierY1 === "number" ? waveStyle.bezierY1 : WAVE_BEZIER_Y1;
-        const bx2 = typeof waveStyle.bezierX2 === "number" ? waveStyle.bezierX2 : WAVE_BEZIER_X2;
-        const by2 = typeof waveStyle.bezierY2 === "number" ? waveStyle.bezierY2 : WAVE_BEZIER_Y2;
+        const defBx1 = WAVE_AIRDROP_EXPERIMENTAL ? WAVE_AIRDROP_BEZIER_X1 : WAVE_BEZIER_X1;
+        const defBy1 = WAVE_AIRDROP_EXPERIMENTAL ? WAVE_AIRDROP_BEZIER_Y1 : WAVE_BEZIER_Y1;
+        const defBx2 = WAVE_AIRDROP_EXPERIMENTAL ? WAVE_AIRDROP_BEZIER_X2 : WAVE_BEZIER_X2;
+        const defBy2 = WAVE_AIRDROP_EXPERIMENTAL ? WAVE_AIRDROP_BEZIER_Y2 : WAVE_BEZIER_Y2;
+        const bx1 = typeof waveStyle.bezierX1 === "number" ? waveStyle.bezierX1 : defBx1;
+        const by1 = typeof waveStyle.bezierY1 === "number" ? waveStyle.bezierY1 : defBy1;
+        const bx2 = typeof waveStyle.bezierX2 === "number" ? waveStyle.bezierX2 : defBx2;
+        const by2 = typeof waveStyle.bezierY2 === "number" ? waveStyle.bezierY2 : defBy2;
         // </patch-1>
         const readyPromise = prepare();
 
         readyPromise.then(function () {
             const cachedState = buildCachedFrameState(origin);
             drawFrameWithState(cachedState);
+            if (WAVE_AIRDROP_EXPERIMENTAL) {
+                const oxPct = Math.round(origin.x * 100);
+                const oyPct = Math.round(origin.y * 100);
+                canvas.style.transformOrigin = oxPct + "% " + oyPct + "%";
+                canvas.style.transform = "scale(1)";
+            }
             canvas.classList.add("is-active");
             let lastTime = null;
             let elapsed = 0;
@@ -1220,9 +1285,16 @@ function trDistortionWave(options) {
                     const offset = travel * easedT;
                     progress = startProgress + offset;
                     particleTail = 0;
+                    if (WAVE_AIRDROP_EXPERIMENTAL) {
+                        const sc = trComputeAirdropScale(rawT);
+                        canvas.style.transform = "scale(" + sc.toFixed(4) + ")";
+                    }
                     drawFrameWithState(cachedState);
                     rafId = requestAnimationFrame(step);
                 } else {
+                    if (WAVE_AIRDROP_EXPERIMENTAL) {
+                        canvas.style.transform = "";
+                    }
                     progress = targetProgress;
                     const tailElapsed = elapsed - baseDuration;
                     const tailRatio = WAVE_PARTICLE_TAIL_MS > 0 ? tailElapsed / WAVE_PARTICLE_TAIL_MS : 1;

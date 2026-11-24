@@ -65,6 +65,7 @@ a {
     --tr-elevation-op40: #80808040;
 
     --tr-critical: rgb(255, 86, 86);
+    --tr-success: #5bd68a;
 
     /* font */
     --tr-font-type: "Segoe UI";
@@ -74,9 +75,9 @@ a {
         --tr-font-s-display: 48px;
         --tr-font-s-largetitle: 32px;
         --tr-font-s-title: 24px;
-        --tr-font-s-headline: 18px;
-        --tr-font-s-primary: 17px;
-        --tr-font-s-secondary: 16px;
+        --tr-font-s-headline: 16px;
+        --tr-font-s-primary: 16px;
+        --tr-font-s-secondary: 15px;
         --tr-font-s-tertiary: 13px;
 
     /* spacing */
@@ -93,6 +94,7 @@ a {
     --tr-border-s: 8px;
     --tr-border-m: 16px;
     --tr-border-l: 32px;
+    --tr-border-xl: 64px;
 
     --tr-phone-width: 393px;
     --tr-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
@@ -352,6 +354,7 @@ button.anim-rise,
 .border-s {border-radius: var(--tr-border-s);}
 .border-m {border-radius: var(--tr-border-m);}
 .border-l {border-radius: var(--tr-border-l);}
+.border-xl {border-radius: var(--tr-border-xl);}
 
 /* typography */
 .as-display {font-size: var(--tr-font-s-display);}
@@ -362,6 +365,7 @@ button.anim-rise,
 .as-secondary {font-size: var(--tr-font-s-secondary);}
 .as-tertiary {font-size: var(--tr-font-s-tertiary);}
 .as-critical {color: var(--tr-critical);}
+.as-success {color: var(--tr-success);}
 .disabled {opacity: 50%;}
 
 /* padding */
@@ -390,16 +394,21 @@ button.anim-rise,
 }
 :where(.spacer) {
     width: 100%;
-    height: 1px;
-    background-color: var(--tr-elevation-op40);
+    height: .5px;
+    background-color: var(--tr-elevation-op20);
     margin-block: var(--tr-space-s);
 }
 :where(.section) {
     min-width: 0;
 }
+:where(.list-index) {
+    min-width: 18px;
+    flex-shrink: 0;
+}
 :where(.card) {
     background-color: var(--tr-elevation-op20);
     padding: var(--tr-space-l);
+    corner-shape: squircle;
 }
 :where(.popup) {
     background-color: var(--tr-solid-dark-3);
@@ -601,7 +610,8 @@ select:focus-visible,
     opacity: 0.75;
 }
 .menu-item input[type="radio"],
-.check-row input[type="checkbox"] {
+.check-row input[type="checkbox"],
+.check-row input[type="radio"] {
     position: absolute;
     opacity: 0;
     width: 0;
@@ -614,7 +624,8 @@ select:focus-visible,
     transition: opacity 120ms ease;
 }
 .menu-item input[type="radio"]:checked ~ .check,
-.check-row input[type="checkbox"]:checked ~ .check {
+.check-row input[type="checkbox"]:checked ~ .check,
+.check-row input[type="radio"]:checked ~ .check {
     opacity: 1;
 }
 

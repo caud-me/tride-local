@@ -290,6 +290,50 @@
                     </div>
                 </div>
 
+                <!-- trListItem( ), [{ title, ?subtitle, ?index, ?step, ?onClick }], used only for numbered or static rows inside trListCard -->
+                <div class="group vbox space-m">
+                    <p class="as-cardheadline as-tertiary as-gray as-bold">Step list</p>
+                    <div class="trListCard card standard vbox space-m border-l">
+                        <div class="trListItem hbox space-m">
+                            <span class="list-index as-tertiary as-gray as-bold as-centered">1</span>
+                            <div class="vbox flex1 space-s">
+                                <p class="as-primary">Confirm source files</p>
+                                <p class="as-secondary as-gray">Lock in the files before writing code</p>
+                            </div>
+                        </div>
+                        <div class="spacer"></div>
+                        <div class="trListItem hbox space-m">
+                            <span class="list-index as-tertiary as-gray as-bold as-centered">2</span>
+                            <div class="vbox flex1 space-s">
+                                <p class="as-primary as-success">Completed step</p>
+                                <p class="as-secondary as-gray">Uses .as-success token (--tr-success)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- trRadioGroup( ), [{ items, ?value, ?name, ?label, ?onChange }], used only for mutually exclusive form/setup choices; do not use trTabbed for options -->
+                <div class="group vbox space-m">
+                    <p class="as-cardheadline as-tertiary as-gray as-bold">Radio group</p>
+                    <div class="trRadioGroup trListCard card standard vbox space-m border-l" role="radiogroup" aria-label="Study mode">
+                        <label class="trRadioRow check-row hbox space-l">
+                            <div class="vbox push-right space-s">
+                                <p class="as-primary">Standard</p>
+                                <p class="as-secondary as-gray">Answer all questions in order</p>
+                            </div>
+                            <input type="radio" name="sample-mode" value="standard" checked>
+                        </label>
+                        <div class="spacer"></div>
+                        <label class="trRadioRow check-row hbox space-l">
+                            <div class="vbox push-right space-s">
+                                <p class="as-primary">Shuffle</p>
+                                <p class="as-secondary as-gray">Randomize questions and choices</p>
+                            </div>
+                            <input type="radio" name="sample-mode" value="shuffle">
+                        </label>
+                    </div>
+                </div>
+
             </div>
         </div>
         <!-- <div class="tab-bar"> ... </div> -->

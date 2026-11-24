@@ -347,6 +347,9 @@ function trMenu(options) {
     }
     triggerBtn.addEventListener("click", toggleMenu);
 
+    const menuRand = Math.random();
+    const menuStr = menuRand.toString(36);
+    const menuId = menuStr.slice(2, 8);
     const sections = opts.sections || opts.groups || [];
     for (let s = 0; s < sections.length; s += 1) {
         const section = sections[s];
@@ -376,7 +379,8 @@ function trMenu(options) {
 
             const radio = document.createElement("input");
             radio.type = "radio";
-            radio.name = section.name || ("menu-group-" + s);
+            const defaultName = "menu-" + menuId + "-group-" + s;
+            radio.name = section.name || defaultName;
             radio.value = item.value !== undefined ? item.value : item.label;
             if (item.disabled) {
                 radio.disabled = true;
@@ -412,12 +416,24 @@ function trMenu(options) {
         panel.appendChild(groupWrap);
     }
 
+    function cleanupMenuListeners() {
+        document.removeEventListener("click", handleOutsideClick);
+        document.removeEventListener("keydown", handleMenuKeyDown);
+    }
     function handleOutsideClick(event) {
+        if (!anchor.isConnected) {
+            cleanupMenuListeners();
+            return;
+        }
         if (!anchor.contains(event.target)) {
             closeMenu();
         }
     }
     function handleMenuKeyDown(event) {
+        if (!anchor.isConnected) {
+            cleanupMenuListeners();
+            return;
+        }
         if (event.key === "Escape" && !panel.classList.contains("hidden")) {
             closeMenu();
             triggerBtn.focus();
@@ -507,21 +523,40 @@ function trListCard(items) {
     return card;
 }
 
-// params: options (required: { title (required), subtitle (optional: string | array) })
+// params: options (required: { title (required: string | node), subtitle (optional: string | array), index (optional: string | number), step (optional: string | number), onClick (optional) })
 function trListItem(options) {
     const opts = options || {};
-    const item = trEl("div", "trListItem vbox");
+    const stepVal = opts.index !== undefined ? opts.index : opts.step;
+    const hasStep = stepVal !== undefined && stepVal !== null && stepVal !== "";
+
+    const item = hasStep ? trEl("div", "trListItem hbox space-m") : trEl("div", "trListItem vbox");
+    let textTarget = item;
+
+    if (hasStep) {
+        const idxEl = trEl("span", "list-index as-tertiary as-gray as-bold as-centered", String(stepVal));
+        item.appendChild(idxEl);
+        textTarget = trEl("div", "vbox push-right");
+        item.appendChild(textTarget);
+    }
+
     if (opts.title) {
-        const titleEl = trEl("p", "as-primary", opts.title);
-        item.appendChild(titleEl);
+        if (opts.title instanceof Node) {
+            textTarget.appendChild(opts.title);
+        } else {
+            const titleEl = trEl("p", "as-primary", opts.title);
+            textTarget.appendChild(titleEl);
+        }
     }
     if (opts.subtitle) {
         const isArr = Array.isArray(opts.subtitle);
         const subs = isArr ? opts.subtitle : [opts.subtitle];
         for (let i = 0; i < subs.length; i += 1) {
             const subEl = trEl("p", "as-secondary as-gray", subs[i]);
-            item.appendChild(subEl);
+            textTarget.appendChild(subEl);
         }
+    }
+    if (opts.onClick) {
+        trBindTap(item, opts.onClick);
     }
     return item;
 }
@@ -700,6 +735,9 @@ function trStatGroup(items, options) {
     }
     for (let i = 0; i < list.length; i += 1) {
         const entry = list[i];
+        if (!entry) {
+            continue;
+        }
         const cell = trEl("div", "vbox flex1 space-m");
         const valEl = trEl("p", "as-title lh-1", entry.value);
         const lblEl = trEl("p", "as-tertiary as-bold as-midgray lh-1", entry.label);
@@ -858,6 +896,93 @@ function trCheckRow(options) {
     return row;
 }
 
+// params: options (required: { items (required: array of { value, title, label, subtitle, disabled }), value (optional), name (optional), label (optional), onChange (optional) })
+function trRadioGroup(options) {
+    const opts = options || {};
+    const items = opts.items || [];
+    const randNum = Math.random();
+    const randStr = randNum.toString(36);
+    const groupName = opts.name || ("tr-radio-" + randStr.slice(2, 8));
+    const hasInitial = opts.value !== undefined && opts.value !== null;
+    const initialStr = hasInitial ? String(opts.value) : "";
+
+    const rows = [];
+    const entries = [];
+
+    for (let i = 0; i < items.length; i += 1) {
+        const item = items[i];
+        if (!item) {
+            continue;
+        }
+        let rowCls = "trRadioRow check-row hbox space-l";
+        if (item.disabled) {
+            rowCls = rowCls + " disabled";
+        }
+        const row = trEl("label", rowCls);
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = groupName;
+        const itemVal = item.value !== undefined ? item.value : (item.title || item.label || "");
+        const itemValStr = String(itemVal);
+        radio.value = itemValStr;
+
+        if (item.disabled) {
+            radio.disabled = true;
+        }
+        if (hasInitial && itemValStr === initialStr) {
+            radio.checked = true;
+        }
+
+        function handleRadioChange() {
+            if (radio.checked && opts.onChange) {
+                opts.onChange(itemVal, item);
+            }
+        }
+        radio.addEventListener("change", handleRadioChange);
+
+        const textWrap = trEl("div", "vbox push-right space-s");
+        const titleText = item.title || item.label || "";
+        const titleEl = trEl("p", "as-primary", titleText);
+        textWrap.appendChild(titleEl);
+        if (item.subtitle) {
+            const subEl = trEl("p", "as-secondary as-gray", item.subtitle);
+            textWrap.appendChild(subEl);
+        }
+
+        const checkIcon = trIcon(TR_ICON_CHECK, { className: "check" });
+        row.appendChild(radio);
+        row.appendChild(textWrap);
+        row.appendChild(checkIcon);
+        rows.push(row);
+        entries.push({ radio: radio, value: itemVal, valueStr: itemValStr });
+    }
+
+    const card = trListCard(rows);
+    card.classList.add("trRadioGroup");
+    card.setAttribute("role", "radiogroup");
+    if (opts.label) {
+        card.setAttribute("aria-label", opts.label);
+    }
+
+    card.getValue = function () {
+        for (let i = 0; i < entries.length; i += 1) {
+            if (entries[i].radio.checked) {
+                return entries[i].value;
+            }
+        }
+        return null;
+    };
+
+    card.setValue = function (nextVal) {
+        const nextStr = nextVal !== undefined && nextVal !== null ? String(nextVal) : "";
+        for (let i = 0; i < entries.length; i += 1) {
+            entries[i].radio.checked = entries[i].valueStr === nextStr;
+        }
+    };
+
+    return card;
+}
+
 // params: options (required: { title (required), subtitle (optional), icon (optional) })
 function trEmptyState(options) {
     const opts = options || {};
@@ -880,8 +1005,11 @@ function trEmptyState(options) {
 // params: options (required: { total (required), current (required) })
 function trStoryBar(options) {
     const opts = options || {};
-    const total = opts.total || 1;
-    const current = opts.current || 1;
+    const parsedTotal = Number(opts.total) || 1;
+    const total = parsedTotal > 0 ? parsedTotal : 1;
+    const rawCurrent = opts.current !== undefined ? Number(opts.current) : 1;
+    const nonNegCurrent = rawCurrent > 0 ? rawCurrent : 0;
+    const current = nonNegCurrent > total ? total : nonNegCurrent;
     const bar = trEl("div", "trStoryBar story-bar");
     bar.setAttribute("role", "progressbar");
     bar.setAttribute("aria-valuemin", "1");
@@ -987,9 +1115,12 @@ function trPropertyRow(options) {
     const randPart = Math.random().toString(36).slice(2, 8);
     const fieldId = opts.id || ("tr-field-" + randPart);
 
+    const hasControl = Boolean(opts.input || opts.select);
     if (opts.label) {
         const lbl = trEl("label");
-        lbl.setAttribute("for", fieldId);
+        if (hasControl) {
+            lbl.setAttribute("for", fieldId);
+        }
         const lblSpan = trEl("span", "as-tertiary as-gray", opts.label);
         lbl.appendChild(lblSpan);
         row.appendChild(lbl);
@@ -1037,6 +1168,8 @@ function trPropertyRow(options) {
         if (cfg.disabled) {
             select.disabled = true;
         }
+        const hasTargetVal = cfg.value !== undefined && cfg.value !== null;
+        const targetValStr = hasTargetVal ? String(cfg.value) : "";
         const list = cfg.options || [];
         for (let i = 0; i < list.length; i += 1) {
             const ch = list[i];
@@ -1048,7 +1181,7 @@ function trPropertyRow(options) {
                     const sub = subOpts[j];
                     const optEl = trEl("option", "", sub.label);
                     optEl.value = sub.value;
-                    if (cfg.value !== undefined && sub.value === cfg.value) {
+                    if (hasTargetVal && String(sub.value) === targetValStr) {
                         optEl.selected = true;
                     }
                     grp.appendChild(optEl);
@@ -1057,7 +1190,7 @@ function trPropertyRow(options) {
             } else {
                 const optEl = trEl("option", "", ch.label);
                 optEl.value = ch.value;
-                if (cfg.value !== undefined && ch.value === cfg.value) {
+                if (hasTargetVal && String(ch.value) === targetValStr) {
                     optEl.selected = true;
                 }
                 select.appendChild(optEl);
@@ -1127,26 +1260,29 @@ function trSheet(options) {
         sheet.appendChild(iconEl);
     }
 
-    const header = trEl("div", "group sheet-header vbox space-t");
-    if (opts.title) {
-        const titleEl = trEl("p", "as-headline as-bold", opts.title);
-        const randId = Math.random().toString(36).slice(2, 8);
-        titleEl.id = "tr-sheet-" + randId;
-        backdrop.setAttribute("aria-labelledby", titleEl.id);
-        header.appendChild(titleEl);
+    const hasHeader = Boolean(opts.title || opts.description || opts.footnote || opts.headerExtra);
+    if (hasHeader) {
+        const header = trEl("div", "group sheet-header vbox space-t");
+        if (opts.title) {
+            const titleEl = trEl("p", "as-headline as-bold", opts.title);
+            const randId = Math.random().toString(36).slice(2, 8);
+            titleEl.id = "tr-sheet-" + randId;
+            backdrop.setAttribute("aria-labelledby", titleEl.id);
+            header.appendChild(titleEl);
+        }
+        if (opts.description) {
+            const descEl = trEl("p", "as-secondary as-midgray", opts.description);
+            header.appendChild(descEl);
+        }
+        if (opts.footnote) {
+            const footEl = trEl("p", "as-tertiary as-gray", opts.footnote);
+            header.appendChild(footEl);
+        }
+        if (opts.headerExtra) {
+            trAppend(header, opts.headerExtra);
+        }
+        sheet.appendChild(header);
     }
-    if (opts.description) {
-        const descEl = trEl("p", "as-secondary as-midgray", opts.description);
-        header.appendChild(descEl);
-    }
-    if (opts.footnote) {
-        const footEl = trEl("p", "as-tertiary as-gray", opts.footnote);
-        header.appendChild(footEl);
-    }
-    if (opts.headerExtra) {
-        trAppend(header, opts.headerExtra);
-    }
-    sheet.appendChild(header);
 
     const bodySource = opts.body || opts.content || opts.children;
     if (bodySource) {
@@ -1165,7 +1301,20 @@ function trSheet(options) {
 
     backdrop.appendChild(sheet);
 
+    let isOpen = false;
+
+    function handleSheetKeyDown(event) {
+        if (event.key === "Escape" && isOpen) {
+            close();
+        }
+    }
+
     function close() {
+        if (!isOpen) {
+            return;
+        }
+        isOpen = false;
+        document.removeEventListener("keydown", handleSheetKeyDown);
         backdrop.classList.add("hidden");
         if (opts.removeOnClose) {
             // ive looked up on the internet on this one, setTimeout wait until the slide exit finish before removing the element
@@ -1181,11 +1330,15 @@ function trSheet(options) {
     }
 
     function open() {
+        isOpen = true;
         if (!backdrop.parentNode) {
             document.body.appendChild(backdrop);
         }
+        document.addEventListener("keydown", handleSheetKeyDown);
         requestAnimationFrame(function () {
-            backdrop.classList.remove("hidden");
+            if (isOpen) {
+                backdrop.classList.remove("hidden");
+            }
         });
     }
 
@@ -1294,6 +1447,13 @@ function trCopyFormState(sourceRoot, cloneRoot) {
         const dstIn = dstInputs[i];
         if (dstIn) {
             dstIn.setAttribute("value", srcIn.value);
+            if (srcIn.type === "checkbox" || srcIn.type === "radio") {
+                if (srcIn.checked) {
+                    dstIn.setAttribute("checked", "checked");
+                } else {
+                    dstIn.removeAttribute("checked");
+                }
+            }
         }
     }
 
@@ -1322,7 +1482,8 @@ function trCopyFormState(sourceRoot, cloneRoot) {
 function trSuccessWave(options) {
     const opts = options || {};
     const appEl = document.getElementById("app");
-    if (!appEl) {
+    const hasWave = typeof trDistortionWave === "function";
+    if (!appEl || !hasWave) {
         if (opts.onDone) {
             opts.onDone();
         }
@@ -1425,6 +1586,7 @@ function trSuccessWave(options) {
         revealedContent: stage,
         source: opts.source || null,
         origin: opts.origin || null,
+        followCursor: opts.followCursor,
         type: opts.type || "center",
         palette: opts.palette || "metal",
         speed: typeof opts.speed === "number" ? opts.speed : 1,
@@ -1451,9 +1613,16 @@ function trSuccessWave(options) {
 function trTransitionWave(options) {
     const opts = options || {};
     const appEl = document.getElementById("app");
-    if (!appEl) {
+    const hasWave = typeof trDistortionWave === "function";
+    if (!appEl || !hasWave) {
         if (opts.navigate) {
-            opts.navigate(null);
+            opts.navigate(function () {
+                if (opts.onFinish) {
+                    opts.onFinish();
+                }
+            });
+        } else if (opts.onFinish) {
+            opts.onFinish();
         }
         return;
     }
@@ -1504,6 +1673,8 @@ function trTransitionWave(options) {
                 children: fromStage,
                 revealedContent: toStage,
                 source: opts.source || null,
+                origin: opts.origin || null,
+                followCursor: opts.followCursor,
                 type: opts.type || "center",
                 palette: opts.palette || "ocean",
                 speed: typeof opts.speed === "number" ? opts.speed : 1,

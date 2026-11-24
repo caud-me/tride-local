@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distortion Wave Playground</title>
+    <link rel="stylesheet" href="components/styleNext.css">
+    <link rel="stylesheet" href="components/responsive-experimental.css">
+    <link rel="stylesheet" href="components/distortion-wave.css">
+    <style>
+        .pg-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--tr-space-l);
+            align-items: start;
+        }
+        @media (min-width: 820px) {
+            .pg-layout {
+                grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
+            }
+            .pg-stage-col {
+                position: sticky;
+                top: 72px;
+            }
+        }
+        .pg-stage-box {
+            width: 100%;
+            height: 460px;
+            border-radius: var(--tr-border-l);
+            border: 1px solid var(--tr-elevation-op40);
+            overflow: hidden;
+            position: relative;
+        }
+        .pg-stage-box > .distortion-wave {
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+        }
+        .pg-mock-view {
+            width: 100%;
+            height: 100%;
+            padding: var(--tr-space-l);
+        }
+        .pg-slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: var(--tr-space-s);
+        }
+        .pg-slider-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pg-slider-row input[type="range"] {
+            width: 100%;
+            accent-color: var(--tr-solid-light-1);
+            cursor: pointer;
+        }
+        .pg-bezier-svg {
+            width: 100%;
+            height: 110px;
+            background: var(--tr-solid-dark-2);
+            border-radius: var(--tr-border-m);
+            border: 1px solid var(--tr-elevation-op20);
+        }
+        .pg-preset-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--tr-space-s);
+        }
+        .pg-output {
+            font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+            font-size: 12px;
+            white-space: pre;
+            overflow-x: auto;
+            color: var(--tr-solid-gray-2);
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="app"></div>
+    <script src="components/distortion-wave.js"></script>
+    <script src="components/components.js"></script>
+    <script>
+        (function () {
+            const DEFAULTS = {
+                type: "center",
+                palette: "metal",
+                customHex: "#5bd68a",
+                duration: 2300,
+                speed: 1.0,
+                originMode: "fixed",
+                originX: 0.5,
+                originY: 0.04,
+                bezierX1: 0.76,
+                bezierY1: 0.0,
+                bezierX2: 0.14,
+                bezierY2: 1.0,
+                amplitude: 0.16,
+                rippleFreq: 14.0,
+                rippleMix: 0.35,
+                aberration: 0.042,
+                rimWidth: 0.14,
+                blurAmount: 0.016,
+                glowIntensity: 0.72,
+                glowSpread: 2.4,
+                coreSpark: 0.45,
+                meshSharpness: 3.2,
+                meshFlow: 2.2,
+                edgeLightIntensity: 0.85,
+                edgeLightWidth: 0.055,
+                edgeCrestBoost: 1.85,
+                edgeHaloPower: 1.4,
+                particleCount: 160,
+                particleSize: 0.0018,
+                particleHalo: 1.35,
+                particleGlow: 1.85,
+                particleDrift: 0.24,
+                particleEase: 2.4
+            };
+
+            const CURVE_PRESETS = [
+                { name: "AirDrop Steep", x1: 0.76, y1: 0.0, x2: 0.14, y2: 1.0 },
+                { name: "Original", x1: 0.50, y1: 0.0, x2: 0.00, y2: 1.0 },
+                { name: "Expo Out", x1: 0.16, y1: 1.0, x2: 0.30, y2: 1.0 },
+                { name: "Smooth S", x1: 0.65, y1: 0.0, x2: 0.35, y2: 1.0 },
+                { name: "Linear", x1: 0.00, y1: 0.0, x2: 1.00, y2: 1.0 }
+            ];
+
+            const state = Object.assign({}, DEFAULTS);
+            const sliderRefs = {};
+            let waveCtrl = null;
+            let stageBox = null;
+            let bezierPath = null;
+            let handleLine1 = null;
+            let handleLine2 = null;
+            let handleDot1 = null;
+            let handleDot2 = null;
+            let outputPre = null;
+            let statusLabel = null;
+            let revealedState = false;
+
+            function buildMockFrom() {
+                const wrap = trEl("div", "pg-mock-view vbox justify-center space-l");
+                const head = trEl("div", "group vbox space-s");
+                head.appendChild(trEl("p", "as-tertiary as-gray", "BEFORE STATE"));
+                head.appendChild(trEl("p", "as-title as-bold", "Tap stage or Play to trigger wave"));
+                wrap.appendChild(head);
+
+                const list = trListCard([
+                    trListItem({ index: 1, title: "Adjust Bezier curve & origin", subtitle: "Test AirDrop steep ease vs original" }),
+                    trListItem({ index: 2, title: "Tune optics, glow & particles", subtitle: "Live rebuilds on next play" }),
+                    trListItem({ index: 3, title: "Copy constants when happy", subtitle: "Paste exact values back into distortion-wave.js" })
+                ]);
+                wrap.appendChild(list);
+                return wrap;
+            }
+
+            function buildMockTo() {
+                const wrap = trEl("div", "pg-mock-view vbox justify-center space-l");
+                wrap.appendChild(trIcon("\uE73E", { className: "as-display as-centered as-success" }));
+                const head = trEl("div", "group vbox center space-t");
+                head.appendChild(trEl("p", "as-headline as-bold as-centered", "Flawless run"));
+                head.appendChild(trEl("p", "as-secondary as-gray as-centered", "Revealed target stage preview"));
+                wrap.appendChild(head);
+                const stats = trStatGroup([
+                    { value: "100%", label: "Accuracy" },
+                    { value: "4950", label: "Score" },
+                    { value: "15x", label: "Streak" }
+                ]);
+                wrap.appendChild(stats);
+                return wrap;
+            }
+
+            function activePaletteValue() {
+                if (state.palette === "custom") {
+                    return state.customHex;
+                }
+                return state.palette;
+            }
+
+            function mountWave() {
+                if (!stageBox) {
+                    return;
+                }
+                stageBox.innerHTML = "";
+                revealedState = false;
+                const isPointer = state.originMode === "pointer";
+                const originVal = isPointer ? null : { x: state.originX, y: state.originY };
+                waveCtrl = trDistortionWave({
+                    children: buildMockFrom(),
+                    revealedContent: buildMockTo(),
+                    type: state.type,
+                    palette: activePaletteValue(),
+                    speed: state.speed,
+                    origin: originVal,
+                    followCursor: isPointer,
+                    cornerRadius: 0,
+                    waveStyle: {
+                        duration: state.duration,
+                        bezierX1: state.bezierX1,
+                        bezierY1: state.bezierY1,
+                        bezierX2: state.bezierX2,
+                        bezierY2: state.bezierY2,
+                        amplitude: state.amplitude,
+                        rippleFreq: state.rippleFreq,
+                        rippleMix: state.rippleMix,
+                        aberration: state.aberration,
+                        rimWidth: state.rimWidth,
+                        blurAmount: state.blurAmount,
+                        glowIntensity: state.glowIntensity,
+                        glowSpread: state.glowSpread,
+                        coreSpark: state.coreSpark,
+                        meshSharpness: state.meshSharpness,
+                        meshFlow: state.meshFlow,
+                        edgeLightIntensity: state.edgeLightIntensity,
+                        edgeLightWidth: state.edgeLightWidth,
+                        edgeCrestBoost: state.edgeCrestBoost,
+                        edgeHaloPower: state.edgeHaloPower,
+                        particleCount: state.particleCount,
+                        particleSize: state.particleSize,
+                        particleHalo: state.particleHalo,
+                        particleGlow: state.particleGlow,
+                        particleDrift: state.particleDrift,
+                        particleEase: state.particleEase
+                    },
+                    onFinish: function (isRev) {
+                        revealedState = isRev;
+                        if (statusLabel) {
+                            statusLabel.textContent = isRev ? "State: Revealed (click Play/Reverse)" : "State: Initial";
+                        }
+                    }
+                });
+                stageBox.appendChild(waveCtrl.el);
+                if (statusLabel) {
+                    statusLabel.textContent = "State: Ready";
+                }
+            }
+
+            function updateBezierPreview() {
+                if (!bezierPath) {
+                    return;
+                }
+                const padX = 16;
+                const padY = 14;
+                const w = 268;
+                const h = 82;
+                const x0 = padX;
+                const y0 = padY + h;
+                const x3 = padX + w;
+                const y3 = padY;
+                const cx1 = padX + state.bezierX1 * w;
+                const cy1 = padY + (1 - state.bezierY1) * h;
+                const cx2 = padX + state.bezierX2 * w;
+                const cy2 = padY + (1 - state.bezierY2) * h;
+                const d = "M " + x0 + " " + y0 + " C " + cx1 + " " + cy1 + ", " + cx2 + " " + cy2 + ", " + x3 + " " + y3;
+                bezierPath.setAttribute("d", d);
+                handleLine1.setAttribute("x1", x0);
+                handleLine1.setAttribute("y1", y0);
+                handleLine1.setAttribute("x2", cx1);
+                handleLine1.setAttribute("y2", cy1);
+                handleLine2.setAttribute("x1", x3);
+                handleLine2.setAttribute("y1", y3);
+                handleLine2.setAttribute("x2", cx2);
+                handleLine2.setAttribute("y2", cy2);
+                handleDot1.setAttribute("cx", cx1);
+                handleDot1.setAttribute("cy", cy1);
+                handleDot2.setAttribute("cx", cx2);
+                handleDot2.setAttribute("cy", cy2);
+            }
+
+            function formatConfigSnippet() {
+                const lines = [
+                    "const WAVE_DURATION = " + state.duration + ";",
+                    "const WAVE_ORIGIN_X = " + state.originX + ";",
+                    "const WAVE_ORIGIN_Y = " + state.originY + ";",
+                    "const WAVE_FOLLOW_CURSOR = " + (state.originMode === "pointer") + ";",
+                    "const WAVE_BEZIER_X1 = " + state.bezierX1 + ";",
+                    "const WAVE_BEZIER_Y1 = " + state.bezierY1 + ";",
+                    "const WAVE_BEZIER_X2 = " + state.bezierX2 + ";",
+                    "const WAVE_BEZIER_Y2 = " + state.bezierY2 + ";",
+                    "const WAVE_AMPLITUDE = " + state.amplitude + ";",
+                    "const WAVE_RIPPLE_FREQ = " + state.rippleFreq + ";",
+                    "const WAVE_RIPPLE_MIX = " + state.rippleMix + ";",
+                    "const WAVE_ABERRATION = " + state.aberration + ";",
+                    "const WAVE_RIM_WIDTH = " + state.rimWidth + ";",
+                    "const WAVE_BLUR_AMOUNT = " + state.blurAmount + ";",
+                    "const WAVE_GLOW_INTENSITY = " + state.glowIntensity + ";",
+                    "const WAVE_GLOW_SPREAD = " + state.glowSpread + ";",
+                    "const WAVE_CORE_SPARK = " + state.coreSpark + ";",
+                    "const WAVE_MESH_SHARPNESS = " + state.meshSharpness + ";",
+                    "const WAVE_MESH_FLOW = " + state.meshFlow + ";",
+                    "const WAVE_EDGE_LIGHT_INTENSITY = " + state.edgeLightIntensity + ";",
+                    "const WAVE_EDGE_LIGHT_WIDTH = " + state.edgeLightWidth + ";",
+                    "const WAVE_EDGE_CREST_BOOST = " + state.edgeCrestBoost + ";",
+                    "const WAVE_EDGE_HALO_POWER = " + state.edgeHaloPower + ";",
+                    "const WAVE_PARTICLE_COUNT = " + state.particleCount + ";",
+                    "const WAVE_PARTICLE_SIZE = " + state.particleSize + ";",
+                    "const WAVE_PARTICLE_HALO = " + state.particleHalo + ";",
+                    "const WAVE_PARTICLE_GLOW = " + state.particleGlow + ";",
+                    "const WAVE_PARTICLE_DRIFT = " + state.particleDrift + ";",
+                    "const WAVE_PARTICLE_EASE = " + state.particleEase + ";"
+                ];
+                return lines.join("\n");
+            }
+
+            function refreshOutput() {
+                updateBezierPreview();
+                if (outputPre) {
+                    outputPre.textContent = formatConfigSnippet();
+                }
+            }
+
+            function makeSlider(key, label, min, max, step, digits) {
+                const wrap = trEl("div", "pg-slider-row");
+                const head = trEl("div", "pg-slider-head");
+                const lbl = trEl("span", "as-tertiary as-gray", label);
+                const valEl = trEl("span", "as-tertiary as-bold", Number(state[key]).toFixed(digits));
+                head.appendChild(lbl);
+                head.appendChild(valEl);
+
+                const input = document.createElement("input");
+                input.type = "range";
+                input.min = String(min);
+                input.max = String(max);
+                input.step = String(step);
+                input.value = String(state[key]);
+                input.addEventListener("input", function () {
+                    const num = Number(input.value);
+                    state[key] = num;
+                    valEl.textContent = num.toFixed(digits);
+                    refreshOutput();
+                });
+
+                wrap.appendChild(head);
+                wrap.appendChild(input);
+                sliderRefs[key] = { input: input, valEl: valEl, digits: digits };
+                return wrap;
+            }
+
+            function syncSlidersFromState() {
+                const keys = Object.keys(sliderRefs);
+                for (let i = 0; i < keys.length; i += 1) {
+                    const k = keys[i];
+                    const ref = sliderRefs[k];
+                    ref.input.value = String(state[k]);
+                    ref.valEl.textContent = Number(state[k]).toFixed(ref.digits);
+                }
+                refreshOutput();
+            }
+
+            function triggerPlay(pointerEvt) {
+                mountWave();
+                const passEvt = state.originMode === "pointer" ? pointerEvt : null;
+                waveCtrl.play(passEvt);
+            }
+
+            function triggerReverse(pointerEvt) {
+                if (!waveCtrl) {
+                    mountWave();
+                }
+                const passEvt = state.originMode === "pointer" ? pointerEvt : null;
+                waveCtrl.reverse(passEvt);
+            }
+
+            function triggerFullscreenDemo() {
+                const isPointer = state.originMode === "pointer";
+                const originVal = isPointer ? null : { x: state.originX, y: state.originY };
+                trSuccessWave({
+                    title: "Fullscreen preview",
+                    subtitle: "Testing live trSuccessWave with current origin & palette.",
+                    palette: activePaletteValue(),
+                    type: state.type,
+                    speed: state.speed,
+                    origin: originVal,
+                    followCursor: isPointer,
+                    buttonLabel: "Close preview"
+                });
+            }
+
+            function buildApp() {
+                const app = document.getElementById("app");
+                const nav = trNavBar({
+                    title: "Wave playground",
+                    subtitle: "Granular distortion-wave tuner",
+                    actions: [
+                        trButton({
+                            label: "Reset",
+                            size: "m",
+                            onClick: function () {
+                                Object.assign(state, DEFAULTS);
+                                syncSlidersFromState();
+                                mountWave();
+                            }
+                        })
+                    ]
+                });
+                app.appendChild(nav);
+
+                const main = trEl("main", "content vbox space-xl");
+                const layout = trEl("div", "pg-layout");
+
+                // left column: sticky stage + play buttons
+                const stageCol = trEl("div", "pg-stage-col vbox space-l");
+                stageBox = trEl("div", "pg-stage-box");
+                stageBox.addEventListener("click", function (evt) {
+                    if (revealedState) {
+                        triggerReverse(evt);
+                    } else {
+                        triggerPlay(evt);
+                    }
+                });
+                stageCol.appendChild(stageBox);
+
+                statusLabel = trEl("p", "as-tertiary as-gray as-centered", "State: Ready");
+                stageCol.appendChild(statusLabel);
+
+                const btnRow = trEl("div", "hbox space-m");
+                btnRow.appendChild(trButton({
+                    label: "Play",
+                    variant: "primary",
+                    size: "m",
+                    className: "flex1",
+                    onClick: function () { triggerPlay(null); }
+                }));
+                btnRow.appendChild(trButton({
+                    label: "Reverse",
+                    size: "m",
+                    className: "flex1",
+                    onClick: function () { triggerReverse(null); }
+                }));
+                btnRow.appendChild(trButton({
+                    label: "Fullscreen",
+                    size: "m",
+                    onClick: triggerFullscreenDemo
+                }));
+                stageCol.appendChild(btnRow);
+                layout.appendChild(stageCol);
+
+                // right column: granular controls
+                const controlsCol = trEl("div", "vbox space-l");
+
+                // 1. Mode, Palette & Origin
+                const typeRow = trPropertyRow({
+                    label: "Wave type",
+                    select: {
+                        value: state.type,
+                        options: [
+                            { value: "center", label: "Center (Radial)" },
+                            { value: "vertical", label: "Vertical" },
+                            { value: "horizontal", label: "Horizontal" }
+                        ],
+                        onChange: function (e) { state.type = e.target.value; refreshOutput(); }
+                    }
+                });
+
+                const paletteRow = trPropertyRow({
+                    label: "Palette",
+                    select: {
+                        value: state.palette,
+                        options: [
+                            { value: "metal", label: "Metal" },
+                            { value: "colorful", label: "Colorful" },
+                            { value: "monochromatic", label: "Monochromatic" },
+                            { value: "green", label: "Green" },
+                            { value: "ocean", label: "Ocean" },
+                            { value: "sunset", label: "Sunset" },
+                            { value: "custom", label: "Custom Hex" }
+                        ],
+                        onChange: function (e) { state.palette = e.target.value; refreshOutput(); }
+                    }
+                });
+
+                const hexRow = trPropertyRow({
+                    label: "Custom hex (when Palette = Custom Hex)",
+                    input: {
+                        type: "text",
+                        value: state.customHex,
+                        onInput: function (e) { state.customHex = e.target.value; }
+                    }
+                });
+
+                const originRadio = trRadioGroup({
+                    label: "Origin mode",
+                    value: state.originMode,
+                    items: [
+                        { value: "fixed", title: "Fixed origin (ignores mouse)", subtitle: "Use X / Y sliders below" },
+                        { value: "pointer", title: "Follow click / mouse", subtitle: "Wave radiates from click position" }
+                    ],
+                    onChange: function (val) { state.originMode = val; }
+                });
+
+                const originPresets = trEl("div", "pg-preset-row");
+                const originSpots = [
+                    { label: "Center (0.5, 0.5)", x: 0.5, y: 0.5 },
+                    { label: "Bottom (0.5, 0.96)", x: 0.5, y: 0.96 },
+                    { label: "Top (0.5, 0.04)", x: 0.5, y: 0.04 }
+                ];
+                for (let i = 0; i < originSpots.length; i += 1) {
+                    const spot = originSpots[i];
+                    originPresets.appendChild(trButton({
+                        label: spot.label,
+                        size: "m",
+                        onClick: function () {
+                            state.originX = spot.x;
+                            state.originY = spot.y;
+                            syncSlidersFromState();
+                        }
+                    }));
+                }
+
+                const originSliders = trCard([
+                    originPresets,
+                    makeSlider("originX", "Origin X", 0, 1, 0.01, 2),
+                    makeSlider("originY", "Origin Y", 0, 1, 0.01, 2)
+                ]);
+
+                controlsCol.appendChild(trCardGroup({ headline: "Mode & palette", card: trListCard([typeRow, paletteRow, hexRow]) }));
+                controlsCol.appendChild(trCardGroup({ headline: "Origin", card: originRadio }));
+                controlsCol.appendChild(originSliders);
+
+                // 2. Timing & Cubic Bezier
+                const svgNs = "http://www.w3.org/2000/svg";
+                const svg = document.createElementNS(svgNs, "svg");
+                svg.setAttribute("viewBox", "0 0 300 110");
+                svg.setAttribute("class", "pg-bezier-svg");
+
+                handleLine1 = document.createElementNS(svgNs, "line");
+                handleLine1.setAttribute("stroke", "#808080");
+                handleLine1.setAttribute("stroke-dasharray", "3 3");
+                handleLine2 = document.createElementNS(svgNs, "line");
+                handleLine2.setAttribute("stroke", "#808080");
+                handleLine2.setAttribute("stroke-dasharray", "3 3");
+                bezierPath = document.createElementNS(svgNs, "path");
+                bezierPath.setAttribute("fill", "none");
+                bezierPath.setAttribute("stroke", "#ededed");
+                bezierPath.setAttribute("stroke-width", "2.5");
+                handleDot1 = document.createElementNS(svgNs, "circle");
+                handleDot1.setAttribute("r", "4");
+                handleDot1.setAttribute("fill", "#5bd68a");
+                handleDot2 = document.createElementNS(svgNs, "circle");
+                handleDot2.setAttribute("r", "4");
+                handleDot2.setAttribute("fill", "#ff5656");
+                svg.appendChild(handleLine1);
+                svg.appendChild(handleLine2);
+                svg.appendChild(bezierPath);
+                svg.appendChild(handleDot1);
+                svg.appendChild(handleDot2);
+
+                const curvePresetRow = trEl("div", "pg-preset-row");
+                for (let i = 0; i < CURVE_PRESETS.length; i += 1) {
+                    const p = CURVE_PRESETS[i];
+                    curvePresetRow.appendChild(trButton({
+                        label: p.name,
+                        size: "m",
+                        onClick: function () {
+                            state.bezierX1 = p.x1;
+                            state.bezierY1 = p.y1;
+                            state.bezierX2 = p.x2;
+                            state.bezierY2 = p.y2;
+                            syncSlidersFromState();
+                        }
+                    }));
+                }
+
+                const timingCard = trCard([
+                    svg,
+                    curvePresetRow,
+                    makeSlider("duration", "Duration (ms)", 400, 5000, 50, 0),
+                    makeSlider("speed", "Speed multiplier", 0.25, 3.0, 0.05, 2),
+                    makeSlider("bezierX1", "Bezier X1", 0, 1, 0.01, 2),
+                    makeSlider("bezierY1", "Bezier Y1", -0.5, 1.5, 0.01, 2),
+                    makeSlider("bezierX2", "Bezier X2", 0, 1, 0.01, 2),
+                    makeSlider("bezierY2", "Bezier Y2", -0.5, 1.5, 0.01, 2)
+                ]);
+                controlsCol.appendChild(trCardGroup({ headline: "Timing & easing curve", card: timingCard }));
+
+                // 3. Optics & Glass
+                const opticsCard = trCard([
+                    makeSlider("amplitude", "Amplitude (lens bend)", 0, 0.5, 0.005, 3),
+                    makeSlider("rippleFreq", "Ripple frequency", 1, 40, 0.5, 1),
+                    makeSlider("rippleMix", "Ripple mix", 0, 1, 0.01, 2),
+                    makeSlider("aberration", "Chromatic aberration", 0, 0.15, 0.002, 3),
+                    makeSlider("rimWidth", "Rim width", 0.02, 0.4, 0.005, 3),
+                    makeSlider("blurAmount", "Glass blur", 0, 0.06, 0.001, 3)
+                ]);
+                controlsCol.appendChild(trCardGroup({ headline: "Optics & distortion", card: opticsCard }));
+
+                // 4. Glow, Mesh & Edge Light
+                const lightCard = trCard([
+                    makeSlider("glowIntensity", "Glow intensity", 0, 2.5, 0.02, 2),
+                    makeSlider("glowSpread", "Glow spread", 0.2, 6, 0.1, 1),
+                    makeSlider("coreSpark", "Core spark", 0, 2, 0.02, 2),
+                    makeSlider("meshSharpness", "Mesh sharpness", 0.5, 8, 0.1, 1),
+                    makeSlider("meshFlow", "Mesh flow", 0, 8, 0.1, 1),
+                    makeSlider("edgeLightIntensity", "Edge light intensity", 0, 2.5, 0.02, 2),
+                    makeSlider("edgeLightWidth", "Edge light width", 0.01, 0.2, 0.002, 3),
+                    makeSlider("edgeCrestBoost", "Edge crest boost", 0, 4, 0.05, 2),
+                    makeSlider("edgeHaloPower", "Edge halo power", 0.2, 4, 0.05, 2)
+                ]);
+                controlsCol.appendChild(trCardGroup({ headline: "Glow, mesh & edge light", card: lightCard }));
+
+                // 5. Particles
+                const particleCard = trCard([
+                    makeSlider("particleCount", "Particle count", 0, 320, 4, 0),
+                    makeSlider("particleSize", "Particle size", 0.0005, 0.006, 0.0001, 4),
+                    makeSlider("particleHalo", "Particle halo", 0.2, 4, 0.05, 2),
+                    makeSlider("particleGlow", "Particle glow", 0, 4, 0.05, 2),
+                    makeSlider("particleDrift", "Particle drift", 0, 0.8, 0.01, 2),
+                    makeSlider("particleEase", "Particle ease", 0.5, 5, 0.1, 1)
+                ]);
+                controlsCol.appendChild(trCardGroup({ headline: "Particles", card: particleCard }));
+
+                // 6. Export constants
+                outputPre = trEl("pre", "pg-output", "");
+                const copyBtn = trButton({
+                    label: "Copy constants",
+                    variant: "primary",
+                    onClick: function () {
+                        const text = formatConfigSnippet();
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(text);
+                        }
+                        copyBtn.textContent = "Copied!";
+                        setTimeout(function () { copyBtn.textContent = "Copy constants"; }, 1200);
+                    }
+                });
+                const exportSection = trSection([
+                    trCardGroup({ headline: "Export constants", card: trCard([outputPre]) }),
+                    copyBtn
+                ]);
+                controlsCol.appendChild(exportSection);
+
+                layout.appendChild(controlsCol);
+                main.appendChild(layout);
+                app.appendChild(main);
+
+                refreshOutput();
+                mountWave();
+            }
+
+            buildApp();
+        })();
+    </script>
+</body>
+</html>
