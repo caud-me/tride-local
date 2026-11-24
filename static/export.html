@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIDE — Export Data</title>
+    <link rel="stylesheet" href="../components/styleNext.css">
+    <link rel="stylesheet" href="../components/responsive-experimental.css">
+    <link rel="stylesheet" href="../components/distortion-wave.css">
+</head>
+<body>
+    <div id="app" class="app">
+        <header class="trNavBar navigation-bar hbox space-l">
+            <button type="button" class="thickness-m border-m" aria-label="Back" data-href="home.html">
+                <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+            </button>
+            <div class="vbox push-right space-s">
+                <h1 class="as-headline lh-1 as-bold">Export data</h1>
+            </div>
+        </header>
+
+        <main class="content vbox space-xl">
+            <section class="trSection section vbox space-l">
+                <div class="trCardGroup group vbox space-m">
+                    <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">What to export</p>
+                    <div class="trCard card standard vbox space-m border-l trListCard">
+                        <label class="trCheckRow check-row hbox space-l">
+                            <input type="checkbox" checked>
+                            <div class="vbox push-right space-s">
+                                <p class="as-primary">TODA associations</p>
+                                <p class="as-secondary as-gray">All registered TODA groups and routes</p>
+                            </div>
+                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                        </label>
+                        <div class="trSpacer spacer" role="separator"></div>
+                        <label class="trCheckRow check-row hbox space-l">
+                            <input type="checkbox" checked>
+                            <div class="vbox push-right space-s">
+                                <p class="as-primary">Members</p>
+                                <p class="as-secondary as-gray">All federation members and roles</p>
+                            </div>
+                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                        </label>
+                        <div class="trSpacer spacer" role="separator"></div>
+                        <label class="trCheckRow check-row hbox space-l">
+                            <input type="checkbox" checked>
+                            <div class="vbox push-right space-s">
+                                <p class="as-primary">Tricycle units</p>
+                                <p class="as-secondary as-gray">All tricycle units and assignments</p>
+                            </div>
+                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                        </label>
+                    </div>
+                    <p class="as-cardfootnote as-tertiary as-gray">Select one or more tables to include in the export.</p>
+                </div>
+
+                <div class="trCardGroup group vbox space-m">
+                    <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Format</p>
+                    <div class="trCard card standard vbox space-m border-l trListCard">
+                        <div class="trPropertyRow vbox" data-tr-field="true">
+                            <label for="export-format"><span class="as-tertiary as-gray">File format</span></label>
+                            <div class="hbox space-m">
+                                <select id="export-format" class="flex1">
+                                    <option value="csv" selected>Excel (.csv)</option>
+                                    <option value="pdf">PDF (Print)</option>
+                                    <option value="sql">SQL (.sql)</option>
+                                </select>
+                                <i class="trIcon icon as-gray" aria-hidden="true">&#xE70D;</i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="as-cardfootnote as-tertiary as-gray">SQL exports raw insert statements; PDF opens a printable report.</p>
+                </div>
+            </section>
+
+            <section class="trSection section vbox space-l">
+                <button type="button" class="trButton as-primary thickness-l border-l">Export</button>
+                <div class="vbox space-m"></div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        (function () {
+            document.addEventListener("click", function (e) {
+                const hrefBtn = e.target.closest("[data-href]");
+                if (hrefBtn) {
+                    window.location.href = hrefBtn.getAttribute("data-href");
+                }
+            });
+        }());
+    </script>
+</body>
+</html>

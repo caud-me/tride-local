@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIDE — Home</title>
+    <link rel="stylesheet" href="../components/styleNext.css">
+    <link rel="stylesheet" href="../components/responsive-experimental.css">
+    <link rel="stylesheet" href="../components/distortion-wave.css">
+</head>
+<body>
+    <div id="app" class="app">
+        <!-- view: home (renderHomePage) -->
+        <div id="view-home" class="vbox flex1">
+            <header class="trNavBar navigation-bar hbox space-l">
+                <p class="trBrandLogo as-headline as-black as-italic lh-1 push-right">TRIDE</p>
+                <button type="button" class="trIcon thickness-m border-m notif-bell" aria-label="Notifications" data-href="notifications.html">
+                    <i class="icon" aria-hidden="true">&#xEA8F;</i>
+                    <span class="notif-dot" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="trIcon thickness-m border-m" aria-label="Settings" data-goto="view-settings">
+                    <i class="icon" aria-hidden="true">&#xE713;</i>
+                </button>
+            </header>
+
+            <main class="content vbox space-xl">
+                <section class="trSection section vbox space-l">
+                    <section class="trProfileCard card profile grid border-l" aria-label="Member profile">
+                        <div class="vbox tl">
+                            <p class="as-tertiary as-gray">Hey,</p>
+                            <p class="as-primary as-bold">Alex Santos</p>
+                        </div>
+                        <div class="avatar-lg tr" aria-hidden="true"></div>
+                        <div class="vbox bl">
+                            <p class="as-tertiary as-gray">Mabolo, Naga City</p>
+                            <p class="as-tertiary as-gray">0917 000 0000</p>
+                        </div>
+                        <div class="vbox br">
+                            <p class="as-tertiary as-gray">Mabolo TODA</p>
+                            <p class="as-tertiary as-gray">E01-23-456789</p>
+                        </div>
+                    </section>
+                    <button type="button" class="trButton as-standard thickness-l border-l" data-goto="view-edit-profile">Edit profile</button>
+                </section>
+
+                <section class="trSection section vbox space-l flex1">
+                    <div class="trTabbed tabbed hbox space-l scroll" role="tablist">
+                        <button type="button" class="as-tabbed as-bold thickness-m active" role="tab" aria-selected="true" data-tab="driver">Driver</button>
+                        <button type="button" class="as-tabbed as-bold thickness-m" role="tab" aria-selected="false" data-tab="operator">Operator</button>
+                    </div>
+
+                    <div id="tab-driver" class="vbox flex1 space-l">
+                        <div class="trCardGroup group vbox space-m">
+                            <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Assigned tricycle</p>
+                            <div class="trBrandCard card brandcard grid border-m">
+                                <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">DRIVER</span></p>
+                                <div class="vbox space-s bl">
+                                    <p class="as-large-title as-bold">0224</p>
+                                    <p class="as-tertiary as-gray">from <span class="as-bold">Jamie Reyes</span></p>
+                                </div>
+                                <div class="br">
+                                    <p class="as-tertiary as-gray">Assigned to <span class="as-bold">you</span></p>
+                                </div>
+                            </div>
+                            <p class="as-cardfootnote as-tertiary as-gray">Contact your operator if you need unit updates.</p>
+                        </div>
+                    </div>
+
+                    <div id="tab-operator" class="vbox flex1 space-l hidden">
+                        <div class="trCard card standard hbox space-m border-l trStatGroup">
+                            <div class="vbox flex1 space-m">
+                                <p class="as-title lh-1">2</p>
+                                <p class="as-tertiary as-bold as-midgray lh-1">drivers</p>
+                            </div>
+                            <div class="vbox flex1 space-m">
+                                <p class="as-title lh-1">1</p>
+                                <p class="as-tertiary as-bold as-midgray lh-1">unused</p>
+                            </div>
+                            <div class="vbox flex1 space-m">
+                                <p class="as-title lh-1">3</p>
+                                <p class="as-tertiary as-bold as-midgray lh-1">tricycles</p>
+                            </div>
+                        </div>
+                        <div class="trCardGroup group vbox space-m">
+                            <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Ownership</p>
+                            <div class="trCard card standard vbox space-m border-l">
+                                <div class="trActionRow hbox space-l" role="button" tabindex="0" data-href="units.html">
+                                    <div class="vbox push-right space-s">
+                                        <p class="as-primary">Manage my tricycle units</p>
+                                    </div>
+                                    <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                                </div>
+                            </div>
+                            <p class="as-cardfootnote as-tertiary as-gray">View, register, or assign drivers to your tricycles.</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- view: edit profile (renderEditProfilePage) -->
+        <div id="view-edit-profile" class="vbox flex1 hidden">
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-goto="view-home">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold">Edit profile</h1>
+                    <p class="as-tertiary as-gray lh-1">for Alex</p>
+                </div>
+                <button type="button" class="trButton as-standard thickness-m border-l" data-goto="view-home">Done</button>
+            </header>
+            <main class="content vbox space-xl">
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Contact &amp; license</p>
+                        <div class="trCard card standard vbox space-m border-l trListCard">
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="edit-addr"><span class="as-tertiary as-gray">Home Address</span></label>
+                                <input id="edit-addr" type="text" value="Mabolo, Naga City">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="edit-contact"><span class="as-tertiary as-gray">Contact Number</span></label>
+                                <input id="edit-contact" type="text" value="0917 000 0000">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="edit-lic"><span class="as-tertiary as-gray">Drivers License</span></label>
+                                <input id="edit-lic" type="text" value="E01-23-456789" placeholder="Optional for non-drivers">
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Updates save directly to your member record.</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- view: settings (renderSettingsPage) -->
+        <div id="view-settings" class="vbox flex1 hidden">
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-goto="view-home">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold">Settings</h1>
+                </div>
+            </header>
+            <main class="content vbox space-xl">
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Session</p>
+                        <div class="trCard card standard vbox space-m border-l">
+                            <div class="trActionRow hbox space-l" role="button" tabindex="0" data-href="auth.html">
+                                <div class="vbox push-right space-s">
+                                    <p class="as-primary">Log out</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">You can sign back in anytime using your Member ID.</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            function showView(id) {
+                const views = document.querySelectorAll("#app > div[id^='view-']");
+                for (let i = 0; i < views.length; i += 1) {
+                    views[i].classList.toggle("hidden", views[i].id !== id);
+                }
+                document.getElementById("app").scrollTop = 0;
+            }
+            document.addEventListener("click", function (e) {
+                const hrefBtn = e.target.closest("[data-href]");
+                if (hrefBtn) {
+                    window.location.href = hrefBtn.getAttribute("data-href");
+                    return;
+                }
+                const gotoBtn = e.target.closest("[data-goto]");
+                if (gotoBtn) {
+                    showView(gotoBtn.getAttribute("data-goto"));
+                    return;
+                }
+                const tabBtn = e.target.closest("[data-tab]");
+                if (tabBtn) {
+                    const tabKey = tabBtn.getAttribute("data-tab");
+                    const allTabs = document.querySelectorAll("[data-tab]");
+                    for (let i = 0; i < allTabs.length; i += 1) {
+                        const active = allTabs[i] === tabBtn;
+                        allTabs[i].classList.toggle("active", active);
+                        allTabs[i].setAttribute("aria-selected", active ? "true" : "false");
+                    }
+                    document.getElementById("tab-driver").classList.toggle("hidden", tabKey !== "driver");
+                    document.getElementById("tab-operator").classList.toggle("hidden", tabKey !== "operator");
+                }
+            });
+        }());
+    </script>
+</body>
+</html>

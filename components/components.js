@@ -139,7 +139,7 @@ function trSpacer() {
 
 // params: text (required)
 function trSectionHeading(text) {
-    const p = trEl("p", "trSectionHeading as-cardheadline as-tertiary as-gray as-bold", text);
+    const p = trEl("p", "trSectionHeading as-cardheadline as-secondary as-gray as-bold", text);
     p.setAttribute("role", "heading");
     p.setAttribute("aria-level", "2");
     return p;
@@ -510,7 +510,7 @@ function trListCard(items) {
 // params: options (required: { title (required), subtitle (optional: string | array) })
 function trListItem(options) {
     const opts = options || {};
-    const item = trEl("div", "trListItem vbox space-s");
+    const item = trEl("div", "trListItem vbox");
     if (opts.title) {
         const titleEl = trEl("p", "as-primary", opts.title);
         item.appendChild(titleEl);
@@ -896,26 +896,6 @@ function trStoryBar(options) {
     return bar;
 }
 
-// params: options (required: { title (required), logoText (optional) })
-function trHero(options) {
-    const opts = options || {};
-    const box = trEl("div", "trHero group vbox center space-m");
-    const logo = trBrandLogo({ text: opts.logoText || "TRIDE" });
-    const titleEl = trEl("p", "as-title as-bold as-centered");
-    const lines = String(opts.title || "").split("\n");
-    for (let i = 0; i < lines.length; i += 1) {
-        if (i > 0) {
-            const br = document.createElement("br");
-            titleEl.appendChild(br);
-        }
-        const txt = document.createTextNode(lines[i]);
-        titleEl.appendChild(txt);
-    }
-    box.appendChild(logo);
-    box.appendChild(titleEl);
-    return box;
-}
-
 /* controls & inputs */
 
 // params: options (required: { label (optional), icon (optional), variant (optional: "standard" | "primary"), size (optional: "m" | "l"), small (optional), critical (optional), disabled (optional), animate (optional: boolean | { delay }), className (optional), onClick (optional) })
@@ -1002,7 +982,7 @@ function trSearchBox(options) {
 // params: options (required: { label (required), value (optional), input (optional: node | config), select (optional: config), error (optional), id (optional) })
 function trPropertyRow(options) {
     const opts = options || {};
-    const row = trEl("div", "trPropertyRow vbox space-s");
+    const row = trEl("div", "trPropertyRow vbox");
     row.setAttribute("data-tr-field", "true");
     const randPart = Math.random().toString(36).slice(2, 8);
     const fieldId = opts.id || ("tr-field-" + randPart);
@@ -1142,11 +1122,12 @@ function trSheet(options) {
 
     const sheet = trEl("div", "sheet vbox space-xl border-l");
 
-    const header = trEl("div", "group sheet-header vbox space-m");
     if (opts.icon) {
         const iconEl = trIcon(opts.icon, { className: "as-display as-centered" });
-        header.appendChild(iconEl);
+        sheet.appendChild(iconEl);
     }
+
+    const header = trEl("div", "group sheet-header vbox space-t");
     if (opts.title) {
         const titleEl = trEl("p", "as-headline as-bold", opts.title);
         const randId = Math.random().toString(36).slice(2, 8);
@@ -1364,12 +1345,13 @@ function trSuccessWave(options) {
     const stage = trEl("div", "fullscreen-stage vbox center justify-center");
     const stageBody = trEl("div", "fullscreen-stage-body trSection section vbox space-xl");
 
-    const headerWrap = trEl("div", "fullscreen-stage-header group vbox center space-m");
     const iconGlyph = opts.icon === undefined ? TR_ICON_CHECK : opts.icon;
     if (iconGlyph) {
         const iconEl = trIcon(iconGlyph, { className: "as-display as-centered" });
-        headerWrap.appendChild(iconEl);
+        stageBody.appendChild(iconEl);
     }
+
+    const headerWrap = trEl("div", "fullscreen-stage-header group vbox center space-t");
     const titleEl = trEl("p", "as-headline as-bold as-centered", opts.title || "Saved");
     headerWrap.appendChild(titleEl);
 

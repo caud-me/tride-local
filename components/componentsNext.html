@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styleNext.css">
+</head>
+<body>
+    <!-- class names are sort of based from Apple's human interface guidelines -->
+    <div class="app">
+        <div class="navigation-bar hbox space-l">
+            <!-- for back, only use chevrons. -->
+            <button class="thickness-m border-m" >
+                <i class="icon">&#xE76B;</i>
+            </button>
+            
+            <div class="vbox push-right space-s">
+                <p class="as-headline lh-1 as-bold">Headline</p>
+                <!-- <p class="push-right as-headline as-black as-italic lh-1">TRIDE <span class="as-tertiary as-midgray as-bold">ADMIN</span></p> -->
+                <p class="as-tertiary as-gray lh-1">Optional Details</p>
+            </div>
+            <button class="thickness-m border-m">
+                <i class="icon">&#xEA8F;</i>
+            </button>
+            <button class="thickness-m border-m">
+                <i class="icon">&#xE713;</i>
+            </button>
+        </div>
+        <div class="content vbox space-xl scroll">
+            <div class="section vbox space-m">
+                <!-- large title is typically not used -->
+                <p class="as-large-title as-bold mb-l">Large Title</p> 
+                <p class="as-title as-bold mb-m">Title</p>
+                <p class="as-headline as-bold mb-s">Headline</p>
+                <p class="as-primary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam sequi ducimus officia, officiis eos eum delectus repellat ex perspiciatis rem facilis neque consectetur placeat, dolorum doloremque saepe sit architecto earum?</p>
+                <p class="as-secondary as-midgray">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta suscipit delectus necessitatibus consequuntur amet labore, repudiandae, magni atque sit hic rerum qui ducimus veniam perspiciatis ab ratione reprehenderit culpa blanditiis!</p>
+                <p class="as-tertiary as-gray">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores enim error, aliquam consequatur quis sequi ratione rerum minus id reprehenderit perferendis, voluptate veniam eaque aut vero aspernatur accusamus. Dolor, quae.</p>
+            </div>
+
+            <!-- for success screen -->
+             <!-- built from 3 groups (parts), the card, and the message -->
+            <div class="section vbox space-xl">
+                <div class="group vbox space-m">
+                    <i class="icon as-display as-centered">&#xE73E;</i>
+                    <p class="as-headline as-bold as-centered">Unit added</p>
+                    <p class="as-secondary as-gray as-centered">Johnny Appleseed is now part of the TODA</p>
+                </div>
+                <div class="group vbox space-l">
+                    <!-- <p class="as-tertiary as-gray as-bold push-right as-cardheadline">...optional...</p>-->
+                    <div class="card brandcard grid border-m">
+                        <p class="tl as-headline as-black as-italic lh-1">TRIDE <span class="as-tertiary as-midgray as-bold">OPERATOR</span></p>
+                        <div class="vbox space-s bl">
+                            <p class="as-large-title as-bold">0224</p>
+                            <p class="as-tertiary as-gray">from <span class="as-bold">you</span></p>
+                        </div>
+                        <div class="br">
+                            <p class="as-tertiary as-gray">Assigned to <span class="as-bold">Paulene Magalona</span></p>
+                        </div>
+                    </div>
+                    <!-- <p class="as-cardfootnote as-tertiary as-gray">...optional...</p> -->
+                </div>
+                <div class="group vbox space-l">
+                    <button class="as-primary thickness-l border-l">Go to members</button>
+                    <a href="#" class="as-tertiary as-gray as-centered">Alternative navigation, less intrusive ones (Optional)</a>
+                </div>
+            </div>
+
+            <!-- section doesnt exist in styleNext.css, but it acts as divider especially for tab buttons -->
+             <!-- section is good for: dividing page, subpage, screens into parts: e.g. top, center, bottom. -->
+            <!-- group doesnt exist in styleNext.css, but it acts as group for related components -->
+            <div class="section vbox space-l">
+                <!-- now, card has three distinct parts: headline (optional 0..1), card (1), and footer (optional 0..1) -->
+                <!-- 
+                    when turning this into a reusable component, consider including the comment too. 
+                    class names in order: class="[trType (they dont usually exist in css)], [atomic-classes...]"
+                 -->
+                <!-- CARD GROUP -->
+                <div class="group vbox space-l">
+                    <p class="as-cardheadline as-tertiary as-gray as-bold">Card Title</p>
+                    <div class="card standard vbox space-l border-l">
+                        <div class="vbox space-s">
+                            <p class="as-primary">Main text goes here</p>
+                            <p class="as-secondary as-midgray">Detailed secondary text goes here, it tells you a bit more context about the primary text.</p>
+                            <p class="as-tertiary as-gray">This is usually values, like 4 members, or status indicators, like On.</p>
+                        </div>
+                        <div class="spacer"></div>
+                        <p class="as-primary push-right">Main text goes here</p>
+                    </div>
+                    <p class="as-cardfootnote as-tertiary as-gray">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Neque, eos deserunt debitis quidem quas voluptatem doloribus officiis tenetur possimus minus cum aperiam quia alias id, aliquam nemo eius commodi suscipit.</p>
+                </div>
+
+                <!-- CARD GROUP -->
+                <div class="group vbox space-l">
+                    <p class="as-tertiary as-gray as-bold push-right as-cardheadline">Card Title</p>
+                    
+                    <div class="card brandcard grid border-m">
+                        <p class="tl as-headline as-black as-italic lh-1">TRIDE <span class="as-tertiary as-midgray as-bold">OPERATOR</span></p>
+                        <div class="vbox space-s bl">
+                            <p class="as-large-title as-bold">0224</p>
+                            <p class="as-tertiary as-gray">from <span class="as-bold">you</span></p>
+                        </div>
+                        <div class="br">
+                            <p class="as-tertiary as-gray">Assigned to <span class="as-bold">Paulene Magalona</span></p>
+                        </div>
+                    </div>
+                    <p class="as-cardfootnote as-tertiary as-gray">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Neque, eos deserunt debitis quidem quas voluptatem doloribus officiis tenetur possimus minus cum aperiam quia alias id, aliquam nemo eius commodi suscipit.</p>
+                </div>
+
+                <!-- still very dynamic, you can still build A-Z from it -->
+                <!-- CARD GROUP -->
+                <div class="group vbox space-l">
+                    <p class="as-cardheadline as-tertiary as-gray as-bold">A</p>
+                    <div class="card standard vbox space-l border-l">
+                        <div class="hbox space-l">
+                            <p class="as-primary push-right">Item 1</p>
+                            <i class="icon">&#xE76C;</i>
+                        </div>
+                        <div class="spacer"></div>
+                        <div class="hbox space-l">
+                            <p class="as-primary push-right">Item 2</p>
+                            <i class="icon">&#xE76C;</i>
+                        </div>
+                    </div>
+                    <p class="as-cardheadline as-tertiary as-gray as-bold">B</p>
+                    <div class="card standard vbox space-l border-l">
+                        <div class="hbox space-l">
+                            <p class="as-primary push-right">Item 1</p>
+                            <i class="icon">&#xE76C;</i>
+                        </div>
+                        <div class="spacer"></div>
+                        <div class="hbox space-l">
+                            <p class="as-primary push-right">Item 2</p>
+                            <i class="icon">&#xE76C;</i>
+                        </div>
+                    </div>
+                    <p class="as-cardfootnote as-tertiary as-gray">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Neque, eos deserunt debitis quidem quas voluptatem doloribus officiis tenetur possimus minus cum aperiam quia alias id, aliquam nemo eius commodi suscipit.</p>
+                </div>
+
+            </div>
+
+            <!-- buttons -->
+            <div class="section vbox space-l">
+                <button class="as-standard thickness-l border-l">This is a button</button>
+                <button class="as-primary thickness-l border-l">This is a primary button</button>
+            </div>
+
+            <!-- popup menus -->
+            <div class="section vbox space-l">
+                <div class="popup vbox space-xl border-l">
+                    <div class="group vbox space-l">
+                        <p class="as-tertiary as-gray">Sort by</p>
+                        <div class="hbox space-l">
+                            <p class="as-primary push-right">Name</p>
+                            <i class="icon">&#xE73E;</i>
+                        </div>
+                        <div class="spacer"></div>
+                        <p class="as-primary push-right">Member ID</p>
+                    </div>
+
+                    <div class="group vbox space-l">
+                        <p class="as-tertiary as-gray">Filter</p>
+                        <div class="hbox space-l">
+                            <p class="as-primary push-right">None</p>
+                            <i class="icon">&#xE73E;</i>
+                        </div>
+                        <div class="spacer"></div>
+                        <p class="as-primary push-right">Drivers</p>
+                        <div class="spacer"></div>
+                        <p class="as-primary push-right">Operators</p>
+                        <div class="spacer"></div>
+                        <p class="as-primary push-right">TODA Presidents</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- tabbed buttons -->
+             <!-- tabbed buttons can leverage .sections as views -->
+            <div class="section vbox space-l">
+                <div class="tabbed hbox space-l scroll" role="tablist" aria-label="Member roles">
+                    <button type="button" class="as-tabbed as-bold thickness-m active" role="tab" aria-selected="true">Driver</button>
+                    <button type="button" class="as-tabbed as-bold thickness-m" role="tab" aria-selected="false">Operator</button>
+                    <button type="button" class="as-tabbed as-bold thickness-m" role="tab" aria-selected="false">TODA President</button>
+                    <button type="button" class="as-tabbed as-bold thickness-m" role="tab" aria-selected="false">Federation Secretary</button>
+                </div>
+            </div>
+            <div class="section vbox space-l">
+                <div class="tabbed hbox space-l" role="tablist" aria-label="Member roles">
+                    <button type="button" class="as-tabbed as-bold flex1 thickness-m active" role="tab" aria-selected="true">First</button>
+                    <button type="button" class="as-tabbed as-bold flex1 thickness-m" role="tab" aria-selected="false">Second</button>
+                </div>
+            </div>
+
+            <div class="section vbox space-l">
+                <div class="group vbox space-l">
+                    <!-- do not remove group even though im not using both headline and footer -->
+                    <div class="card standard vbox space-l border-l">
+                        <p class="as-primary push-right as-critical">Critical action</p>
+                        <div class="spacer"></div>
+                        <p class="as-primary push-right as-critical disabled">Critical action disabled</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section vbox space-l">
+                <!-- sheet is also divided in three groups, one for texts (1), icon being optional, second for content (optional 0..1), and buttons (1) -->
+                 <!-- this transforms into bottomsheet for android, and a modal for desktop or tablets -->
+                <div class="sheet vbox space-xl border-l">
+                    <div class="group vbox space-m">
+                        <!-- <i class="icon as-display as-centered">&#xE73E;</i> -->
+                        <p class="as-headline as-bold">Confirm deletion?</p>
+                        <p class="as-secondary as-midgray">This is a critical action and this cannot be undone, we will not be able to protect you on this one.</p>
+                        <p class="as-tertiary as-gray">Lorem ipsum dolor sit amet consectetur.</p>
+                    </div>
+                    <!-- <div class="group vbox space-l">
+                        ...optional...
+                    </div> -->
+                    <div class="group hbox space-m">
+                        <button class="as-standard thickness-m border-l flex1">Cancel</button>
+                        <button class="as-standard thickness-m border-l flex1 as-critical">OK</button>
+                    </div>
+                </div>
+            </div>
+            <div class="section vbox space-l">
+                <!-- member profile -->
+                <div class="group vbox space-l">
+                    <div class="card profile grid border-l">
+                        <div class="vbox tl">
+                            <p class="as-tertiary as-gray">Hey,</p>
+                            <p class="as-primary as-bold">member full name</p>
+                        </div>
+                        <div class="avatar-lg tr" aria-hidden="true"></div>
+                        <div class="vbox bl">
+                            <p class="as-tertiary as-gray">my address</p>
+                            <p class="as-tertiary as-gray">my contact no.</p>
+                        </div>
+                        <div class="vbox br">
+                            <p class="as-tertiary as-gray">my toda association</p>
+                            <p class="as-tertiary as-gray">my license no.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- stat group -->
+                <div class="hbox space-m" aria-label="Unit summary">
+                    <div class="vbox flex1 space-s">
+                        <p class="as-title as-bold">2</p>
+                        <p class="as-tertiary as-gray">drivers</p>
+                    </div>
+                    <div class="vbox flex1 space-s">
+                        <p class="as-title as-bold">1</p>
+                        <p class="as-tertiary as-gray">unused</p>
+                    </div>
+                    <div class="vbox flex1 space-s">
+                        <p class="as-title as-bold">3</p>
+                        <p class="as-tertiary as-gray">tricycles</p>
+                    </div>
+                </div>
+
+                <!-- searchbox -->
+                <div class="card hbox space-m thickness-m border-l" role="search">
+                    <i class="icon as-gray" aria-hidden="true">&#xE721;</i>
+                    <input type="search" class="flex1" placeholder="Find a member" aria-label="Find a member">
+                </div>
+
+                <!-- property rows: input, select, validation -->
+                <div class="group vbox space-l">
+                    <div class="card standard vbox space-l border-l">
+                        <div class="vbox space-s">
+                            <label for="sample-input"><span class="as-tertiary as-gray">description</span></label>
+                            <input id="sample-input" type="text" placeholder="enter text here">
+                        </div>
+                        <div class="spacer"></div>
+                        <div class="vbox space-s">
+                            <label for="sample-toda"><span class="as-tertiary as-gray">TODA Group</span></label>
+                            <div class="hbox space-m">
+                                <select id="sample-toda" class="flex1">
+                                    <option value="T01">Mabolo TODA</option>
+                                    <option value="T02">Pacol TODA</option>
+                                </select>
+                                <i class="icon as-gray" aria-hidden="true">&#xE70D;</i>
+                            </div>
+                        </div>
+                        <div class="spacer"></div>
+                        <div class="vbox space-s">
+                            <label for="sample-body"><span class="as-tertiary as-gray">Plate / Body Number</span></label>
+                            <input id="sample-body" type="text" value="0224" aria-invalid="true" aria-describedby="sample-body-err">
+                            <p id="sample-body-err" class="as-tertiary as-critical" role="alert">Operator already owns the maximum of 3 tricycles</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- <div class="tab-bar"> ... </div> -->
+        <!-- tab-area is generally not used for tride -->
+    </div>
+</body>
+</html>

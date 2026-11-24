@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIDE — Auth &amp; OOBE</title>
+    <link rel="stylesheet" href="../components/styleNext.css">
+    <link rel="stylesheet" href="../components/responsive-experimental.css">
+    <link rel="stylesheet" href="../components/distortion-wave.css">
+</head>
+<body>
+    <div id="app" class="app">
+        <!-- view: login (renderLoginPage) -->
+        <div id="view-login" class="vbox flex1">
+            <main class="content vbox justify-center space-xl">
+                <section class="trSection section vbox space-l">
+                    <div class="group vbox center space-t">
+                        <p class="trBrandLogo as-headline as-black as-italic lh-1">TRIDE</p>
+                        <p class="as-title as-bold as-centered">Madali na lang yan<br>sa tride.</p>
+                    </div>
+                </section>
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <div class="trCard card standard vbox space-m border-l">
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="login-id"><span class="as-tertiary as-gray">ID</span></label>
+                                <input id="login-id" type="text" placeholder="Enter your ID">
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Use the Member ID or Secretary ID issued by your federation.</p>
+                    </div>
+                    <button type="button" class="trButton as-primary thickness-l border-l" data-goto="view-home-stub">Log in</button>
+                </section>
+                <footer class="trSection section vbox space-l">
+                    <div class="group vbox space-m">
+                        <p class="as-tertiary as-centered as-gray">TODA President or Federation Secretary?</p>
+                        <button type="button" class="trButton as-standard thickness-l border-l" data-goto="view-oobe-1">Open OOBE Setup Demo</button>
+                    </div>
+                </footer>
+            </main>
+        </div>
+
+        <!-- view: oobe step 1 (renderOobeStep step 1) -->
+        <div id="view-oobe-1" class="vbox flex1 hidden">
+            <div class="trStoryBar story-bar" role="progressbar" aria-valuemin="1" aria-valuemax="8" aria-valuenow="1">
+                <div class="story-segment active"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+            </div>
+            <main class="content vbox justify-center space-xl flex1">
+                <section class="trSection section vbox space-l">
+                    <div class="group vbox center space-t">
+                        <div class="trHero group vbox center space-m">
+                            <p class="trBrandLogo as-headline as-black as-italic lh-1">TRIDE</p>
+                            <p class="as-title as-bold as-centered">Madali na lang<br>yan sa tride.</p>
+                        </div>
+                        <p class="as-secondary as-gray as-centered">Set up your tricycle federation in a few quick steps.</p>
+                    </div>
+                </section>
+                <section class="trSection section vbox space-l">
+                    <div class="group vbox space-l">
+                        <button type="button" class="trButton as-primary thickness-l border-l" data-goto="view-oobe-2">Get started</button>
+                        <p class="as-tertiary as-gray as-centered" role="button" tabindex="0" data-goto="view-login">...or you can try demo mode</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- view: oobe step 2 (renderOobeStep step 2) -->
+        <div id="view-oobe-2" class="vbox flex1 hidden">
+            <div class="trStoryBar story-bar" role="progressbar" aria-valuemin="1" aria-valuemax="8" aria-valuenow="2">
+                <div class="story-segment active"></div>
+                <div class="story-segment active"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+            </div>
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-goto="view-oobe-1">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold"></h1>
+                </div>
+            </header>
+            <main class="content vbox justify-center space-xl flex1">
+                <section class="trSection section vbox space-l">
+                    <div class="group vbox center space-t">
+                        <i class="trIcon icon as-display as-centered" aria-hidden="true">&#xE8F1;</i>
+                        <p class="as-headline as-bold as-centered">Get to know Tride</p>
+                        <p class="as-secondary as-gray as-centered">Manage TODAs, tricycle units, and member records in one place.</p>
+                    </div>
+                </section>
+                <section class="trSection section vbox space-l">
+                    <div class="trCard card standard vbox space-m border-l trListCard">
+                        <div class="trListItem vbox">
+                            <p class="as-primary">TODAs &amp; associations</p>
+                            <p class="as-secondary as-gray">Organize local tricycle associations and their officers.</p>
+                        </div>
+                        <div class="trSpacer spacer" role="separator"></div>
+                        <div class="trListItem vbox">
+                            <p class="as-primary">Tricycle units</p>
+                            <p class="as-secondary as-gray">Track plate numbers, body numbers, and unit assignments.</p>
+                        </div>
+                        <div class="trSpacer spacer" role="separator"></div>
+                        <div class="trListItem vbox">
+                            <p class="as-primary">Member records</p>
+                            <p class="as-secondary as-gray">Keep driver, operator, and secretary profiles up to date.</p>
+                        </div>
+                    </div>
+                    <button type="button" class="trButton as-primary thickness-l border-l" data-goto="view-oobe-4">Next</button>
+                </section>
+            </main>
+        </div>
+
+        <!-- view: oobe step 4 (renderOobeStep step 4) -->
+        <div id="view-oobe-4" class="vbox flex1 hidden">
+            <div class="trStoryBar story-bar" role="progressbar" aria-valuemin="1" aria-valuemax="8" aria-valuenow="4">
+                <div class="story-segment active"></div>
+                <div class="story-segment active"></div>
+                <div class="story-segment active"></div>
+                <div class="story-segment active"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+                <div class="story-segment"></div>
+            </div>
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-goto="view-oobe-2">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold"></h1>
+                </div>
+            </header>
+            <main class="content vbox justify-center space-xl flex1">
+                <section class="trSection section vbox space-l">
+                    <div class="group vbox center space-t">
+                        <p class="as-headline as-bold as-centered">Federation setup</p>
+                        <p class="as-secondary as-gray as-centered">Enter your federation ID and official name.</p>
+                    </div>
+                </section>
+                <section class="trSection section vbox space-l">
+                    <div class="trCard card standard vbox space-m border-l trListCard">
+                        <div class="trPropertyRow vbox" data-tr-field="true">
+                            <label for="oobe-fed-id"><span class="as-tertiary as-gray">Federation ID</span></label>
+                            <input id="oobe-fed-id" type="text" placeholder="e.g. FED-01">
+                        </div>
+                        <div class="trSpacer spacer" role="separator"></div>
+                        <div class="trPropertyRow vbox" data-tr-field="true">
+                            <label for="oobe-fed-name"><span class="as-tertiary as-gray">Federation Name</span></label>
+                            <input id="oobe-fed-name" type="text" placeholder="Federation name">
+                        </div>
+                    </div>
+                    <button type="button" class="trButton as-primary thickness-l border-l" data-goto="view-oobe-8">Next</button>
+                </section>
+            </main>
+        </div>
+
+        <!-- view: oobe step 8 (renderOobeStep step 8) -->
+        <div id="view-oobe-8" class="vbox flex1 hidden">
+            <div class="trStoryBar story-bar" role="progressbar" aria-valuemin="1" aria-valuemax="8" aria-valuenow="8">
+                <div class="story-segment active"></div>
+                <div class="story-segment active"></div>
+                <div class="story-segment active"></div>
+                <div class="story-segment active"></div>
+                <div class="story-segment active"></div>
+                <div class="story-segment active"></div>
+                <div class="story-segment active"></div>
+                <div class="story-segment active"></div>
+            </div>
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-goto="view-oobe-4">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold"></h1>
+                </div>
+            </header>
+            <main class="content vbox justify-center space-xl flex1">
+                <section class="trSection section vbox space-l">
+                    <div class="group vbox center space-t">
+                        <p class="as-headline as-bold as-centered">Are you a driver?</p>
+                        <p class="as-secondary as-gray as-centered">Let us know if you also operate a tricycle unit.</p>
+                    </div>
+                </section>
+                <section class="trSection section vbox space-l">
+                    <div class="trCard card standard vbox space-m border-l trListCard">
+                        <label class="trCheckRow check-row hbox space-l">
+                            <input type="checkbox" name="oobe-driver" checked>
+                            <div class="vbox push-right space-s">
+                                <p class="as-primary">I am a driver</p>
+                            </div>
+                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                        </label>
+                        <div class="trSpacer spacer" role="separator"></div>
+                        <label class="trCheckRow check-row hbox space-l">
+                            <input type="checkbox" name="oobe-driver">
+                            <div class="vbox push-right space-s">
+                                <p class="as-primary">I am not a driver</p>
+                            </div>
+                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                        </label>
+                    </div>
+                    <button type="button" class="trButton as-primary thickness-l border-l" data-open-sheet="sheet-oobe-confirm">Next</button>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- sheet: confirm secretary account (openOobeConfirmSheet) -->
+    <div id="sheet-oobe-confirm" class="trSheet sheet-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="sheet-oobe-title">
+        <div class="sheet vbox space-xl border-l">
+            <div class="group sheet-header vbox space-t">
+                <p id="sheet-oobe-title" class="as-headline as-bold">Confirm secretary account</p>
+                <p class="as-secondary as-midgray">Review your details before creating the federation.</p>
+            </div>
+            <div class="group sheet-body vbox space-l">
+                <div class="trPropertyRow vbox" data-tr-field="true">
+                    <label><span class="as-tertiary as-gray">Federation</span></label>
+                    <p class="as-primary">Naga City Tricycle Federation</p>
+                </div>
+                <div class="trPropertyRow vbox" data-tr-field="true">
+                    <label><span class="as-tertiary as-gray">Federation ID</span></label>
+                    <p class="as-primary">FED-01</p>
+                </div>
+                <div class="trPropertyRow vbox" data-tr-field="true">
+                    <label><span class="as-tertiary as-gray">Secretary ID</span></label>
+                    <p class="as-primary">SEC-001</p>
+                </div>
+                <div class="trPropertyRow vbox" data-tr-field="true">
+                    <label><span class="as-tertiary as-gray">Name</span></label>
+                    <p class="as-primary">Alex Santos</p>
+                </div>
+            </div>
+            <div class="group sheet-footer vbox space-m">
+                <button type="button" class="trButton as-primary thickness-l border-l" data-close-sheet="sheet-oobe-confirm" data-goto="view-login">Create account</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            function showView(id) {
+                if (!id || id === "view-home-stub") {
+                    window.location.href = "home.html";
+                    return;
+                }
+                const views = document.querySelectorAll("#app > div[id^='view-']");
+                for (let i = 0; i < views.length; i += 1) {
+                    views[i].classList.toggle("hidden", views[i].id !== id);
+                }
+                document.getElementById("app").scrollTop = 0;
+            }
+            document.addEventListener("click", function (e) {
+                const gotoBtn = e.target.closest("[data-goto]");
+                if (gotoBtn) {
+                    showView(gotoBtn.getAttribute("data-goto"));
+                }
+                const openBtn = e.target.closest("[data-open-sheet]");
+                if (openBtn) {
+                    const sheet = document.getElementById(openBtn.getAttribute("data-open-sheet"));
+                    if (sheet) {
+                        sheet.classList.remove("hidden");
+                    }
+                }
+                const closeBtn = e.target.closest("[data-close-sheet]");
+                if (closeBtn) {
+                    const sheet = document.getElementById(closeBtn.getAttribute("data-close-sheet"));
+                    if (sheet) {
+                        sheet.classList.add("hidden");
+                    }
+                }
+                if (e.target.classList.contains("sheet-backdrop")) {
+                    e.target.classList.add("hidden");
+                }
+            });
+            const driverChecks = document.querySelectorAll("input[name='oobe-driver']");
+            for (let i = 0; i < driverChecks.length; i += 1) {
+                driverChecks[i].addEventListener("change", function () {
+                    if (this.checked) {
+                        for (let j = 0; j < driverChecks.length; j += 1) {
+                            if (driverChecks[j] !== this) {
+                                driverChecks[j].checked = false;
+                            }
+                        }
+                    }
+                });
+            }
+        }());
+    </script>
+</body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIDE — Members</title>
+    <link rel="stylesheet" href="../components/styleNext.css">
+    <link rel="stylesheet" href="../components/responsive-experimental.css">
+    <link rel="stylesheet" href="../components/distortion-wave.css">
+</head>
+<body>
+    <div id="app" class="app">
+        <!-- view: members list (renderMembersPage) -->
+        <div id="view-members" class="vbox flex1">
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-href="home.html">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold">Manage all members</h1>
+                </div>
+                <button type="button" class="trIcon thickness-m border-m" aria-label="Add member" data-goto="view-add-member">
+                    <i class="icon" aria-hidden="true">&#xE710;</i>
+                </button>
+            </header>
+
+            <main class="content vbox space-xl">
+                <section class="trSection section vbox space-l flex1">
+                    <div class="trTabbed tabbed hbox space-l" role="tablist">
+                        <button type="button" class="as-tabbed as-bold thickness-m flex1 active" role="tab" aria-selected="true" data-tab="all">All</button>
+                        <button type="button" class="as-tabbed as-bold thickness-m flex1" role="tab" aria-selected="false" data-tab="norole">No-role members</button>
+                    </div>
+
+                    <div class="hbox space-l">
+                        <div class="trSearchBox card hbox space-m thickness-m border-l flex1" role="search">
+                            <i class="trIcon icon as-gray" aria-hidden="true">&#xE721;</i>
+                            <input type="search" class="flex1" placeholder="Find a member" aria-label="Find a member">
+                        </div>
+                        <div class="hbox">
+                            <div class="trMenu menu-anchor">
+                                <button type="button" class="thickness-m border-m" aria-label="Filter" aria-haspopup="menu" aria-expanded="false" data-menu-toggle="members-filter-menu">
+                                    <i class="trIcon icon" aria-hidden="true">&#xE71C;</i>
+                                </button>
+                                <div id="members-filter-menu" class="trMenuPanel popup vbox space-xl border-l scroll hidden" role="menu">
+                                    <div class="group vbox space-m">
+                                        <p class="as-tertiary as-gray">Sort by</p>
+                                        <label class="menu-item hbox space-l" role="menuitemradio" aria-checked="true">
+                                            <input type="radio" name="all-member-sort" value="name" checked>
+                                            <p class="as-primary push-right">Name</p>
+                                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                                        </label>
+                                        <div class="trSpacer spacer" role="separator"></div>
+                                        <label class="menu-item hbox space-l" role="menuitemradio" aria-checked="false">
+                                            <input type="radio" name="all-member-sort" value="id">
+                                            <p class="as-primary push-right">Member ID</p>
+                                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                                        </label>
+                                    </div>
+                                    <div class="group vbox space-m">
+                                        <p class="as-tertiary as-gray">Filter by role</p>
+                                        <label class="menu-item hbox space-l" role="menuitemradio" aria-checked="true">
+                                            <input type="radio" name="all-member-role" value="all" checked>
+                                            <p class="as-primary push-right">All roles</p>
+                                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                                        </label>
+                                        <div class="trSpacer spacer" role="separator"></div>
+                                        <label class="menu-item hbox space-l" role="menuitemradio" aria-checked="false">
+                                            <input type="radio" name="all-member-role" value="driver">
+                                            <p class="as-primary push-right">Driver</p>
+                                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                                        </label>
+                                        <div class="trSpacer spacer" role="separator"></div>
+                                        <label class="menu-item hbox space-l" role="menuitemradio" aria-checked="false">
+                                            <input type="radio" name="all-member-role" value="operator">
+                                            <p class="as-primary push-right">Operator</p>
+                                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="members-tab-all" class="vbox flex1 space-l">
+                        <div class="trAlphaList vbox space-l">
+                            <div class="trCardGroup group vbox space-m">
+                                <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">A</p>
+                                <div class="trCard card standard vbox space-m border-l trListCard">
+                                    <div class="trActionRow hbox space-l" role="button" tabindex="0" data-goto="view-member-detail">
+                                        <div class="vbox push-right space-s">
+                                            <p class="as-primary">Alex Santos</p>
+                                        </div>
+                                        <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                                    </div>
+                                    <div class="trSpacer spacer" role="separator"></div>
+                                    <div class="trActionRow hbox space-l" role="button" tabindex="0" data-goto="view-member-detail">
+                                        <div class="vbox push-right space-s">
+                                            <p class="as-primary">Andrea Cruz</p>
+                                        </div>
+                                        <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="trCardGroup group vbox space-m">
+                                <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">J</p>
+                                <div class="trCard card standard vbox space-m border-l trListCard">
+                                    <div class="trActionRow hbox space-l" role="button" tabindex="0" data-goto="view-member-detail">
+                                        <div class="vbox push-right space-s">
+                                            <p class="as-primary">Jamie Reyes</p>
+                                        </div>
+                                        <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="members-tab-norole" class="vbox flex1 space-l hidden">
+                        <div class="trEmptyState group vbox center justify-center flex1 space-m" role="status">
+                            <i class="trIcon icon as-display as-centered as-gray" aria-hidden="true">&#xE716;</i>
+                            <p class="as-secondary as-bold as-centered">No members found</p>
+                            <p class="as-tertiary as-gray as-centered">Tap + to register a member.</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- view: member detail (renderMemberDetailPage) -->
+        <div id="view-member-detail" class="vbox flex1 hidden">
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-goto="view-members">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold">Member details</h1>
+                    <p class="as-tertiary as-gray lh-1">for Alex</p>
+                </div>
+            </header>
+
+            <main class="content vbox space-xl">
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Member details</p>
+                        <div class="trCard card standard vbox space-m border-l trListCard">
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">Member ID</span></label>
+                                <p class="as-primary">M-001</p>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">Address</span></label>
+                                <p class="as-primary">Mabolo, Naga City</p>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">Contact No.</span></label>
+                                <p class="as-primary">0917 000 0000</p>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">License No.</span></label>
+                                <p class="as-primary">E01-23-456789</p>
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Personal contact and license details belong to Alex.</p>
+                    </div>
+                </section>
+
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Roles</p>
+                        <div class="trCard card standard vbox space-m border-l trListCard">
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">Assigned roles</span></label>
+                                <p class="as-primary">Driver, Operator</p>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trActionRow hbox space-l" role="button" tabindex="0" data-open-sheet="sheet-manage-roles">
+                                <div class="vbox push-right space-s">
+                                    <p class="as-primary">Manage roles</p>
+                                </div>
+                                <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Federation Secretary assigns TODA President; units and driver licenses cover the rest.</p>
+                    </div>
+
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">TODA group</p>
+                        <div class="trCard card standard vbox space-m border-l trListCard">
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">Association</span></label>
+                                <p class="as-primary">Mabolo TODA</p>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trActionRow hbox space-l" role="button" tabindex="0" data-open-sheet="sheet-toda-picker">
+                                <div class="vbox push-right space-s">
+                                    <p class="as-primary">Change TODA group</p>
+                                </div>
+                                <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Federation Secretary can assign or move this member's TODA group.</p>
+                    </div>
+                </section>
+
+                <section class="trSection section vbox space-l">
+                    <div class="trCardStack group vbox space-l">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">2 Tricycles owned · 1 remaining</p>
+                        <div class="card-stack collapsed">
+                            <div class="trBrandCard card brandcard grid border-m" style="z-index: 2;">
+                                <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">OPERATOR</span></p>
+                                <div class="vbox space-s bl">
+                                    <p class="as-large-title as-bold">0224</p>
+                                    <p class="as-tertiary as-gray">from <span class="as-bold">Alex Santos</span></p>
+                                </div>
+                                <div class="br">
+                                    <p class="as-tertiary as-gray">Assigned to <span class="as-bold">Jamie Reyes</span></p>
+                                </div>
+                            </div>
+                            <div class="trBrandCard card brandcard grid border-m" style="z-index: 1;">
+                                <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">OPERATOR</span></p>
+                                <div class="vbox space-s bl">
+                                    <p class="as-large-title as-bold">0819</p>
+                                    <p class="as-tertiary as-gray">from <span class="as-bold">Alex Santos</span></p>
+                                </div>
+                                <div class="br">
+                                    <p class="as-tertiary as-gray">No driver</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Danger zone</p>
+                        <div class="trCard card standard vbox space-m border-l">
+                            <div class="trActionRow hbox space-l" role="button" tabindex="0">
+                                <div class="vbox push-right space-s">
+                                    <p class="as-primary as-critical">Remove Alex Santos</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">A member must have no owned units, assigned tricycle, or leadership role before removal.</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- view: add member (renderAddMemberPage) -->
+        <div id="view-add-member" class="vbox flex1 hidden">
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-goto="view-members">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold">Add member</h1>
+                </div>
+                <button type="button" class="trButton as-standard thickness-m border-l" data-goto="view-members">Done</button>
+            </header>
+            <main class="content vbox space-xl">
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">New member</p>
+                        <div class="trCard card standard vbox space-m border-l trListCard">
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-id"><span class="as-tertiary as-gray">ID Number</span></label>
+                                <input id="add-id" type="text" placeholder="e.g. M1">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-first"><span class="as-tertiary as-gray">First Name</span></label>
+                                <input id="add-first" type="text" placeholder="e.g. Alex">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-last"><span class="as-tertiary as-gray">Last Name</span></label>
+                                <input id="add-last" type="text" placeholder="e.g. Santos">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-addr"><span class="as-tertiary as-gray">Home Address</span></label>
+                                <input id="add-addr" type="text" placeholder="Barangay, City">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-contact"><span class="as-tertiary as-gray">Phone Number</span></label>
+                                <input id="add-contact" type="text" placeholder="09XXXXXXXXX">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-lic"><span class="as-tertiary as-gray">Driver's License (Optional)</span></label>
+                                <input id="add-lic" type="text" placeholder="Leave blank if non-driver">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-toda"><span class="as-tertiary as-gray">TODA Group</span></label>
+                                <div class="hbox space-m">
+                                    <select id="add-toda" class="flex1">
+                                        <option value="T01">Mabolo TODA</option>
+                                        <option value="T02">Pacol TODA</option>
+                                    </select>
+                                    <i class="trIcon icon as-gray" aria-hidden="true">&#xE70D;</i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Leave License No. blank if this member is not an active driver.</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- sheet: manage roles -->
+    <div id="sheet-manage-roles" class="trSheet sheet-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="sheet-roles-title">
+        <div class="sheet vbox space-xl border-l">
+            <div class="group sheet-header vbox space-t">
+                <p id="sheet-roles-title" class="as-headline as-bold">Manage roles</p>
+            </div>
+            <div class="group sheet-body vbox space-l">
+                <div class="trCard card standard vbox space-m border-l trListCard">
+                    <div class="trActionRow hbox space-l" aria-disabled="true">
+                        <div class="vbox push-right space-s">
+                            <p class="as-primary disabled">Operator (2 of 3 tricycles)</p>
+                        </div>
+                    </div>
+                    <div class="trSpacer spacer" role="separator"></div>
+                    <div class="trActionRow hbox space-l" aria-disabled="true">
+                        <div class="vbox push-right space-s">
+                            <p class="as-primary disabled">Licensed driver (E01-23-456789)</p>
+                        </div>
+                    </div>
+                    <div class="trSpacer spacer" role="separator"></div>
+                    <div class="trActionRow hbox space-l" role="button" tabindex="0">
+                        <div class="vbox push-right space-s">
+                            <p class="as-primary">Assign as president of Mabolo TODA</p>
+                        </div>
+                        <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                    </div>
+                </div>
+            </div>
+            <div class="group sheet-footer vbox space-m">
+                <button type="button" class="trButton as-standard thickness-l border-l" data-close-sheet="sheet-manage-roles">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- sheet: select toda group -->
+    <div id="sheet-toda-picker" class="trSheet sheet-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="sheet-toda-title">
+        <div class="sheet vbox space-xl border-l">
+            <div class="group sheet-header vbox space-t">
+                <p id="sheet-toda-title" class="as-headline as-bold">Select TODA group</p>
+            </div>
+            <div class="group sheet-body vbox space-l">
+                <div class="trCard card standard vbox space-m border-l trListCard">
+                    <div class="trActionRow hbox space-l" role="button" tabindex="0" data-close-sheet="sheet-toda-picker">
+                        <div class="vbox push-right space-s">
+                            <p class="as-primary">Mabolo TODA (T01)</p>
+                        </div>
+                    </div>
+                    <div class="trSpacer spacer" role="separator"></div>
+                    <div class="trActionRow hbox space-l" role="button" tabindex="0" data-close-sheet="sheet-toda-picker">
+                        <div class="vbox push-right space-s">
+                            <p class="as-primary">Pacol TODA (T02)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="group sheet-footer vbox space-m">
+                <button type="button" class="trButton as-standard thickness-l border-l" data-close-sheet="sheet-toda-picker">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            function showView(id) {
+                const views = document.querySelectorAll("#app > div[id^='view-']");
+                for (let i = 0; i < views.length; i += 1) {
+                    views[i].classList.toggle("hidden", views[i].id !== id);
+                }
+                document.getElementById("app").scrollTop = 0;
+            }
+            document.addEventListener("click", function (e) {
+                const hrefBtn = e.target.closest("[data-href]");
+                if (hrefBtn) {
+                    window.location.href = hrefBtn.getAttribute("data-href");
+                    return;
+                }
+                const gotoBtn = e.target.closest("[data-goto]");
+                if (gotoBtn) {
+                    showView(gotoBtn.getAttribute("data-goto"));
+                    return;
+                }
+                const tabBtn = e.target.closest("[data-tab]");
+                if (tabBtn) {
+                    const key = tabBtn.getAttribute("data-tab");
+                    const allTabs = document.querySelectorAll("[data-tab]");
+                    for (let i = 0; i < allTabs.length; i += 1) {
+                        const active = allTabs[i] === tabBtn;
+                        allTabs[i].classList.toggle("active", active);
+                        allTabs[i].setAttribute("aria-selected", active ? "true" : "false");
+                    }
+                    document.getElementById("members-tab-all").classList.toggle("hidden", key !== "all");
+                    document.getElementById("members-tab-norole").classList.toggle("hidden", key !== "norole");
+                    return;
+                }
+                const menuBtn = e.target.closest("[data-menu-toggle]");
+                if (menuBtn) {
+                    const panel = document.getElementById(menuBtn.getAttribute("data-menu-toggle"));
+                    const open = panel.classList.contains("hidden");
+                    panel.classList.toggle("hidden", !open);
+                    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+                    return;
+                }
+                if (!e.target.closest(".trMenu")) {
+                    const openMenus = document.querySelectorAll(".trMenuPanel:not(.hidden)");
+                    for (let i = 0; i < openMenus.length; i += 1) {
+                        openMenus[i].classList.add("hidden");
+                    }
+                }
+                const stack = e.target.closest(".card-stack.collapsed");
+                if (stack) {
+                    stack.classList.remove("collapsed");
+                    return;
+                }
+                const openBtn = e.target.closest("[data-open-sheet]");
+                if (openBtn) {
+                    const sheet = document.getElementById(openBtn.getAttribute("data-open-sheet"));
+                    if (sheet) {
+                        sheet.classList.remove("hidden");
+                    }
+                }
+                const closeBtn = e.target.closest("[data-close-sheet]");
+                if (closeBtn) {
+                    const sheet = document.getElementById(closeBtn.getAttribute("data-close-sheet"));
+                    if (sheet) {
+                        sheet.classList.add("hidden");
+                    }
+                }
+                if (e.target.classList.contains("sheet-backdrop")) {
+                    e.target.classList.add("hidden");
+                }
+            });
+        }());
+    </script>
+</body>
+</html>

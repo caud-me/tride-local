@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIDE — Notifications</title>
+    <link rel="stylesheet" href="../components/styleNext.css">
+    <link rel="stylesheet" href="../components/responsive-experimental.css">
+    <link rel="stylesheet" href="../components/distortion-wave.css">
+</head>
+<body>
+    <div id="app" class="app">
+        <header class="trNavBar navigation-bar hbox space-l">
+            <button type="button" class="thickness-m border-m" aria-label="Back" data-href="home.html">
+                <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+            </button>
+            <div class="vbox push-right space-s">
+                <h1 class="as-headline lh-1 as-bold">Notifications</h1>
+            </div>
+            <div class="hbox align-center">
+                <div class="trMenu menu-anchor">
+                    <button type="button" class="thickness-m border-m" aria-label="Notification options" aria-haspopup="menu" aria-expanded="false" data-menu-toggle="notif-menu">
+                        <i class="trIcon icon" aria-hidden="true">&#xE712;</i>
+                    </button>
+                    <div id="notif-menu" class="trMenuPanel popup vbox space-xl border-l scroll hidden" role="menu">
+                        <div class="group vbox space-m">
+                            <label class="menu-item hbox space-l" role="menuitemradio" aria-checked="false" id="mark-all-read">
+                                <input type="radio" name="ntf-header-actions" value="read-all">
+                                <p class="as-primary push-right">Mark as read</p>
+                                <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content vbox space-xl">
+            <section class="trSection section vbox space-l">
+                <div class="trCardGroup group vbox space-m">
+                    <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Recent updates</p>
+                    <div class="trCard card standard vbox space-m border-l trListCard">
+                        <div class="vbox space-s notif-item" role="button" tabindex="0">
+                            <p class="as-primary">Assigned to unit 0224</p>
+                            <p class="as-secondary as-gray">Jamie Reyes assigned you as driver of unit 0224.</p>
+                        </div>
+                        <div class="trSpacer spacer" role="separator"></div>
+                        <div class="vbox space-s notif-item">
+                            <p class="as-primary as-gray">Profile updated</p>
+                            <p class="as-secondary as-gray">Your contact number was updated.</p>
+                        </div>
+                    </div>
+                    <p class="as-cardfootnote as-tertiary as-gray">Tap an unread notification to mark it as read.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        (function () {
+            document.addEventListener("click", function (e) {
+                const hrefBtn = e.target.closest("[data-href]");
+                if (hrefBtn) {
+                    window.location.href = hrefBtn.getAttribute("data-href");
+                    return;
+                }
+                const menuBtn = e.target.closest("[data-menu-toggle]");
+                if (menuBtn) {
+                    const panel = document.getElementById(menuBtn.getAttribute("data-menu-toggle"));
+                    const open = panel.classList.contains("hidden");
+                    panel.classList.toggle("hidden", !open);
+                    menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+                    return;
+                }
+                const notifRow = e.target.closest(".notif-item[role='button']");
+                if (notifRow) {
+                    const titleEl = notifRow.querySelector("p");
+                    if (titleEl) {
+                        titleEl.classList.add("as-gray");
+                    }
+                    notifRow.removeAttribute("role");
+                    notifRow.removeAttribute("tabindex");
+                }
+                if (e.target.closest("#mark-all-read")) {
+                    const items = document.querySelectorAll(".notif-item p:first-child");
+                    for (let i = 0; i < items.length; i += 1) {
+                        items[i].classList.add("as-gray");
+                    }
+                    document.getElementById("notif-menu").classList.add("hidden");
+                    return;
+                }
+                if (!e.target.closest(".trMenu")) {
+                    const openMenus = document.querySelectorAll(".trMenuPanel:not(.hidden)");
+                    for (let i = 0; i < openMenus.length; i += 1) {
+                        openMenus[i].classList.add("hidden");
+                    }
+                }
+            });
+        }());
+    </script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIDE — Units</title>
+    <link rel="stylesheet" href="../components/styleNext.css">
+    <link rel="stylesheet" href="../components/responsive-experimental.css">
+    <link rel="stylesheet" href="../components/distortion-wave.css">
+</head>
+<body>
+    <div id="app" class="app">
+        <!-- view: operator units (renderOperatorUnitsPage) -->
+        <div id="view-operator-units" class="vbox flex1">
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-href="home.html">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold">Manage my tricycle units</h1>
+                </div>
+                <button type="button" class="trIcon thickness-m border-m" aria-label="Add tricycle" data-goto="view-add-unit">
+                    <i class="icon" aria-hidden="true">&#xE710;</i>
+                </button>
+            </header>
+
+            <main class="content vbox space-xl">
+                <section class="trSection section vbox space-l">
+                    <div class="trCardStack group vbox space-l">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Actively used</p>
+                        <div class="card-stack collapsed">
+                            <div class="trBrandCard card brandcard grid border-m" role="button" tabindex="0" style="z-index: 2;" data-goto="view-manage-unit">
+                                <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">OPERATOR</span></p>
+                                <div class="vbox space-s bl">
+                                    <p class="as-large-title as-bold">0224</p>
+                                    <p class="as-tertiary as-gray">from <span class="as-bold">you</span></p>
+                                </div>
+                                <div class="br">
+                                    <p class="as-tertiary as-gray">Assigned to <span class="as-bold">Jamie Reyes</span></p>
+                                </div>
+                            </div>
+                            <div class="trBrandCard card brandcard grid border-m" role="button" tabindex="0" style="z-index: 1;" data-goto="view-manage-unit">
+                                <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">OPERATOR</span></p>
+                                <div class="vbox space-s bl">
+                                    <p class="as-large-title as-bold">0412</p>
+                                    <p class="as-tertiary as-gray">from <span class="as-bold">you</span></p>
+                                </div>
+                                <div class="br">
+                                    <p class="as-tertiary as-gray">Assigned to <span class="as-bold">yourself</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="trCardStack group vbox space-l">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Unassigned</p>
+                        <div class="card-stack">
+                            <div class="trBrandCard card brandcard grid border-m" role="button" tabindex="0" style="z-index: 1;" data-goto="view-manage-unit">
+                                <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">OPERATOR</span></p>
+                                <div class="vbox space-s bl">
+                                    <p class="as-large-title as-bold">0819</p>
+                                    <p class="as-tertiary as-gray">from <span class="as-bold">you</span></p>
+                                </div>
+                                <div class="br">
+                                    <p class="as-tertiary as-gray">No driver</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- view: manage unit (renderManageUnitPage) -->
+        <div id="view-manage-unit" class="vbox flex1 hidden">
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-goto="view-operator-units">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold">Manage unit</h1>
+                    <p class="as-tertiary as-gray lh-1">for your unit 0224</p>
+                </div>
+                <button type="button" class="trButton as-standard thickness-m border-l" data-goto="view-operator-units">Done</button>
+            </header>
+
+            <main class="content vbox space-xl">
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Tricycle details</p>
+                        <div class="trCard card standard vbox space-m border-l trListCard">
+                            <div class="trPropertyRow vbox" data-tr-field="true" role="button" tabindex="0" data-open-sheet="sheet-driver-picker">
+                                <label><span class="as-tertiary as-gray">Assigned driver</span></label>
+                                <p class="as-primary">Jamie Reyes (M-002)</p>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">Body No.</span></label>
+                                <p class="as-primary">0224</p>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="unit-chassis"><span class="as-tertiary as-gray">Chassis No.</span></label>
+                                <input id="unit-chassis" type="text" value="CH0001">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="unit-fran"><span class="as-tertiary as-gray">Franchise No.</span></label>
+                                <input id="unit-fran" type="text" value="FR202601">
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Tap the driver row to assign or switch who drives this unit.</p>
+                    </div>
+                </section>
+
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Danger zone</p>
+                        <div class="trCard card standard vbox space-m border-l trListCard">
+                            <div class="trActionRow hbox space-l" role="button" tabindex="0">
+                                <div class="vbox push-right space-s">
+                                    <p class="as-primary as-critical">Remove driver</p>
+                                </div>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trActionRow hbox space-l" aria-disabled="true">
+                                <div class="vbox push-right space-s">
+                                    <p class="as-primary as-critical disabled">Remove tricycle</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Remove the assigned driver before deleting this tricycle.</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- view: add unit (renderAddMyUnitPage) -->
+        <div id="view-add-unit" class="vbox flex1 hidden">
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-goto="view-operator-units">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold">Add my tricycle</h1>
+                </div>
+                <button type="button" class="trButton as-standard thickness-m border-l" data-goto="view-operator-units">Done</button>
+            </header>
+
+            <main class="content vbox space-xl">
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Unit registration</p>
+                        <div class="trCard card standard vbox space-m border-l trListCard">
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-body"><span class="as-tertiary as-gray">Body Number</span></label>
+                                <input id="add-body" type="text" maxlength="4" placeholder="e.g. 0235">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-chassis"><span class="as-tertiary as-gray">Chassis Number</span></label>
+                                <input id="add-chassis" type="text" placeholder="e.g. CH0008">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-fran"><span class="as-tertiary as-gray">Franchise Number</span></label>
+                                <input id="add-fran" type="text" placeholder="e.g. FR202604">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true" role="button" tabindex="0" data-open-sheet="sheet-driver-picker">
+                                <label><span class="as-tertiary as-gray">Assigned driver (Optional)</span></label>
+                                <p class="as-primary">None (Tap to assign licensed driver)</p>
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Operators can register up to 3 tricycles. Driver assignment is optional.</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- sheet: driver picker (openDriverPicker) -->
+    <div id="sheet-driver-picker" class="trSheet sheet-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="sheet-driver-title">
+        <div class="sheet vbox space-xl border-l">
+            <div class="group sheet-header vbox space-t">
+                <p id="sheet-driver-title" class="as-headline as-bold">Select licensed driver</p>
+                <div class="trSearchBox card hbox space-m thickness-m border-l" role="search">
+                    <i class="trIcon icon as-gray" aria-hidden="true">&#xE721;</i>
+                    <input type="search" class="flex1" placeholder="Find a driver" aria-label="Find a driver">
+                </div>
+            </div>
+            <div class="group sheet-body vbox space-l">
+                <div class="trAlphaList vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">J</p>
+                        <div class="trCard card standard vbox space-m border-l trListCard">
+                            <div class="trActionRow hbox space-l" role="button" tabindex="0" data-close-sheet="sheet-driver-picker">
+                                <div class="vbox push-right space-s">
+                                    <p class="as-primary">Jamie Reyes (M-002)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="group sheet-footer vbox space-m">
+                <button type="button" class="trButton as-standard thickness-l border-l" data-close-sheet="sheet-driver-picker">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            function showView(id) {
+                const views = document.querySelectorAll("#app > div[id^='view-']");
+                for (let i = 0; i < views.length; i += 1) {
+                    views[i].classList.toggle("hidden", views[i].id !== id);
+                }
+                document.getElementById("app").scrollTop = 0;
+            }
+            document.addEventListener("click", function (e) {
+                const hrefBtn = e.target.closest("[data-href]");
+                if (hrefBtn) {
+                    window.location.href = hrefBtn.getAttribute("data-href");
+                    return;
+                }
+                const stack = e.target.closest(".card-stack.collapsed");
+                if (stack) {
+                    stack.classList.remove("collapsed");
+                    return;
+                }
+                const gotoBtn = e.target.closest("[data-goto]");
+                if (gotoBtn) {
+                    showView(gotoBtn.getAttribute("data-goto"));
+                    return;
+                }
+                const openBtn = e.target.closest("[data-open-sheet]");
+                if (openBtn) {
+                    const sheet = document.getElementById(openBtn.getAttribute("data-open-sheet"));
+                    if (sheet) {
+                        sheet.classList.remove("hidden");
+                    }
+                }
+                const closeBtn = e.target.closest("[data-close-sheet]");
+                if (closeBtn) {
+                    const sheet = document.getElementById(closeBtn.getAttribute("data-close-sheet"));
+                    if (sheet) {
+                        sheet.classList.add("hidden");
+                    }
+                }
+                if (e.target.classList.contains("sheet-backdrop")) {
+                    e.target.classList.add("hidden");
+                }
+            });
+        }());
+    </script>
+</body>
+</html>

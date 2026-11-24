@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRIDE — TODA Associations</title>
+    <link rel="stylesheet" href="../components/styleNext.css">
+    <link rel="stylesheet" href="../components/responsive-experimental.css">
+    <link rel="stylesheet" href="../components/distortion-wave.css">
+</head>
+<body>
+    <div id="app" class="app">
+        <!-- view: todas list (renderTodasPage) -->
+        <div id="view-todas" class="vbox flex1">
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-href="home.html">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold">TODA associations</h1>
+                </div>
+                <button type="button" class="trIcon thickness-m border-m" aria-label="Add TODA" data-goto="view-add-toda">
+                    <i class="icon" aria-hidden="true">&#xE710;</i>
+                </button>
+            </header>
+
+            <main class="content vbox space-xl">
+                <section class="trSection section vbox space-l flex1">
+                    <div class="trTabbed tabbed hbox space-l" role="tablist">
+                        <button type="button" class="as-tabbed as-bold thickness-m flex1 active" role="tab" aria-selected="true" data-tab="all">All</button>
+                        <button type="button" class="as-tabbed as-bold thickness-m flex1" role="tab" aria-selected="false" data-tab="empty">Empty TODAs</button>
+                    </div>
+
+                    <div id="todas-tab-all" class="vbox flex1 space-l">
+                        <div class="vbox space-l card-grid">
+                            <div class="trBrandCard card brandcard grid border-m" role="button" tabindex="0" data-goto="view-toda-detail">
+                                <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">ASSOCIATION</span></p>
+                                <div class="tr">
+                                    <p class="as-tertiary as-gray">24 members</p>
+                                </div>
+                                <div class="vbox space-s bl">
+                                    <p class="as-headline as-bold">Mabolo TODA</p>
+                                    <p class="as-tertiary as-gray">Mabolo - Centro</p>
+                                </div>
+                                <div class="br">
+                                    <p class="as-tertiary as-gray">Pres: <span class="as-bold">Jamie Reyes</span></p>
+                                </div>
+                            </div>
+
+                            <div class="trBrandCard card brandcard grid border-m" role="button" tabindex="0" data-goto="view-toda-detail">
+                                <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">ASSOCIATION</span></p>
+                                <div class="tr">
+                                    <p class="as-tertiary as-gray">18 members</p>
+                                </div>
+                                <div class="vbox space-s bl">
+                                    <p class="as-headline as-bold">Pacol TODA</p>
+                                    <p class="as-tertiary as-gray">Pacol - Centro</p>
+                                </div>
+                                <div class="br">
+                                    <p class="as-tertiary as-gray">No president</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="todas-tab-empty" class="vbox flex1 space-l hidden">
+                        <div class="trEmptyState group vbox center justify-center flex1 space-m" role="status">
+                            <i class="trIcon icon as-display as-centered as-gray" aria-hidden="true">&#xE82F;</i>
+                            <p class="as-secondary as-bold as-centered">No empty TODA associations</p>
+                            <p class="as-tertiary as-gray as-centered">Every TODA association has at least one member.</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- view: toda detail (renderTodaDetailPage) -->
+        <div id="view-toda-detail" class="vbox flex1 hidden">
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-goto="view-todas">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold">TODA details</h1>
+                    <p class="as-tertiary as-gray lh-1">for Mabolo TODA</p>
+                </div>
+            </header>
+
+            <main class="content vbox space-xl">
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Association details</p>
+                        <div class="trCard card standard vbox space-m border-l trListCard">
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">TODA ID</span></label>
+                                <p class="as-primary">T01</p>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">Route</span></label>
+                                <p class="as-primary">Mabolo - Centro</p>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true" role="button" tabindex="0" data-href="members.html">
+                                <label><span class="as-tertiary as-gray">TODA President</span></label>
+                                <p class="as-primary">Jamie Reyes (M-002)</p>
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Tap the president row to assign or replace the TODA president.</p>
+                    </div>
+
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Directory</p>
+                        <div class="trCard card standard vbox space-m border-l trListCard">
+                            <div class="trActionRow hbox space-l" role="button" tabindex="0" data-href="members.html">
+                                <div class="vbox push-right space-s">
+                                    <p class="as-primary">Members in Mabolo TODA (24)</p>
+                                </div>
+                                <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trActionRow hbox space-l" role="button" tabindex="0" data-href="units.html">
+                                <div class="vbox push-right space-s">
+                                    <p class="as-primary">Units in Mabolo TODA</p>
+                                </div>
+                                <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Browse members and tricycle units assigned to this association.</p>
+                    </div>
+                </section>
+
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Danger zone</p>
+                        <div class="trCard card standard vbox space-m border-l">
+                            <div class="trActionRow hbox space-l" role="button" tabindex="0">
+                                <div class="vbox push-right space-s">
+                                    <p class="as-primary as-critical">Remove Mabolo TODA</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Remove all members and unassign the president before deleting this TODA.</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- view: add toda (renderAddTodaPage) -->
+        <div id="view-add-toda" class="vbox flex1 hidden">
+            <header class="trNavBar navigation-bar hbox space-l">
+                <button type="button" class="thickness-m border-m" aria-label="Back" data-goto="view-todas">
+                    <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
+                </button>
+                <div class="vbox push-right space-s">
+                    <h1 class="as-headline lh-1 as-bold">Register TODA</h1>
+                </div>
+                <button type="button" class="trButton as-standard thickness-m border-l" data-goto="view-todas">Done</button>
+            </header>
+
+            <main class="content vbox space-xl">
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">New association</p>
+                        <div class="trCard card standard vbox space-m border-l trListCard">
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-toda-id"><span class="as-tertiary as-gray">TODA ID</span></label>
+                                <input id="add-toda-id" type="text" placeholder="e.g. T01">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-toda-name"><span class="as-tertiary as-gray">TODA Name</span></label>
+                                <input id="add-toda-name" type="text" placeholder="e.g. Mabolo TODA">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-toda-route"><span class="as-tertiary as-gray">Route</span></label>
+                                <input id="add-toda-route" type="text" placeholder="e.g. Mabolo - Centro">
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Each TODA needs a unique ID, name, and primary route.</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            function showView(id) {
+                const views = document.querySelectorAll("#app > div[id^='view-']");
+                for (let i = 0; i < views.length; i += 1) {
+                    views[i].classList.toggle("hidden", views[i].id !== id);
+                }
+                document.getElementById("app").scrollTop = 0;
+            }
+            document.addEventListener("click", function (e) {
+                const hrefBtn = e.target.closest("[data-href]");
+                if (hrefBtn) {
+                    window.location.href = hrefBtn.getAttribute("data-href");
+                    return;
+                }
+                const gotoBtn = e.target.closest("[data-goto]");
+                if (gotoBtn) {
+                    showView(gotoBtn.getAttribute("data-goto"));
+                    return;
+                }
+                const tabBtn = e.target.closest("[data-tab]");
+                if (tabBtn) {
+                    const key = tabBtn.getAttribute("data-tab");
+                    const allTabs = document.querySelectorAll("[data-tab]");
+                    for (let i = 0; i < allTabs.length; i += 1) {
+                        const active = allTabs[i] === tabBtn;
+                        allTabs[i].classList.toggle("active", active);
+                        allTabs[i].setAttribute("aria-selected", active ? "true" : "false");
+                    }
+                    document.getElementById("todas-tab-all").classList.toggle("hidden", key !== "all");
+                    document.getElementById("todas-tab-empty").classList.toggle("hidden", key !== "empty");
+                }
+            });
+        }());
+    </script>
+</body>
+</html>
