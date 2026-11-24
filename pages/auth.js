@@ -441,7 +441,7 @@ function renderOobePage(params) {
 
 function renderLoginPage() {
     const main = trEl("main", "content vbox justify-center space-xl");
-    const isAdminPortal = window.location.pathname.indexOf("/admin") === 0;
+    const isAdminPortal = window.location.pathname.indexOf("/admin") !== -1;
     const heroHeading = isAdminPortal ? "Ready for takeoff." : "Madali na lang yan\nsa tride.";
 
     const hero = trEl("div", "group vbox center space-t");
@@ -494,7 +494,7 @@ function renderLoginPage() {
     const footerBtnLabel = isAdminPortal
         ? "Back to Member App"
         : "Sign in at Admin Portal";
-    const footerTarget = isAdminPortal ? "/" : "/admin";
+    const footerTarget = isAdminPortal ? "index.html" : "admin.html";
 
     const footerCaption = trEl("p", "as-tertiary as-centered as-gray", footerNote);
     const footerBtn = trButton({

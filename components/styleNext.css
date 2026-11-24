@@ -394,7 +394,7 @@ button.anim-rise,
     width: 100%;
     height: .5px;
     background-color: var(--tr-elevation-op20);
-    margin-block: var(--tr-space-m);
+    margin-block: var(--tr-space-s);
 }
 :where(.section) {
     min-width: 0;
