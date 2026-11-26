@@ -164,12 +164,34 @@ function trRise(children, options) {
 
 /* layout & navigation */
 
-// params: options (optional: { text (optional), subtext (optional), sub (optional), className (optional) } | string)
+// params: options (optional: { text (optional), subtext (optional), sub (optional), svg (optional), className (optional) } | string)
 function trBrandLogo(options) {
     const isString = typeof options === "string";
     const opts = isString ? { text: options } : (options || {});
     const mainText = opts.text || "TRIDE";
     const subText = opts.subtext || opts.sub || "";
+
+    if (opts.svg) {
+        let wrapCls = "trBrandLogo hbox space-s";
+        if (opts.className) {
+            wrapCls = wrapCls + " " + opts.className;
+        }
+        const wrap = trEl("div", wrapCls);
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(opts.svg, "image/svg+xml");
+        const svgEl = svgDoc.documentElement;
+        if (svgEl && svgEl.nodeName.toLowerCase() === "svg") {
+            const imported = document.importNode(svgEl, true);
+            imported.classList.add("trBrandLogo-svg");
+            wrap.appendChild(imported);
+        }
+        if (subText) {
+            const subSpan = trEl("span", "as-tertiary as-midgray as-bold", subText);
+            wrap.appendChild(subSpan);
+        }
+        return wrap;
+    }
+
     let cls = "trBrandLogo as-headline as-black as-italic lh-1";
     if (opts.className) {
         cls = cls + " " + opts.className;
@@ -184,7 +206,7 @@ function trBrandLogo(options) {
     return p;
 }
 
-// params: options (optional: { title (optional), subtitle (optional), titleNode (optional), onBack (optional), actions (optional: array) })
+// params: options (optional: { title (optional), subtitle (optional), titleNode (optional), center (optional: boolean), onBack (optional), leftActions (optional: array), actions (optional: array) })
 function trNavBar(options) {
     const opts = options || {};
     const bar = trEl("header", "trNavBar navigation-bar hbox space-l");
@@ -199,11 +221,21 @@ function trNavBar(options) {
         bar.appendChild(backBtn);
     }
 
+    if (opts.leftActions) {
+        trAppend(bar, opts.leftActions);
+    }
+
     if (opts.titleNode) {
-        opts.titleNode.classList.add("push-right");
+        const hasPushRight = opts.titleNode.classList.contains("push-right");
+        const hasPushCenter = opts.titleNode.classList.contains("push-center");
+        if (!hasPushRight && !hasPushCenter) {
+            const alignCls = opts.center ? "push-center" : "push-right";
+            opts.titleNode.classList.add(alignCls);
+        }
         bar.appendChild(opts.titleNode);
     } else {
-        const titleBox = trEl("div", "vbox push-right space-s");
+        const alignCls = opts.center ? "push-center" : "push-right";
+        const titleBox = trEl("div", "vbox " + alignCls + " space-s");
         const titleEl = trEl("h1", "as-headline lh-1 as-bold", opts.title || "");
         titleBox.appendChild(titleEl);
         if (opts.subtitle) {
@@ -573,7 +605,7 @@ function trAppendSlot(target, value) {
     }
 }
 
-// params: options (required: { title (optional), bodyNumber (optional), logoText (optional), subtext (optional), role (optional), topRight (optional), subtitle (optional), owner (optional), bottomRight (optional), assignedTo (optional), big (optional), className (optional), onClick (optional) })
+// params: options (required: { title (optional), bodyNumber (optional), logoText (optional), logoSvg (optional), svg (optional), subtext (optional), role (optional), topRight (optional), subtitle (optional), owner (optional), bottomRight (optional), assignedTo (optional), big (optional), className (optional), onClick (optional) })
 function trBrandCard(options) {
     const opts = options || {};
     let cls = "trBrandCard card brandcard grid border-m";
@@ -584,6 +616,7 @@ function trBrandCard(options) {
 
     const logo = trBrandLogo({
         text: opts.logoText || "TRIDE",
+        svg: opts.logoSvg || opts.svg || "",
         subtext: opts.subtext || opts.role || "",
         className: "tl"
     });

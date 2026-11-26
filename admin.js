@@ -121,7 +121,7 @@ function renderHomePage(params) {
         return [];
     }
 
-    const settingsIcon = trIcon("\uE713", {
+    const settingsIcon = trIcon("\uE712", {
         label: "Settings",
         onClick: function () {
             pushPage(renderAdminSettingsPage, {});
@@ -131,9 +131,10 @@ function renderHomePage(params) {
     if (typeof createNotificationBellButton === "function") {
         navActions.push(createNotificationBellButton());
     }
-    navActions.push(settingsIcon);
     const navBar = trNavBar({
-        titleNode: trBrandLogo({ text: "TRIDE", subtext: "ADMIN" }),
+        leftActions: [settingsIcon],
+        titleNode: trBrandLogo({ svg: TRIDE_AUTH_BRAND_SVG }),
+        center: true,
         actions: navActions
     });
 

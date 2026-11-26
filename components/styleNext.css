@@ -257,6 +257,13 @@ button.anim-rise,
 .push-right {
     margin-inline-end: auto;
 }
+.push-center {
+    margin-inline: auto;
+}
+.trBrandLogo-svg {
+    height: 24px;
+    width: auto;
+}
 .grid {
     display: grid;
     grid-template-columns: 1fr auto;
