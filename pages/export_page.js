@@ -1,33 +1,51 @@
-/* experimental export data screen (standalone, removable) */
+/* 6-table export data screen (SQL in FK order, JSON with preview, CSV, and printable PDF) */
 
-const EXPORT_FILE_PREFIX = "tride-export";
-const EXPORT_FORMATS = [
-    { label: "Excel (.csv)", value: "csv" },
-    { label: "PDF (Print)", value: "pdf" },
-    { label: "SQL (.sql)", value: "sql" }
+const EXPORT_FILE_PREFIX = "tride-dbms1-export";
+const EXPORT_PREVIEW_MAX_CHARS = 1200;
+
+const EXPORT_DATASETS = [
+    { key: "federation", title: "Federations", subtitle: "City and district federations", secretaryOnly: false },
+    { key: "toda_association", title: "TODA associations", subtitle: "SEC-registered TODAs, routes, and terminals", secretaryOnly: false },
+    { key: "member", title: "Members", subtitle: "Atomic address and driver credential profiles", secretaryOnly: false },
+    { key: "tricycle", title: "Tricycle units", subtitle: "Franchised tricycles, color zones, and permits", secretaryOnly: false },
+    { key: "driver_assignment", title: "Driver assignments", subtitle: "Primary and alternate (relyebo) shifts", secretaryOnly: false },
+    { key: "officer_term", title: "Officer terms", subtitle: "Elected TODA board positions and term dates", secretaryOnly: false }
 ];
 
+const EXPORT_FORMATS = [
+    { label: "SQL (.sql)", value: "sql" },
+    { label: "JSON (.json)", value: "json" },
+    { label: "Excel (.csv)", value: "csv" },
+    { label: "PDF (Print)", value: "pdf" }
+];
+
+// params: rawValue (optional)
 function escapeCsvCell(rawValue) {
     if (rawValue === null || rawValue === undefined) {
         return "";
     }
     let text = String(rawValue);
-    const hasSpecial = text.indexOf(",") !== -1 || text.indexOf("\"") !== -1 || text.indexOf("\n") !== -1;
-    if (hasSpecial) {
+    const hasComma = text.indexOf(",") !== -1;
+    const hasQuote = text.indexOf("\"") !== -1;
+    const hasNewline = text.indexOf("\n") !== -1;
+    if (hasComma || hasQuote || hasNewline) {
         text = text.replace(/"/g, "\"\"");
         text = "\"" + text + "\"";
     }
     return text;
 }
 
+// params: columns (required), rows (required)
 function buildCsvText(columns, rows) {
     const lines = [];
     const headerCells = [];
     const colCount = columns.length;
     for (let i = 0; i < colCount; i += 1) {
-        headerCells.push(escapeCsvCell(columns[i]));
+        const cell = escapeCsvCell(columns[i]);
+        headerCells.push(cell);
     }
-    lines.push(headerCells.join(","));
+    const headerLine = headerCells.join(",");
+    lines.push(headerLine);
 
     const rowCount = rows.length;
     for (let r = 0; r < rowCount; r += 1) {
@@ -35,13 +53,16 @@ function buildCsvText(columns, rows) {
         const cells = [];
         for (let c = 0; c < colCount; c += 1) {
             const key = columns[c];
-            cells.push(escapeCsvCell(record[key]));
+            const cell = escapeCsvCell(record[key]);
+            cells.push(cell);
         }
-        lines.push(cells.join(","));
+        const rowLine = cells.join(",");
+        lines.push(rowLine);
     }
     return lines.join("\r\n");
 }
 
+// params: rawValue (optional)
 function escapeSqlValue(rawValue) {
     if (rawValue === null || rawValue === undefined || rawValue === "") {
         return "NULL";
@@ -55,7 +76,8 @@ function escapeSqlValue(rawValue) {
     return "'" + text + "'";
 }
 
-function buildSqlInserts(tableName, columns, rows) {
+// params: tableName (required), columns (required), rows (required), nullOutColumn (optional)
+function buildSqlInserts(tableName, columns, rows, nullOutColumn) {
     const lines = [];
     const rowCount = rows.length;
     const colCount = columns.length;
@@ -69,14 +91,37 @@ function buildSqlInserts(tableName, columns, rows) {
         const values = [];
         for (let c = 0; c < colCount; c += 1) {
             const key = columns[c];
-            values.push(escapeSqlValue(record[key]));
+            if (nullOutColumn && key === nullOutColumn) {
+                values.push("NULL");
+            } else {
+                const escaped = escapeSqlValue(record[key]);
+                values.push(escaped);
+            }
         }
-        const stmt = "INSERT INTO `" + tableName + "` (" + colList + ") VALUES (" + values.join(", ") + ");";
+        const valText = values.join(", ");
+        const stmt = "INSERT INTO `" + tableName + "` (" + colList + ") VALUES (" + valText + ");";
         lines.push(stmt);
     }
     return lines.join("\n");
 }
 
+// params: federationRows (required)
+function buildFederationSecretaryUpdates(federationRows) {
+    const lines = [];
+    const count = federationRows.length;
+    for (let i = 0; i < count; i += 1) {
+        const row = federationRows[i];
+        if (row && row.Secretary_Member_ID) {
+            const secVal = escapeSqlValue(row.Secretary_Member_ID);
+            const fedVal = escapeSqlValue(row.Federation_ID);
+            const stmt = "UPDATE `federation` SET `Secretary_Member_ID` = " + secVal + " WHERE `Federation_ID` = " + fedVal + ";";
+            lines.push(stmt);
+        }
+    }
+    return lines.join("\n");
+}
+
+// params: filename (required), content (required), mimeType (required)
 function triggerFileDownload(filename, content, mimeType) {
     const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
@@ -91,6 +136,7 @@ function triggerFileDownload(filename, content, mimeType) {
     }, 1000);
 }
 
+// params: rawValue (optional)
 function escapeHtmlText(rawValue) {
     if (rawValue === null || rawValue === undefined) {
         return "";
@@ -102,6 +148,7 @@ function escapeHtmlText(rawValue) {
     return text;
 }
 
+// params: title (required), columns (required), rows (required)
 function buildHtmlTableSection(title, columns, rows) {
     const parts = [];
     parts.push("<h2>" + escapeHtmlText(title) + " (" + rows.length + ")</h2>");
@@ -126,6 +173,7 @@ function buildHtmlTableSection(title, columns, rows) {
     return parts.join("");
 }
 
+// params: reportTitle (required), sections (required)
 function openPrintPdfReport(reportTitle, sections) {
     const printWin = window.open("", "_blank");
     if (!printWin) {
@@ -144,17 +192,19 @@ function openPrintPdfReport(reportTitle, sections) {
     htmlParts.push("h1 { font-size: 20px; margin-bottom: 4px; }");
     htmlParts.push("p.meta { color: #555; font-size: 12px; margin-bottom: 20px; }");
     htmlParts.push("h2 { font-size: 15px; margin: 20px 0 8px; }");
-    htmlParts.push("table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }");
-    htmlParts.push("th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; }");
+    htmlParts.push("table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 16px; }");
+    htmlParts.push("th, td { border: 1px solid #ccc; padding: 5px 6px; text-align: left; }");
     htmlParts.push("th { background: #f2f2f2; }");
     htmlParts.push("</style></head><body>");
     htmlParts.push("<h1>" + escapeHtmlText(reportTitle) + "</h1>");
-    htmlParts.push("<p class=\"meta\">Generated " + escapeHtmlText(new Date().toLocaleString()) + "</p>");
+    const nowText = new Date().toLocaleString();
+    htmlParts.push("<p class=\"meta\">Generated " + escapeHtmlText(nowText) + "</p>");
 
     const sectionCount = sections.length;
     for (let i = 0; i < sectionCount; i += 1) {
         const sec = sections[i];
-        htmlParts.push(buildHtmlTableSection(sec.title, sec.columns, sec.rows));
+        const htmlSec = buildHtmlTableSection(sec.title, sec.columns, sec.rows);
+        htmlParts.push(htmlSec);
     }
     htmlParts.push("</body></html>");
 
@@ -165,59 +215,40 @@ function openPrintPdfReport(reportTitle, sections) {
     printWin.print();
 }
 
+// params: params (optional: { role, scopeTodaId, scopeTodaName })
 function renderExportPage(params) {
     const opts = params || {};
     const isSecretary = opts.role === "secretary";
     const scopeTodaId = isSecretary ? null : (opts.scopeTodaId || null);
-    const scopeLabel = isSecretary ? "all TODAs" : (opts.scopeTodaName || "your TODA");
+    let scopeLabel = "all TODAs";
+    if (!isSecretary) {
+        scopeLabel = opts.scopeTodaName || "your TODA";
+    }
 
     const navBar = trNavBar({
         title: "Export data",
+        subtitle: "for " + scopeLabel,
         onBack: popPage
     });
 
     const main = trEl("main", "content vbox space-xl");
 
-    const selected = {
-        todas: isSecretary,
-        members: true,
-        units: true
-    };
-
+    const selected = {};
     const checkRows = [];
-    if (isSecretary) {
-        const todaCheck = trCheckRow({
-            title: "TODA associations",
-            subtitle: "All registered TODA groups and routes",
-            checked: selected.todas,
+    const dsCount = EXPORT_DATASETS.length;
+    for (let i = 0; i < dsCount; i += 1) {
+        const ds = EXPORT_DATASETS[i];
+        selected[ds.key] = true;
+        const row = trCheckRow({
+            title: ds.title,
+            subtitle: ds.subtitle,
+            checked: true,
             onChange: function (checked) {
-                selected.todas = checked;
+                selected[ds.key] = checked;
             }
         });
-        checkRows.push(todaCheck);
+        checkRows.push(row);
     }
-
-    const memberSubtitle = isSecretary ? "All federation members and roles" : "Members in " + scopeLabel;
-    const memberCheck = trCheckRow({
-        title: "Members",
-        subtitle: memberSubtitle,
-        checked: selected.members,
-        onChange: function (checked) {
-            selected.members = checked;
-        }
-    });
-    checkRows.push(memberCheck);
-
-    const unitSubtitle = isSecretary ? "All tricycle units and assignments" : "Tricycle units in " + scopeLabel;
-    const unitCheck = trCheckRow({
-        title: "Tricycle units",
-        subtitle: unitSubtitle,
-        checked: selected.units,
-        onChange: function (checked) {
-            selected.units = checked;
-        }
-    });
-    checkRows.push(unitCheck);
 
     let activeFormat = EXPORT_FORMATS[0].value;
     const formatRow = trPropertyRow({
@@ -225,20 +256,56 @@ function renderExportPage(params) {
         select: {
             value: activeFormat,
             options: EXPORT_FORMATS,
-            onChange: function (nextVal) {
-                activeFormat = nextVal;
+            onChange: function (event) {
+                activeFormat = event.target.value;
             }
         }
     });
 
     const statusWrap = trEl("div", "vbox space-m");
+    const previewWrap = trEl("div", "vbox space-l");
 
     function setExportStatus(message, isCritical) {
         statusWrap.replaceChildren();
-        const cls = isCritical ? "as-tertiary as-critical" : "as-tertiary as-gray";
+        let cls = "as-tertiary as-gray";
+        if (isCritical) {
+            cls = "as-tertiary as-critical";
+        }
         const msgEl = trEl("p", cls, message);
         msgEl.setAttribute("role", "status");
         statusWrap.appendChild(msgEl);
+    }
+
+    function renderJsonPreview(exportObj, sectionList) {
+        previewWrap.replaceChildren();
+        const countRows = [];
+        const sLen = sectionList.length;
+        for (let i = 0; i < sLen; i += 1) {
+            const sec = sectionList[i];
+            const row = trPropertyRow({
+                label: sec.title,
+                value: String(sec.rows.length) + " " + pluralLabel(sec.rows.length, "row", "rows")
+            });
+            countRows.push(row);
+        }
+
+        let jsonStr = JSON.stringify(exportObj, null, 2);
+        if (jsonStr.length > EXPORT_PREVIEW_MAX_CHARS) {
+            jsonStr = jsonStr.slice(0, EXPORT_PREVIEW_MAX_CHARS) + "\n...";
+        }
+        const snippetRow = trListItem({
+            title: "JSON preview",
+            subtitle: jsonStr
+        });
+        countRows.push(snippetRow);
+
+        const prevCard = trListCard(countRows);
+        const prevGroup = trCardGroup({
+            headline: "Export summary",
+            card: prevCard,
+            footnote: "Full JSON snapshot downloaded to your device."
+        });
+        previewWrap.appendChild(prevGroup);
     }
 
     const exportBtn = trButton({
@@ -246,63 +313,113 @@ function renderExportPage(params) {
         variant: "primary",
         onClick: async function () {
             statusWrap.replaceChildren();
-            const hasSelection = selected.todas || selected.members || selected.units;
-            if (!hasSelection) {
+            previewWrap.replaceChildren();
+
+            let anySelected = false;
+            for (let i = 0; i < dsCount; i += 1) {
+                if (selected[EXPORT_DATASETS[i].key]) {
+                    anySelected = true;
+                }
+            }
+            if (!anySelected) {
                 setExportStatus("Select at least one dataset to export.", true);
                 return;
             }
 
-            setExportStatus("Preparing export...", false);
+            setExportStatus("Preparing 6-table export...", false);
+
             try {
-                const schemaRes = typeof apiGetSchema === "function" ? await apiGetSchema() : null;
-                const schemaTables = schemaRes && schemaRes.tables ? schemaRes.tables : null;
+                const exportRes = await apiExport(scopeTodaId);
+                const rawTables = exportRes.tables || {};
+                let schemaTables = null;
+                if (typeof apiSchema === "function") {
+                    const schemaRes = await apiSchema();
+                    if (schemaRes && schemaRes.tables) {
+                        schemaTables = schemaRes.tables;
+                    }
+                }
+
+                // based on final_dbms1_relational-model.md, relational schema, assemble selected datasets in strict foreign key insert order
                 const sections = [];
-                const sqlBlocks = [];
-                const scopeSlug = scopeTodaId ? scopeTodaId.toLowerCase() : "all";
+                const jsonPayload = {};
+                const scopeSlug = scopeTodaId ? String(scopeTodaId).toLowerCase() : "all";
 
-                if (selected.todas && isSecretary) {
-                    const todaRes = await apiListTodas();
-                    const todas = todaRes.todas || [];
-                    const todaCols = resolveTableColumns(schemaTables, "toda_association", todas);
+                for (let i = 0; i < dsCount; i += 1) {
+                    const ds = EXPORT_DATASETS[i];
+                    if (!selected[ds.key]) {
+                        continue;
+                    }
+                    const rows = rawTables[ds.key] || [];
+                    const cols = resolveTableColumns(schemaTables, ds.key, rows);
                     sections.push({
-                        key: "todas",
-                        table: "toda_association",
-                        title: "TODA Associations",
-                        columns: todaCols,
-                        rows: todas
+                        key: ds.key,
+                        table: ds.key,
+                        title: ds.title,
+                        columns: cols,
+                        rows: rows
                     });
-                }
-
-                if (selected.members) {
-                    const memberQuery = scopeTodaId ? { todaId: scopeTodaId } : {};
-                    const memRes = await apiListMembers(memberQuery);
-                    const members = memRes.members || [];
-                    const memberCols = resolveTableColumns(schemaTables, "member", members);
-                    sections.push({
-                        key: "members",
-                        table: "member",
-                        title: "Members",
-                        columns: memberCols,
-                        rows: members
-                    });
-                }
-
-                if (selected.units) {
-                    const unitQuery = scopeTodaId ? { todaId: scopeTodaId } : {};
-                    const unitRes = await apiListTricycles(unitQuery);
-                    const units = unitRes.tricycles || [];
-                    const unitCols = resolveTableColumns(schemaTables, "tricycle", units);
-                    sections.push({
-                        key: "units",
-                        table: "tricycle",
-                        title: "Tricycle Units",
-                        columns: unitCols,
-                        rows: units
-                    });
+                    jsonPayload[ds.key] = rows;
                 }
 
                 const secCount = sections.length;
-                if (activeFormat === "csv") {
+                if (activeFormat === "sql") {
+                    const sqlBlocks = [];
+                    sqlBlocks.push("-- Tride dbms1_tride SQL export (" + scopeLabel + ")");
+                    const isoNow = new Date().toISOString();
+                    sqlBlocks.push("-- Generated " + isoNow);
+
+                    let fedRowsForUpdate = null;
+                    let memberEmitted = false;
+                    let updateEmitted = false;
+
+                    for (let i = 0; i < secCount; i += 1) {
+                        const sec = sections[i];
+                        sqlBlocks.push("");
+                        sqlBlocks.push("-- " + sec.title);
+
+                        if (sec.table === "federation") {
+                            // based on final_dbms1_relational-model.md, MANAGES, insert federation with null secretary first to avoid circular foreign key error
+                            fedRowsForUpdate = sec.rows;
+                            const fedSql = buildSqlInserts(sec.table, sec.columns, sec.rows, "Secretary_Member_ID");
+                            sqlBlocks.push(fedSql);
+                        } else {
+                            const tblSql = buildSqlInserts(sec.table, sec.columns, sec.rows, null);
+                            sqlBlocks.push(tblSql);
+                        }
+
+                        if (sec.table === "member") {
+                            memberEmitted = true;
+                            if (fedRowsForUpdate) {
+                                const updSql = buildFederationSecretaryUpdates(fedRowsForUpdate);
+                                if (updSql) {
+                                    sqlBlocks.push("");
+                                    sqlBlocks.push("-- Bind appointed federation secretaries");
+                                    sqlBlocks.push(updSql);
+                                    updateEmitted = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if (fedRowsForUpdate && !memberEmitted && !updateEmitted) {
+                        const tailUpd = buildFederationSecretaryUpdates(fedRowsForUpdate);
+                        if (tailUpd) {
+                            sqlBlocks.push("");
+                            sqlBlocks.push("-- Bind appointed federation secretaries");
+                            sqlBlocks.push(tailUpd);
+                        }
+                    }
+
+                    const sqlName = EXPORT_FILE_PREFIX + "-" + scopeSlug + ".sql";
+                    triggerFileDownload(sqlName, sqlBlocks.join("\n"), "application/sql;charset=utf-8");
+                    setExportStatus("Downloaded " + sqlName + " in FK insert order.", false);
+                } else if (activeFormat === "json") {
+                    const jsonName = EXPORT_FILE_PREFIX + "-" + scopeSlug + ".json";
+                    const jsonText = JSON.stringify(jsonPayload, null, 2);
+                    triggerFileDownload(jsonName, jsonText, "application/json;charset=utf-8");
+                    renderJsonPreview(jsonPayload, sections);
+                    setExportStatus("Downloaded " + jsonName + ".", false);
+                } else if (activeFormat === "csv") {
                     for (let i = 0; i < secCount; i += 1) {
                         const sec = sections[i];
                         const csvText = buildCsvText(sec.columns, sec.rows);
@@ -310,20 +427,8 @@ function renderExportPage(params) {
                         triggerFileDownload(filename, "\uFEFF" + csvText, "text/csv;charset=utf-8");
                     }
                     setExportStatus("Downloaded " + secCount + " Excel (.csv) file(s).", false);
-                } else if (activeFormat === "sql") {
-                    sqlBlocks.push("-- Tride SQL export (" + scopeLabel + ")");
-                    sqlBlocks.push("-- Generated " + new Date().toISOString());
-                    for (let i = 0; i < secCount; i += 1) {
-                        const sec = sections[i];
-                        sqlBlocks.push("");
-                        sqlBlocks.push("-- " + sec.title);
-                        sqlBlocks.push(buildSqlInserts(sec.table, sec.columns, sec.rows));
-                    }
-                    const sqlName = EXPORT_FILE_PREFIX + "-" + scopeSlug + ".sql";
-                    triggerFileDownload(sqlName, sqlBlocks.join("\n"), "application/sql;charset=utf-8");
-                    setExportStatus("Downloaded " + sqlName + ".", false);
                 } else {
-                    openPrintPdfReport("Tride Export - " + scopeLabel, sections);
+                    openPrintPdfReport("Tride dbms1_tride Export - " + scopeLabel, sections);
                     setExportStatus("Opened PDF print view.", false);
                 }
             } catch (err) {
@@ -332,21 +437,23 @@ function renderExportPage(params) {
         }
     });
 
-    trAppend(main, [
-        trSection([
-            trCardGroup({
-                headline: "What to export",
-                card: trListCard(checkRows),
-                footnote: "Select one or more tables to include in the export."
-            }),
-            trCardGroup({
-                headline: "Format",
-                card: trListCard([formatRow]),
-                footnote: "SQL exports raw insert statements; PDF opens a printable report."
-            })
-        ]),
-        trSection([exportBtn, statusWrap])
-    ]);
+    const tablesCard = trListCard(checkRows);
+    const tablesGroup = trCardGroup({
+        headline: "What to export (6 tables)",
+        card: tablesCard,
+        footnote: "Select one or more tables. SQL exports follow strict foreign key insert order."
+    });
+
+    const formatCard = trListCard([formatRow]);
+    const formatGroup = trCardGroup({
+        headline: "Format",
+        card: formatCard,
+        footnote: "SQL builds replayable inserts; JSON shows a live preview and downloads a snapshot."
+    });
+
+    const formSec = trSection([tablesGroup, formatGroup]);
+    const actionSec = trSection([exportBtn, statusWrap, previewWrap]);
+    trAppend(main, [formSec, actionSec]);
 
     return [navBar, main];
 }

@@ -7,32 +7,35 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Tride Admin</title>
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" type="image/svg+xml" href="assets/icons/Tride.svg">
-    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
-    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
-    <link rel="stylesheet" href="components/styleNext.css">
-    <link rel="stylesheet" href="components/responsive-experimental.css">
-    <link rel="stylesheet" href="components/distortion-wave.css">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" type="image/svg+xml" href="./assets/icons/Tride.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+    <link rel="stylesheet" href="./components/styleNext.css">
+    <link rel="stylesheet" href="./components/responsive-experimental.css">
+    <link rel="stylesheet" href="./components/distortion-wave.css">
 </head>
 <body>
     <div id="app" class="app"></div>
-    <script src="components/components.js"></script>
-    <script src="components/distortion-wave.js"></script>
-    <script src="router.js"></script>
-    <script src="api.js"></script>
-    <script src="helpers.js"></script>
-    <script src="schema_bridge.js"></script>
-    <script src="pages/auth.js"></script>
-    <script src="pages/units.js"></script>
-    <script src="pages/members.js"></script>
-    <script src="pages/todas.js"></script>
-    <script src="pages/notifications.js"></script>
+    <script src="./components/components.js"></script>
+    <script src="./components/distortion-wave.js"></script>
+    <script src="./js/local_schema.js"></script>
+    <script src="./js/local_database.js"></script>
+    <script src="./js/local_api_controller.js"></script>
+    <script src="./js/api_client.js"></script>
+    <script src="./js/schema_bridge.js"></script>
+    <script src="./js/nav_router.js"></script>
+    <script src="./js/ui_helpers.js"></script>
+    <script src="./pages/auth_page.js"></script>
+    <script src="./pages/units_page.js"></script>
+    <script src="./pages/members_page.js"></script>
+    <script src="./pages/todas_page.js"></script>
+    <script src="./pages/notifications_page.js"></script>
     <!-- experimental export feature: remove this script tag to disable -->
-    <script src="pages/export_page.js"></script>
-    <script src="admin.js"></script>
+    <script src="./pages/export_page.js"></script>
+    <script src="./js/admin_app.js"></script>
     <!-- temporary dev autofill helper: remove this script tag to disable -->
-    <script src="autofill_helper.js"></script>
+    <script src="./js/autofill_helper.js"></script>
     <script>
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", function () {

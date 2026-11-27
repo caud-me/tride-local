@@ -27,42 +27,45 @@
             <main class="content vbox space-xl">
                 <section class="trSection section vbox space-l">
                     <div class="trCardStack group vbox space-l">
-                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Actively used</p>
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">With active shift drivers (2)</p>
                         <div class="card-stack collapsed">
                             <div class="trBrandCard card brandcard grid border-m" role="button" tabindex="0" style="z-index: 2;" data-goto="view-manage-unit">
                                 <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">OPERATOR</span></p>
+                                <div class="tr"><p class="as-tertiary as-gray">Blue</p></div>
                                 <div class="vbox space-s bl">
-                                    <p class="as-large-title as-bold">0224</p>
+                                    <p class="as-large-title as-bold">0225</p>
                                     <p class="as-tertiary as-gray">from <span class="as-bold">you</span></p>
                                 </div>
                                 <div class="br">
-                                    <p class="as-tertiary as-gray">Assigned to <span class="as-bold">Jamie Reyes</span></p>
+                                    <p class="as-tertiary as-gray">Assigned to <span class="as-bold">Pedro Reyes</span> (+1 alt)</p>
                                 </div>
                             </div>
                             <div class="trBrandCard card brandcard grid border-m" role="button" tabindex="0" style="z-index: 1;" data-goto="view-manage-unit">
                                 <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">OPERATOR</span></p>
+                                <div class="tr"><p class="as-tertiary as-gray">STF-Blue</p></div>
                                 <div class="vbox space-s bl">
-                                    <p class="as-large-title as-bold">0412</p>
+                                    <p class="as-large-title as-bold">013-STF</p>
                                     <p class="as-tertiary as-gray">from <span class="as-bold">you</span></p>
                                 </div>
                                 <div class="br">
-                                    <p class="as-tertiary as-gray">Assigned to <span class="as-bold">yourself</span></p>
+                                    <p class="as-tertiary as-gray">Assigned to <span class="as-bold">Carlos Mendoza</span></p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="trCardStack group vbox space-l">
-                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Unassigned</p>
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Unassigned (1)</p>
                         <div class="card-stack">
                             <div class="trBrandCard card brandcard grid border-m" role="button" tabindex="0" style="z-index: 1;" data-goto="view-manage-unit">
                                 <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">OPERATOR</span></p>
+                                <div class="tr"><p class="as-tertiary as-gray">Blue</p></div>
                                 <div class="vbox space-s bl">
-                                    <p class="as-large-title as-bold">0819</p>
+                                    <p class="as-large-title as-bold">0226</p>
                                     <p class="as-tertiary as-gray">from <span class="as-bold">you</span></p>
                                 </div>
                                 <div class="br">
-                                    <p class="as-tertiary as-gray">No driver</p>
+                                    <p class="as-tertiary as-gray">No active driver</p>
                                 </div>
                             </div>
                         </div>
@@ -71,7 +74,7 @@
             </main>
         </div>
 
-        <!-- view: manage unit (renderManageUnitPage) -->
+        <!-- view: manage unit (renderManageUnitPage keyed by Tricycle_ID) -->
         <div id="view-manage-unit" class="vbox flex1 hidden">
             <header class="trNavBar navigation-bar hbox space-l">
                 <button type="button" class="thickness-m border-m" aria-label="Back" data-goto="view-operator-units">
@@ -79,7 +82,7 @@
                 </button>
                 <div class="vbox push-right space-s">
                     <h1 class="as-headline lh-1 as-bold">Manage unit</h1>
-                    <p class="as-tertiary as-gray lh-1">for your unit 0224</p>
+                    <p class="as-tertiary as-gray lh-1">for your unit 0225</p>
                 </div>
                 <button type="button" class="trButton as-standard thickness-m border-l" data-goto="view-operator-units">Done</button>
             </header>
@@ -87,49 +90,95 @@
             <main class="content vbox space-xl">
                 <section class="trSection section vbox space-l">
                     <div class="trCardGroup group vbox space-m">
-                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Tricycle details</p>
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Tricycle registration</p>
                         <div class="trCard card standard vbox space-m border-l trListCard">
-                            <div class="trPropertyRow vbox" data-tr-field="true" role="button" tabindex="0" data-open-sheet="sheet-driver-picker">
-                                <label><span class="as-tertiary as-gray">Assigned driver</span></label>
-                                <p class="as-primary">Jamie Reyes (M-002)</p>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">Tricycle ID</span></label>
+                                <p class="as-primary">TRI-002</p>
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
                             <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label><span class="as-tertiary as-gray">Body No.</span></label>
-                                <p class="as-primary">0224</p>
+                                <label for="unit-body"><span class="as-tertiary as-gray">Body Number</span></label>
+                                <input id="unit-body" type="text" maxlength="15" value="0225">
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
                             <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label for="unit-chassis"><span class="as-tertiary as-gray">Chassis No.</span></label>
-                                <input id="unit-chassis" type="text" value="CH0001">
+                                <label for="unit-plate"><span class="as-tertiary as-gray">Plate Number</span></label>
+                                <input id="unit-plate" type="text" maxlength="15" value="EAB-1002">
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
                             <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label for="unit-fran"><span class="as-tertiary as-gray">Franchise No.</span></label>
-                                <input id="unit-fran" type="text" value="FR202601">
+                                <label for="unit-fran"><span class="as-tertiary as-gray">Franchise Number</span></label>
+                                <input id="unit-fran" type="text" value="FRAN-2024-0225">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="unit-chassis"><span class="as-tertiary as-gray">Chassis Number</span></label>
+                                <input id="unit-chassis" type="text" value="CHS-TMX-1002">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="unit-zone"><span class="as-tertiary as-gray">Color Zone</span></label>
+                                <div class="hbox space-m">
+                                    <select id="unit-zone" class="flex1">
+                                        <option value="">None</option>
+                                        <option value="Red">Red</option>
+                                        <option value="Blue" selected>Blue</option>
+                                        <option value="Green">Green</option>
+                                        <option value="Yellow">Yellow</option>
+                                        <option value="STF-Blue">STF-Blue</option>
+                                        <option value="STF-White">STF-White</option>
+                                        <option value="White">White</option>
+                                    </select>
+                                    <i class="trIcon icon as-gray" aria-hidden="true">&#xE70D;</i>
+                                </div>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="unit-owner"><span class="as-tertiary as-gray">Owner Member ID</span></label>
+                                <input id="unit-owner" type="text" maxlength="10" value="MEM-002">
                             </div>
                         </div>
-                        <p class="as-cardfootnote as-tertiary as-gray">Tap the driver row to assign or switch who drives this unit.</p>
+                        <p class="as-cardfootnote as-tertiary as-gray">Tricycle ID stays fixed even if body placard or motor identifiers update.</p>
                     </div>
                 </section>
 
                 <section class="trSection section vbox space-l">
                     <div class="trCardGroup group vbox space-m">
-                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Danger zone</p>
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Shift drivers (2)</p>
                         <div class="trCard card standard vbox space-m border-l trListCard">
                             <div class="trActionRow hbox space-l" role="button" tabindex="0">
                                 <div class="vbox push-right space-s">
-                                    <p class="as-primary as-critical">Remove driver</p>
+                                    <p class="as-primary">Pedro Reyes (MEM-003)</p>
+                                    <p class="as-secondary as-gray">Primary · Mon-Fri 06:00-18:00 · Active (2026-02-01)</p>
                                 </div>
+                                <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
-                            <div class="trActionRow hbox space-l" aria-disabled="true">
+                            <div class="trActionRow hbox space-l" role="button" tabindex="0">
                                 <div class="vbox push-right space-s">
-                                    <p class="as-primary as-critical disabled">Remove tricycle</p>
+                                    <p class="as-primary">Elena Bautista (MEM-004)</p>
+                                    <p class="as-secondary as-gray">Alternate · Sat-Sun 06:00-18:00 · Active (2026-02-05)</p>
+                                </div>
+                                <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                            </div>
+                        </div>
+                        <p class="as-cardfootnote as-tertiary as-gray">Tap a shift row to update role, schedule, status, or remove it.</p>
+                    </div>
+                    <button type="button" class="trButton as-standard thickness-l border-l" data-open-sheet="sheet-assign-shift">Assign shift driver</button>
+                </section>
+
+                <section class="trSection section vbox space-l">
+                    <div class="trCardGroup group vbox space-m">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Danger zone</p>
+                        <div class="trCard card standard vbox space-m border-l">
+                            <div class="trActionRow hbox space-l" role="button" tabindex="0">
+                                <div class="vbox push-right space-s">
+                                    <p class="as-primary as-critical">Remove tricycle 0225</p>
                                 </div>
                             </div>
                         </div>
-                        <p class="as-cardfootnote as-tertiary as-gray">Remove the assigned driver before deleting this tricycle.</p>
+                        <p class="as-cardfootnote as-tertiary as-gray">Deleting this tricycle automatically removes its linked shift assignments.</p>
                     </div>
                 </section>
             </main>
@@ -153,58 +202,88 @@
                         <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Unit registration</p>
                         <div class="trCard card standard vbox space-m border-l trListCard">
                             <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label for="add-body"><span class="as-tertiary as-gray">Body Number</span></label>
-                                <input id="add-body" type="text" maxlength="4" placeholder="e.g. 0235">
+                                <label for="add-tri-id"><span class="as-tertiary as-gray">Tricycle ID (Optional)</span></label>
+                                <input id="add-tri-id" type="text" maxlength="10" placeholder="Auto or e.g. TRI-006">
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
                             <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label for="add-chassis"><span class="as-tertiary as-gray">Chassis Number</span></label>
-                                <input id="add-chassis" type="text" placeholder="e.g. CH0008">
+                                <label for="add-body"><span class="as-tertiary as-gray">Body Number</span></label>
+                                <input id="add-body" type="text" maxlength="15" placeholder="e.g. 0227 or 013-STF">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-plate"><span class="as-tertiary as-gray">Plate Number</span></label>
+                                <input id="add-plate" type="text" maxlength="15" placeholder="e.g. EAB-1006">
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
                             <div class="trPropertyRow vbox" data-tr-field="true">
                                 <label for="add-fran"><span class="as-tertiary as-gray">Franchise Number</span></label>
-                                <input id="add-fran" type="text" placeholder="e.g. FR202604">
+                                <input id="add-fran" type="text" placeholder="e.g. FRAN-2026-0227">
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
-                            <div class="trPropertyRow vbox" data-tr-field="true" role="button" tabindex="0" data-open-sheet="sheet-driver-picker">
-                                <label><span class="as-tertiary as-gray">Assigned driver (Optional)</span></label>
-                                <p class="as-primary">None (Tap to assign licensed driver)</p>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-chassis"><span class="as-tertiary as-gray">Chassis Number</span></label>
+                                <input id="add-chassis" type="text" placeholder="e.g. CHS-TMX-1006">
                             </div>
                         </div>
-                        <p class="as-cardfootnote as-tertiary as-gray">Operators can register up to 3 tricycles. Driver assignment is optional.</p>
+                        <p class="as-cardfootnote as-tertiary as-gray">Operators can register up to 5 tricycles. Assign shift drivers after registration.</p>
                     </div>
                 </section>
             </main>
         </div>
     </div>
 
-    <!-- sheet: driver picker (openDriverPicker) -->
-    <div id="sheet-driver-picker" class="trSheet sheet-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="sheet-driver-title">
+    <!-- sheet: assign shift driver (openCreateAssignmentSheet) -->
+    <div id="sheet-assign-shift" class="trSheet sheet-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="sheet-shift-title">
         <div class="sheet vbox space-xl border-l">
             <div class="group sheet-header vbox space-t">
-                <p id="sheet-driver-title" class="as-headline as-bold">Select licensed driver</p>
-                <div class="trSearchBox card hbox space-m thickness-m border-l" role="search">
-                    <i class="trIcon icon as-gray" aria-hidden="true">&#xE721;</i>
-                    <input type="search" class="flex1" placeholder="Find a driver" aria-label="Find a driver">
-                </div>
+                <p id="sheet-shift-title" class="as-headline as-bold">Assign shift driver</p>
+                <p class="as-secondary as-midgray">Add a Primary or Alternate (relyebo) shift for unit 0225.</p>
             </div>
             <div class="group sheet-body vbox space-l">
-                <div class="trAlphaList vbox space-l">
-                    <div class="trCardGroup group vbox space-m">
-                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">J</p>
-                        <div class="trCard card standard vbox space-m border-l trListCard">
-                            <div class="trActionRow hbox space-l" role="button" tabindex="0" data-close-sheet="sheet-driver-picker">
-                                <div class="vbox push-right space-s">
-                                    <p class="as-primary">Jamie Reyes (M-002)</p>
-                                </div>
+                <div class="trCard card standard vbox space-m border-l trListCard">
+                    <div class="trPropertyRow vbox" data-tr-field="true">
+                        <label><span class="as-tertiary as-gray">Licensed Driver</span></label>
+                        <p class="as-primary">Elena Bautista (MEM-004)</p>
+                    </div>
+                    <div class="trSpacer spacer" role="separator"></div>
+                    <div class="trPropertyRow vbox" data-tr-field="true">
+                        <label for="shift-sched"><span class="as-tertiary as-gray">Shift Schedule</span></label>
+                        <input id="shift-sched" type="text" placeholder="e.g. Sat-Sun 06:00-18:00">
+                    </div>
+                    <div class="trSpacer spacer" role="separator"></div>
+                    <div class="trPropertyRow vbox" data-tr-field="true">
+                        <label for="shift-date"><span class="as-tertiary as-gray">Date Assigned</span></label>
+                        <input id="shift-date" type="text" maxlength="10" placeholder="YYYY-MM-DD">
+                    </div>
+                </div>
+
+                <div class="trCardGroup group vbox space-m">
+                    <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Driver role</p>
+                    <div class="trCard card standard vbox space-m border-l trListCard trRadioGroup" role="radiogroup" aria-label="Driver Role">
+                        <label class="trRadioRow check-row hbox space-l">
+                            <input type="radio" name="create-shift-role" value="Primary">
+                            <div class="vbox push-right space-s">
+                                <p class="as-primary">Primary driver</p>
+                                <p class="as-secondary as-gray">Main regular shift driver for this tricycle.</p>
                             </div>
-                        </div>
+                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                        </label>
+                        <div class="trSpacer spacer" role="separator"></div>
+                        <label class="trRadioRow check-row hbox space-l">
+                            <input type="radio" name="create-shift-role" value="Alternate" checked>
+                            <div class="vbox push-right space-s">
+                                <p class="as-primary">Alternate (Relyebo)</p>
+                                <p class="as-secondary as-gray">Reliever or weekend/extra shift driver.</p>
+                            </div>
+                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                        </label>
                     </div>
                 </div>
             </div>
             <div class="group sheet-footer vbox space-m">
-                <button type="button" class="trButton as-standard thickness-l border-l" data-close-sheet="sheet-driver-picker">Cancel</button>
+                <button type="button" class="trButton as-primary thickness-l border-l" data-close-sheet="sheet-assign-shift">Assign shift driver</button>
+                <button type="button" class="trButton as-standard thickness-l border-l" data-close-sheet="sheet-assign-shift">Cancel</button>
             </div>
         </div>
     </div>

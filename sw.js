@@ -1,32 +1,37 @@
-const TRIDE_CACHE_NAME = "tride-local-v27";
+/* offline service worker cache for tride-local (dbms1_tride 6-table edition) */
+
+const TRIDE_CACHE_NAME = "tride-local-v30";
 const PRECACHE_URLS = [
     "./",
     "./index.html",
     "./admin.html",
     "./manifest.webmanifest",
-    "./app.js",
-    "./admin.js",
-    "./api.js",
-    "./router.js",
-    "./helpers.js",
-    "./schema_bridge.js",
-    "./autofill_helper.js",
-    "./components/style.css",
+    "./components/styleNext.css",
     "./components/responsive-experimental.css",
     "./components/distortion-wave.css",
     "./components/distortion-wave.js",
     "./components/components.js",
-    "./pages/auth.js",
-    "./pages/export_page.js",
-    "./pages/home.js",
-    "./pages/members.js",
-    "./pages/notifications.js",
-    "./pages/todas.js",
-    "./pages/units.js",
     "./assets/fonts/SegoeIcons.ttf",
     "./assets/icons/Tride.svg",
     "./assets/icons/icon-192.png",
-    "./assets/icons/icon-512.png"
+    "./assets/icons/icon-512.png",
+    "./js/local_schema.js",
+    "./js/local_database.js",
+    "./js/local_api_controller.js",
+    "./js/api_client.js",
+    "./js/schema_bridge.js",
+    "./js/nav_router.js",
+    "./js/ui_helpers.js",
+    "./js/autofill_helper.js",
+    "./js/member_app.js",
+    "./js/admin_app.js",
+    "./pages/auth_page.js",
+    "./pages/home_page.js",
+    "./pages/todas_page.js",
+    "./pages/members_page.js",
+    "./pages/units_page.js",
+    "./pages/notifications_page.js",
+    "./pages/export_page.js"
 ];
 
 self.addEventListener("install", function (event) {
@@ -43,7 +48,8 @@ self.addEventListener("activate", function (event) {
     event.waitUntil(
         caches.keys().then(function (keys) {
             const removals = [];
-            for (let i = 0; i < keys.length; i += 1) {
+            const keyCount = keys.length;
+            for (let i = 0; i < keyCount; i += 1) {
                 if (keys[i] !== TRIDE_CACHE_NAME) {
                     removals.push(caches.delete(keys[i]));
                 }

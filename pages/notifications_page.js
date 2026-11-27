@@ -1,18 +1,9 @@
-/* modular notifications UI (safe to remove without breaking core pages) */
+/* modular notifications UI for shift assignments and officer term notices */
 
-function apiListNotifications() {
-    return apiRequest("GET", "/notifications");
-}
+const NOTIF_EMPTY_TITLE = "No notifications yet";
+const NOTIF_EMPTY_SUBTITLE = "Updates such as shift assignments and officer appointments appear here.";
 
-function apiMarkNotificationRead(id) {
-    const safeId = encodeURIComponent(id);
-    return apiRequest("PUT", "/notifications/" + safeId + "/read");
-}
-
-function apiMarkAllNotificationsRead() {
-    return apiRequest("PUT", "/notifications/read-all");
-}
-
+// params: none
 function createNotificationBellButton() {
     const bellBtn = trIcon("\uEA8F", {
         label: "Notifications",
@@ -37,6 +28,7 @@ function createNotificationBellButton() {
     return bellBtn;
 }
 
+// params: allRead (required: boolean), onMarkedRead (optional: function)
 function buildHeaderMoreMenu(allRead, onMarkedRead) {
     return trMenu({
         icon: "\uE712",
@@ -47,7 +39,7 @@ function buildHeaderMoreMenu(allRead, onMarkedRead) {
                 items: [
                     {
                         value: "read-all",
-                        label: "Mark as read",
+                        label: "Mark all as read",
                         checked: false,
                         disabled: allRead
                     }
@@ -69,18 +61,21 @@ function buildHeaderMoreMenu(allRead, onMarkedRead) {
     });
 }
 
+// params: none
 function renderNotificationsPage() {
     const main = trEl("main", "content vbox space-xl");
     const menuSlot = trEl("div", "hbox align-center");
 
     function updateHeaderMenu(allRead) {
         menuSlot.replaceChildren();
-        menuSlot.appendChild(buildHeaderMoreMenu(allRead, loadFeed));
+        const menuNode = buildHeaderMoreMenu(allRead, loadFeed);
+        menuSlot.appendChild(menuNode);
     }
 
     function loadFeed() {
         main.replaceChildren();
-        main.appendChild(trEl("p", "as-tertiary as-gray", "Loading notifications..."));
+        const loadingText = trEl("p", "as-tertiary as-gray", "Loading notifications...");
+        main.appendChild(loadingText);
 
         apiListNotifications().then(function (data) {
             main.replaceChildren();
@@ -91,20 +86,27 @@ function renderNotificationsPage() {
             if (items.length === 0) {
                 const emptyView = trEmptyState({
                     icon: "\uEA8F",
-                    title: "No notifications yet",
-                    subtitle: "Updates such as tricycle assignments will appear here."
+                    title: NOTIF_EMPTY_TITLE,
+                    subtitle: NOTIF_EMPTY_SUBTITLE
                 });
-                main.appendChild(trSection(emptyView, { flex: true }));
+                const emptySec = trSection(emptyView, { flex: true });
+                main.appendChild(emptySec);
                 return;
             }
 
             const rows = [];
-            for (let i = 0; i < items.length; i += 1) {
+            const itemCount = items.length;
+            for (let i = 0; i < itemCount; i += 1) {
                 const item = items[i];
                 const row = trEl("div", "vbox space-s");
-                const titleCls = item.isRead ? "as-primary as-gray" : "as-primary";
-                row.appendChild(trEl("p", titleCls, item.title));
-                row.appendChild(trEl("p", "as-secondary as-gray", item.message));
+                let titleCls = "as-primary";
+                if (item.isRead) {
+                    titleCls = "as-primary as-gray";
+                }
+                const titleEl = trEl("p", titleCls, item.title);
+                const msgEl = trEl("p", "as-secondary as-gray", item.message);
+                row.appendChild(titleEl);
+                row.appendChild(msgEl);
 
                 if (!item.isRead) {
                     trBindTap(row, async function () {
@@ -118,18 +120,23 @@ function renderNotificationsPage() {
                 }
                 rows.push(row);
             }
-            main.appendChild(trSection(trCardGroup({
+            const feedCard = trListCard(rows);
+            const feedGroup = trCardGroup({
                 headline: "Recent updates",
-                card: trListCard(rows),
-                footnote: "Tap an unread notification to mark it as read."
-            })));
+                card: feedCard,
+                footnote: "Tap an unread notice to mark it as read."
+            });
+            const feedSec = trSection(feedGroup);
+            main.appendChild(feedSec);
         }).catch(function (err) {
             main.replaceChildren();
-            main.appendChild(trSection(trEmptyState({
+            const errEmpty = trEmptyState({
                 icon: "\uE783",
                 title: "Could not load notifications",
                 subtitle: err.message
-            }), { flex: true }));
+            });
+            const errSec = trSection(errEmpty, { flex: true });
+            main.appendChild(errSec);
         });
     }
 

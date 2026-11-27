@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRIDE — TODA Associations</title>
+    <title>TRIDE — TODAs &amp; Federations</title>
     <link rel="stylesheet" href="../components/styleNext.css">
     <link rel="stylesheet" href="../components/responsive-experimental.css">
     <link rel="stylesheet" href="../components/distortion-wave.css">
 </head>
 <body>
     <div id="app" class="app">
-        <!-- view: todas list (renderTodasPage) -->
+        <!-- view: todas & federations hub (renderTodasPage) -->
         <div id="view-todas" class="vbox flex1">
             <header class="trNavBar navigation-bar hbox space-l">
                 <button type="button" class="thickness-m border-m" aria-label="Back" data-href="home.html">
                     <i class="trIcon icon" aria-hidden="true">&#xE76B;</i>
                 </button>
                 <div class="vbox push-right space-s">
-                    <h1 class="as-headline lh-1 as-bold">TODA associations</h1>
+                    <h1 class="as-headline lh-1 as-bold">TODAs &amp; federations</h1>
                 </div>
                 <button type="button" class="trIcon thickness-m border-m" aria-label="Add TODA" data-goto="view-add-toda">
                     <i class="icon" aria-hidden="true">&#xE710;</i>
@@ -27,54 +27,64 @@
             <main class="content vbox space-xl">
                 <section class="trSection section vbox space-l flex1">
                     <div class="trTabbed tabbed hbox space-l" role="tablist">
-                        <button type="button" class="as-tabbed as-bold thickness-m flex1 active" role="tab" aria-selected="true" data-tab="all">All</button>
-                        <button type="button" class="as-tabbed as-bold thickness-m flex1" role="tab" aria-selected="false" data-tab="empty">Empty TODAs</button>
+                        <button type="button" class="as-tabbed as-bold thickness-m flex1 active" role="tab" aria-selected="true" data-tab="todas">TODAs</button>
+                        <button type="button" class="as-tabbed as-bold thickness-m flex1" role="tab" aria-selected="false" data-tab="federations">Federations</button>
                     </div>
 
-                    <div id="todas-tab-all" class="vbox flex1 space-l">
-                        <div class="vbox space-l card-grid">
+                    <div id="tab-todas" class="vbox flex1 space-l">
+                        <div class="card-grid vbox space-l">
                             <div class="trBrandCard card brandcard grid border-m" role="button" tabindex="0" data-goto="view-toda-detail">
                                 <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">ASSOCIATION</span></p>
                                 <div class="tr">
-                                    <p class="as-tertiary as-gray">24 members</p>
+                                    <p class="as-tertiary as-gray">4 members · 3 units</p>
                                 </div>
                                 <div class="vbox space-s bl">
                                     <p class="as-headline as-bold">Mabolo TODA</p>
                                     <p class="as-tertiary as-gray">Mabolo - Centro</p>
                                 </div>
                                 <div class="br">
-                                    <p class="as-tertiary as-gray">Pres: <span class="as-bold">Jamie Reyes</span></p>
+                                    <p class="as-tertiary as-gray">Pres: <span class="as-bold">Juan Dela Cruz</span></p>
                                 </div>
                             </div>
 
                             <div class="trBrandCard card brandcard grid border-m" role="button" tabindex="0" data-goto="view-toda-detail">
                                 <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">ASSOCIATION</span></p>
                                 <div class="tr">
-                                    <p class="as-tertiary as-gray">18 members</p>
+                                    <p class="as-tertiary as-gray">0 members · 0 units</p>
                                 </div>
                                 <div class="vbox space-s bl">
-                                    <p class="as-headline as-bold">Pacol TODA</p>
-                                    <p class="as-tertiary as-gray">Pacol - Centro</p>
+                                    <p class="as-headline as-bold">Concepcion Pequena TODA</p>
+                                    <p class="as-tertiary as-gray">Concepcion - SM Naga</p>
                                 </div>
                                 <div class="br">
-                                    <p class="as-tertiary as-gray">No president</p>
+                                    <p class="as-tertiary as-gray">No active president</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div id="todas-tab-empty" class="vbox flex1 space-l hidden">
-                        <div class="trEmptyState group vbox center justify-center flex1 space-m" role="status">
-                            <i class="trIcon icon as-display as-centered as-gray" aria-hidden="true">&#xE82F;</i>
-                            <p class="as-secondary as-bold as-centered">No empty TODA associations</p>
-                            <p class="as-tertiary as-gray as-centered">Every TODA association has at least one member.</p>
+                    <div id="tab-federations" class="vbox flex1 space-l hidden">
+                        <div class="card-grid vbox space-l">
+                            <div class="trBrandCard card brandcard grid border-m" role="button" tabindex="0">
+                                <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">FEDERATION</span></p>
+                                <div class="tr">
+                                    <p class="as-tertiary as-gray">4 TODAs</p>
+                                </div>
+                                <div class="vbox space-s bl">
+                                    <p class="as-headline as-bold">NCFETODA INC.</p>
+                                    <p class="as-tertiary as-gray">SP-RES-2026-601 · exp 2029-08-28</p>
+                                </div>
+                                <div class="br">
+                                    <p class="as-tertiary as-gray">Sec: <span class="as-bold">Juan Dela Cruz</span></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
             </main>
         </div>
 
-        <!-- view: toda detail (renderTodaDetailPage) -->
+        <!-- view: toda detail with officer_term board roster (renderTodaDetailPage) -->
         <div id="view-toda-detail" class="vbox flex1 hidden">
             <header class="trNavBar navigation-bar hbox space-l">
                 <button type="button" class="thickness-m border-m" aria-label="Back" data-goto="view-todas">
@@ -93,7 +103,7 @@
                         <div class="trCard card standard vbox space-m border-l trListCard">
                             <div class="trPropertyRow vbox" data-tr-field="true">
                                 <label><span class="as-tertiary as-gray">TODA ID</span></label>
-                                <p class="as-primary">T01</p>
+                                <p class="as-primary">TODA-01</p>
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
                             <div class="trPropertyRow vbox" data-tr-field="true">
@@ -101,47 +111,66 @@
                                 <p class="as-primary">Mabolo - Centro</p>
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
-                            <div class="trPropertyRow vbox" data-tr-field="true" role="button" tabindex="0" data-href="members.html">
-                                <label><span class="as-tertiary as-gray">TODA President</span></label>
-                                <p class="as-primary">Jamie Reyes (M-002)</p>
-                            </div>
-                        </div>
-                        <p class="as-cardfootnote as-tertiary as-gray">Tap the president row to assign or replace the TODA president.</p>
-                    </div>
-
-                    <div class="trCardGroup group vbox space-m">
-                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Directory</p>
-                        <div class="trCard card standard vbox space-m border-l trListCard">
-                            <div class="trActionRow hbox space-l" role="button" tabindex="0" data-href="members.html">
-                                <div class="vbox push-right space-s">
-                                    <p class="as-primary">Members in Mabolo TODA (24)</p>
-                                </div>
-                                <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">SEC Reg. Number</span></label>
+                                <p class="as-primary">SEC-CN202100101</p>
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
-                            <div class="trActionRow hbox space-l" role="button" tabindex="0" data-href="units.html">
-                                <div class="vbox push-right space-s">
-                                    <p class="as-primary">Units in Mabolo TODA</p>
-                                </div>
-                                <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">Terminal Location</span></label>
+                                <p class="as-primary">SM City Naga Terminal</p>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">Accreditation Expiry</span></label>
+                                <p class="as-primary">2029-06-30</p>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">Status</span></label>
+                                <p class="as-primary">Active</p>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label><span class="as-tertiary as-gray">Federation</span></label>
+                                <p class="as-primary">NCFETODA INC. (FED-01)</p>
                             </div>
                         </div>
-                        <p class="as-cardfootnote as-tertiary as-gray">Browse members and tricycle units assigned to this association.</p>
+                        <p class="as-cardfootnote as-tertiary as-gray">City accreditation and SEC registration record for this association.</p>
                     </div>
                 </section>
 
                 <section class="trSection section vbox space-l">
                     <div class="trCardGroup group vbox space-m">
-                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Danger zone</p>
-                        <div class="trCard card standard vbox space-m border-l">
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Officer board (3)</p>
+                        <div class="trCard card standard vbox space-m border-l trListCard">
                             <div class="trActionRow hbox space-l" role="button" tabindex="0">
                                 <div class="vbox push-right space-s">
-                                    <p class="as-primary as-critical">Remove Mabolo TODA</p>
+                                    <p class="as-primary">President</p>
+                                    <p class="as-secondary as-gray">Juan Dela Cruz (MEM-001) · 2025-01-01 to 2026-12-31 · Active</p>
                                 </div>
+                                <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trActionRow hbox space-l" role="button" tabindex="0">
+                                <div class="vbox push-right space-s">
+                                    <p class="as-primary">Treasurer</p>
+                                    <p class="as-secondary as-gray">Maria Santos (MEM-002) · 2025-01-01 to 2026-12-31 · Active</p>
+                                </div>
+                                <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trActionRow hbox space-l" role="button" tabindex="0">
+                                <div class="vbox push-right space-s">
+                                    <p class="as-primary">Secretary</p>
+                                    <p class="as-secondary as-gray">Pedro Reyes (MEM-003) · 2025-01-01 to 2026-12-31 · Active</p>
+                                </div>
+                                <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
                             </div>
                         </div>
-                        <p class="as-cardfootnote as-tertiary as-gray">Remove all members and unassign the president before deleting this TODA.</p>
+                        <p class="as-cardfootnote as-tertiary as-gray">Tap an officer term to review, edit, or end it.</p>
                     </div>
+                    <button type="button" class="trButton as-standard thickness-l border-l" data-open-sheet="sheet-add-officer">Add officer term</button>
                 </section>
             </main>
         </div>
@@ -164,8 +193,8 @@
                         <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">New association</p>
                         <div class="trCard card standard vbox space-m border-l trListCard">
                             <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label for="add-toda-id"><span class="as-tertiary as-gray">TODA ID</span></label>
-                                <input id="add-toda-id" type="text" placeholder="e.g. T01">
+                                <label for="add-toda-id"><span class="as-tertiary as-gray">TODA ID (Optional)</span></label>
+                                <input id="add-toda-id" type="text" maxlength="10" placeholder="Auto or e.g. TODA-06">
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
                             <div class="trPropertyRow vbox" data-tr-field="true">
@@ -177,11 +206,91 @@
                                 <label for="add-toda-route"><span class="as-tertiary as-gray">Route</span></label>
                                 <input id="add-toda-route" type="text" placeholder="e.g. Mabolo - Centro">
                             </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-toda-sec"><span class="as-tertiary as-gray">SEC Reg. Number</span></label>
+                                <input id="add-toda-sec" type="text" placeholder="e.g. SEC-CN202600106">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-toda-term"><span class="as-tertiary as-gray">Terminal Location</span></label>
+                                <input id="add-toda-term" type="text" placeholder="e.g. SM City Naga Terminal">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-toda-exp"><span class="as-tertiary as-gray">Accreditation Expiry</span></label>
+                                <input id="add-toda-exp" type="text" maxlength="10" placeholder="YYYY-MM-DD">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-toda-fed"><span class="as-tertiary as-gray">Federation Affiliation</span></label>
+                                <div class="hbox space-m">
+                                    <select id="add-toda-fed" class="flex1">
+                                        <option value="">None (Unaffiliated)</option>
+                                        <option value="FED-01" selected>NCFETODA INC. (FED-01)</option>
+                                    </select>
+                                    <i class="trIcon icon as-gray" aria-hidden="true">&#xE70D;</i>
+                                </div>
+                            </div>
                         </div>
-                        <p class="as-cardfootnote as-tertiary as-gray">Each TODA needs a unique ID, name, and primary route.</p>
+                        <p class="as-cardfootnote as-tertiary as-gray">Federation affiliation can be left as None for newly chartered TODAs.</p>
                     </div>
                 </section>
             </main>
+        </div>
+    </div>
+
+    <!-- sheet: add officer term -->
+    <div id="sheet-add-officer" class="trSheet sheet-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="sheet-officer-title">
+        <div class="sheet vbox space-xl border-l">
+            <div class="group sheet-header vbox space-t">
+                <p id="sheet-officer-title" class="as-headline as-bold">Add officer term</p>
+                <p class="as-secondary as-midgray">Assign an elected board seat for Mabolo TODA.</p>
+            </div>
+            <div class="group sheet-body vbox space-l">
+                <div class="trCard card standard vbox space-m border-l trListCard">
+                    <div class="trPropertyRow vbox" data-tr-field="true">
+                        <label for="ot-member"><span class="as-tertiary as-gray">TODA Member</span></label>
+                        <div class="hbox space-m">
+                            <select id="ot-member" class="flex1">
+                                <option value="MEM-001">Juan Dela Cruz (MEM-001)</option>
+                                <option value="MEM-004">Elena Bautista (MEM-004)</option>
+                            </select>
+                            <i class="trIcon icon as-gray" aria-hidden="true">&#xE70D;</i>
+                        </div>
+                    </div>
+                    <div class="trSpacer spacer" role="separator"></div>
+                    <div class="trPropertyRow vbox" data-tr-field="true">
+                        <label for="ot-pos"><span class="as-tertiary as-gray">Position</span></label>
+                        <div class="hbox space-m">
+                            <select id="ot-pos" class="flex1">
+                                <option value="President">President</option>
+                                <option value="Vice President">Vice President</option>
+                                <option value="Secretary">Secretary</option>
+                                <option value="Treasurer">Treasurer</option>
+                                <option value="Auditor">Auditor</option>
+                                <option value="Sgt. at Arms">Sgt. at Arms</option>
+                                <option value="Board of Directors">Board of Directors</option>
+                            </select>
+                            <i class="trIcon icon as-gray" aria-hidden="true">&#xE70D;</i>
+                        </div>
+                    </div>
+                    <div class="trSpacer spacer" role="separator"></div>
+                    <div class="trPropertyRow vbox" data-tr-field="true">
+                        <label for="ot-start"><span class="as-tertiary as-gray">Term Start</span></label>
+                        <input id="ot-start" type="text" maxlength="10" placeholder="YYYY-MM-DD">
+                    </div>
+                    <div class="trSpacer spacer" role="separator"></div>
+                    <div class="trPropertyRow vbox" data-tr-field="true">
+                        <label for="ot-end"><span class="as-tertiary as-gray">Term End</span></label>
+                        <input id="ot-end" type="text" maxlength="10" placeholder="YYYY-MM-DD">
+                    </div>
+                </div>
+            </div>
+            <div class="group sheet-footer vbox space-m">
+                <button type="button" class="trButton as-primary thickness-l border-l" data-close-sheet="sheet-add-officer">Save officer term</button>
+                <button type="button" class="trButton as-standard thickness-l border-l" data-close-sheet="sheet-add-officer">Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -214,8 +323,26 @@
                         allTabs[i].classList.toggle("active", active);
                         allTabs[i].setAttribute("aria-selected", active ? "true" : "false");
                     }
-                    document.getElementById("todas-tab-all").classList.toggle("hidden", key !== "all");
-                    document.getElementById("todas-tab-empty").classList.toggle("hidden", key !== "empty");
+                    document.getElementById("tab-todas").classList.toggle("hidden", key !== "todas");
+                    document.getElementById("tab-federations").classList.toggle("hidden", key !== "federations");
+                    return;
+                }
+                const openBtn = e.target.closest("[data-open-sheet]");
+                if (openBtn) {
+                    const sheet = document.getElementById(openBtn.getAttribute("data-open-sheet"));
+                    if (sheet) {
+                        sheet.classList.remove("hidden");
+                    }
+                }
+                const closeBtn = e.target.closest("[data-close-sheet]");
+                if (closeBtn) {
+                    const sheet = document.getElementById(closeBtn.getAttribute("data-close-sheet"));
+                    if (sheet) {
+                        sheet.classList.add("hidden");
+                    }
+                }
+                if (e.target.classList.contains("sheet-backdrop")) {
+                    e.target.classList.add("hidden");
                 }
             });
         }());

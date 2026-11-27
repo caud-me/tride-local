@@ -34,7 +34,7 @@
                     <div class="hbox space-l">
                         <div class="trSearchBox card hbox space-m thickness-m border-l flex1" role="search">
                             <i class="trIcon icon as-gray" aria-hidden="true">&#xE721;</i>
-                            <input type="search" class="flex1" placeholder="Find a member" aria-label="Find a member">
+                            <input type="search" class="flex1" placeholder="Find by name, ID, or barangay" aria-label="Find by name, ID, or barangay">
                         </div>
                         <div class="hbox">
                             <div class="trMenu menu-anchor">
@@ -43,16 +43,16 @@
                                 </button>
                                 <div id="members-filter-menu" class="trMenuPanel popup vbox space-xl border-l scroll hidden" role="menu">
                                     <div class="group vbox space-m">
-                                        <p class="as-tertiary as-gray">Sort by</p>
+                                        <p class="as-tertiary as-gray">Filter by Barangay</p>
                                         <label class="menu-item hbox space-l" role="menuitemradio" aria-checked="true">
-                                            <input type="radio" name="all-member-sort" value="name" checked>
-                                            <p class="as-primary push-right">Name</p>
+                                            <input type="radio" name="all-member-barangay" value="all" checked>
+                                            <p class="as-primary push-right">All barangays</p>
                                             <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
                                         </label>
                                         <div class="trSpacer spacer" role="separator"></div>
                                         <label class="menu-item hbox space-l" role="menuitemradio" aria-checked="false">
-                                            <input type="radio" name="all-member-sort" value="id">
-                                            <p class="as-primary push-right">Member ID</p>
+                                            <input type="radio" name="all-member-barangay" value="Mabolo">
+                                            <p class="as-primary push-right">Mabolo</p>
                                             <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
                                         </label>
                                     </div>
@@ -65,14 +65,14 @@
                                         </label>
                                         <div class="trSpacer spacer" role="separator"></div>
                                         <label class="menu-item hbox space-l" role="menuitemradio" aria-checked="false">
-                                            <input type="radio" name="all-member-role" value="driver">
-                                            <p class="as-primary push-right">Driver</p>
+                                            <input type="radio" name="all-member-role" value="officer">
+                                            <p class="as-primary push-right">TODA Officer</p>
                                             <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
                                         </label>
                                         <div class="trSpacer spacer" role="separator"></div>
                                         <label class="menu-item hbox space-l" role="menuitemradio" aria-checked="false">
-                                            <input type="radio" name="all-member-role" value="operator">
-                                            <p class="as-primary push-right">Operator</p>
+                                            <input type="radio" name="all-member-role" value="driver">
+                                            <p class="as-primary push-right">Driver</p>
                                             <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
                                         </label>
                                     </div>
@@ -84,29 +84,24 @@
                     <div id="members-tab-all" class="vbox flex1 space-l">
                         <div class="trAlphaList vbox space-l">
                             <div class="trCardGroup group vbox space-m">
-                                <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">A</p>
+                                <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">J</p>
                                 <div class="trCard card standard vbox space-m border-l trListCard">
                                     <div class="trActionRow hbox space-l" role="button" tabindex="0" data-goto="view-member-detail">
                                         <div class="vbox push-right space-s">
-                                            <p class="as-primary">Alex Santos</p>
-                                        </div>
-                                        <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
-                                    </div>
-                                    <div class="trSpacer spacer" role="separator"></div>
-                                    <div class="trActionRow hbox space-l" role="button" tabindex="0" data-goto="view-member-detail">
-                                        <div class="vbox push-right space-s">
-                                            <p class="as-primary">Andrea Cruz</p>
+                                            <p class="as-primary">Juan Dela Cruz</p>
+                                            <p class="as-secondary as-gray">Federation Secretary · President · Operator (1 unit) · Brgy. Mabolo</p>
                                         </div>
                                         <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
                                     </div>
                                 </div>
                             </div>
                             <div class="trCardGroup group vbox space-m">
-                                <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">J</p>
+                                <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">M</p>
                                 <div class="trCard card standard vbox space-m border-l trListCard">
                                     <div class="trActionRow hbox space-l" role="button" tabindex="0" data-goto="view-member-detail">
                                         <div class="vbox push-right space-s">
-                                            <p class="as-primary">Jamie Reyes</p>
+                                            <p class="as-primary">Maria Santos</p>
+                                            <p class="as-secondary as-gray">Treasurer · Operator (2 units) · Brgy. Mabolo</p>
                                         </div>
                                         <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
                                     </div>
@@ -134,99 +129,73 @@
                 </button>
                 <div class="vbox push-right space-s">
                     <h1 class="as-headline lh-1 as-bold">Member details</h1>
-                    <p class="as-tertiary as-gray lh-1">for Alex</p>
+                    <p class="as-tertiary as-gray lh-1">for Maria</p>
                 </div>
             </header>
 
             <main class="content vbox space-xl">
                 <section class="trSection section vbox space-l">
-                    <div class="trCardGroup group vbox space-m">
-                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Member details</p>
-                        <div class="trCard card standard vbox space-m border-l trListCard">
-                            <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label><span class="as-tertiary as-gray">Member ID</span></label>
-                                <p class="as-primary">M-001</p>
-                            </div>
-                            <div class="trSpacer spacer" role="separator"></div>
-                            <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label><span class="as-tertiary as-gray">Address</span></label>
-                                <p class="as-primary">Mabolo, Naga City</p>
-                            </div>
-                            <div class="trSpacer spacer" role="separator"></div>
-                            <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label><span class="as-tertiary as-gray">Contact No.</span></label>
-                                <p class="as-primary">0917 000 0000</p>
-                            </div>
-                            <div class="trSpacer spacer" role="separator"></div>
-                            <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label><span class="as-tertiary as-gray">License No.</span></label>
-                                <p class="as-primary">E01-23-456789</p>
-                            </div>
+                    <section class="trProfileCard card profile grid border-l" aria-label="Member profile">
+                        <div class="vbox tl">
+                            <p class="as-tertiary as-gray">Hey,</p>
+                            <p class="as-primary as-bold">Maria Santos</p>
                         </div>
-                        <p class="as-cardfootnote as-tertiary as-gray">Personal contact and license details belong to Alex.</p>
-                    </div>
+                        <div class="avatar-lg tr" aria-hidden="true"></div>
+                        <div class="vbox bl">
+                            <p class="as-tertiary as-gray">45 Penafrancia Ave., Mabolo, Naga City</p>
+                            <p class="as-tertiary as-gray">09171234502</p>
+                        </div>
+                        <div class="vbox br">
+                            <p class="as-tertiary as-gray">Mabolo TODA</p>
+                            <p class="as-tertiary as-gray">Non-driving member</p>
+                        </div>
+                    </section>
                 </section>
 
                 <section class="trSection section vbox space-l">
                     <div class="trCardGroup group vbox space-m">
-                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Roles</p>
-                        <div class="trCard card standard vbox space-m border-l trListCard">
-                            <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label><span class="as-tertiary as-gray">Assigned roles</span></label>
-                                <p class="as-primary">Driver, Operator</p>
-                            </div>
-                            <div class="trSpacer spacer" role="separator"></div>
-                            <div class="trActionRow hbox space-l" role="button" tabindex="0" data-open-sheet="sheet-manage-roles">
-                                <div class="vbox push-right space-s">
-                                    <p class="as-primary">Manage roles</p>
-                                </div>
-                                <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
-                            </div>
-                        </div>
-                        <p class="as-cardfootnote as-tertiary as-gray">Federation Secretary assigns TODA President; units and driver licenses cover the rest.</p>
-                    </div>
-
-                    <div class="trCardGroup group vbox space-m">
-                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">TODA group</p>
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">TODA association</p>
                         <div class="trCard card standard vbox space-m border-l trListCard">
                             <div class="trPropertyRow vbox" data-tr-field="true">
                                 <label><span class="as-tertiary as-gray">Association</span></label>
-                                <p class="as-primary">Mabolo TODA</p>
+                                <p class="as-primary">Mabolo TODA (TODA-01)</p>
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
                             <div class="trActionRow hbox space-l" role="button" tabindex="0" data-open-sheet="sheet-toda-picker">
                                 <div class="vbox push-right space-s">
-                                    <p class="as-primary">Change TODA group</p>
+                                    <p class="as-primary">Transfer TODA group</p>
                                 </div>
                                 <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
                             </div>
                         </div>
-                        <p class="as-cardfootnote as-tertiary as-gray">Federation Secretary can assign or move this member's TODA group.</p>
+                        <p class="as-cardfootnote as-tertiary as-gray">TODA membership is mandatory. End any officer terms before transferring.</p>
                     </div>
                 </section>
 
                 <section class="trSection section vbox space-l">
                     <div class="trCardStack group vbox space-l">
-                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">2 Tricycles owned · 1 remaining</p>
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">2 of 5 Tricycles owned · 3 remaining</p>
                         <div class="card-stack collapsed">
                             <div class="trBrandCard card brandcard grid border-m" style="z-index: 2;">
                                 <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">OPERATOR</span></p>
+                                <div class="tr"><p class="as-tertiary as-gray">Blue</p></div>
                                 <div class="vbox space-s bl">
-                                    <p class="as-large-title as-bold">0224</p>
-                                    <p class="as-tertiary as-gray">from <span class="as-bold">Alex Santos</span></p>
+                                    <p class="as-large-title as-bold">0225</p>
+                                    <p class="as-tertiary as-gray">from <span class="as-bold">Maria Santos</span></p>
                                 </div>
                                 <div class="br">
-                                    <p class="as-tertiary as-gray">Assigned to <span class="as-bold">Jamie Reyes</span></p>
+                                    <p class="as-tertiary as-gray">Assigned to <span class="as-bold">Pedro Reyes</span> (+1 alt)</p>
                                 </div>
                             </div>
                             <div class="trBrandCard card brandcard grid border-m" style="z-index: 1;">
                                 <p class="trBrandLogo as-headline as-black as-italic lh-1 tl">TRIDE <span class="as-tertiary as-midgray as-bold">OPERATOR</span></p>
+                                <div class="tr"><p class="as-tertiary as-gray">Blue</p></div>
                                 <div class="vbox space-s bl">
-                                    <p class="as-large-title as-bold">0819</p>
-                                    <p class="as-tertiary as-gray">from <span class="as-bold">Alex Santos</span></p>
+                                    <p class="as-large-title as-bold">0226</p>
+                                    <p class="as-tertiary as-gray">from <span class="as-bold">Maria Santos</span></p>
                                 </div>
                                 <div class="br">
-                                    <p class="as-tertiary as-gray">No driver</p>
+                                    <p class="as-tertiary as-gray">No active driver</p>
                                 </div>
                             </div>
                         </div>
@@ -235,15 +204,15 @@
 
                 <section class="trSection section vbox space-l">
                     <div class="trCardGroup group vbox space-m">
-                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Danger zone</p>
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Danger zone (RA 10173)</p>
                         <div class="trCard card standard vbox space-m border-l">
-                            <div class="trActionRow hbox space-l" role="button" tabindex="0">
+                            <div class="trActionRow hbox space-l" aria-disabled="true">
                                 <div class="vbox push-right space-s">
-                                    <p class="as-primary as-critical">Remove Alex Santos</p>
+                                    <p class="as-primary as-critical disabled">Erase Maria Santos (RA 10173)</p>
                                 </div>
                             </div>
                         </div>
-                        <p class="as-cardfootnote as-tertiary as-gray">A member must have no owned units, assigned tricycle, or leadership role before removal.</p>
+                        <p class="as-cardfootnote as-tertiary as-gray">This operator owns 2 tricycle unit(s). Transfer or delete owned units before erasing.</p>
                     </div>
                 </section>
             </main>
@@ -263,11 +232,11 @@
             <main class="content vbox space-xl">
                 <section class="trSection section vbox space-l">
                     <div class="trCardGroup group vbox space-m">
-                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">New member</p>
+                        <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">Member details</p>
                         <div class="trCard card standard vbox space-m border-l trListCard">
                             <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label for="add-id"><span class="as-tertiary as-gray">ID Number</span></label>
-                                <input id="add-id" type="text" placeholder="e.g. M1">
+                                <label for="add-id"><span class="as-tertiary as-gray">Member ID (Optional)</span></label>
+                                <input id="add-id" type="text" maxlength="10" placeholder="Auto or e.g. MEM-007">
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
                             <div class="trPropertyRow vbox" data-tr-field="true">
@@ -281,89 +250,63 @@
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
                             <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label for="add-addr"><span class="as-tertiary as-gray">Home Address</span></label>
-                                <input id="add-addr" type="text" placeholder="Barangay, City">
+                                <label for="add-street"><span class="as-tertiary as-gray">Street</span></label>
+                                <input id="add-street" type="text" placeholder="e.g. 12 Rizal St.">
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
                             <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label for="add-contact"><span class="as-tertiary as-gray">Phone Number</span></label>
+                                <label for="add-brgy"><span class="as-tertiary as-gray">Barangay</span></label>
+                                <input id="add-brgy" type="text" placeholder="e.g. Mabolo">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-city"><span class="as-tertiary as-gray">City / Municipality</span></label>
+                                <input id="add-city" type="text" value="Naga City">
+                            </div>
+                            <div class="trSpacer spacer" role="separator"></div>
+                            <div class="trPropertyRow vbox" data-tr-field="true">
+                                <label for="add-contact"><span class="as-tertiary as-gray">Contact Number</span></label>
                                 <input id="add-contact" type="text" placeholder="09XXXXXXXXX">
                             </div>
                             <div class="trSpacer spacer" role="separator"></div>
                             <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label for="add-lic"><span class="as-tertiary as-gray">Driver's License (Optional)</span></label>
-                                <input id="add-lic" type="text" placeholder="Leave blank if non-driver">
-                            </div>
-                            <div class="trSpacer spacer" role="separator"></div>
-                            <div class="trPropertyRow vbox" data-tr-field="true">
-                                <label for="add-toda"><span class="as-tertiary as-gray">TODA Group</span></label>
+                                <label for="add-toda"><span class="as-tertiary as-gray">TODA Association</span></label>
                                 <div class="hbox space-m">
                                     <select id="add-toda" class="flex1">
-                                        <option value="T01">Mabolo TODA</option>
-                                        <option value="T02">Pacol TODA</option>
+                                        <option value="TODA-01">Mabolo TODA (TODA-01)</option>
+                                        <option value="TODA-02">Pacol TODA (TODA-02)</option>
                                     </select>
                                     <i class="trIcon icon as-gray" aria-hidden="true">&#xE70D;</i>
                                 </div>
                             </div>
                         </div>
-                        <p class="as-cardfootnote as-tertiary as-gray">Leave License No. blank if this member is not an active driver.</p>
+                        <p class="as-cardfootnote as-tertiary as-gray">Leave Member ID blank to auto-assign the next ID.</p>
                     </div>
                 </section>
             </main>
         </div>
     </div>
 
-    <!-- sheet: manage roles -->
-    <div id="sheet-manage-roles" class="trSheet sheet-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="sheet-roles-title">
-        <div class="sheet vbox space-xl border-l">
-            <div class="group sheet-header vbox space-t">
-                <p id="sheet-roles-title" class="as-headline as-bold">Manage roles</p>
-            </div>
-            <div class="group sheet-body vbox space-l">
-                <div class="trCard card standard vbox space-m border-l trListCard">
-                    <div class="trActionRow hbox space-l" aria-disabled="true">
-                        <div class="vbox push-right space-s">
-                            <p class="as-primary disabled">Operator (2 of 3 tricycles)</p>
-                        </div>
-                    </div>
-                    <div class="trSpacer spacer" role="separator"></div>
-                    <div class="trActionRow hbox space-l" aria-disabled="true">
-                        <div class="vbox push-right space-s">
-                            <p class="as-primary disabled">Licensed driver (E01-23-456789)</p>
-                        </div>
-                    </div>
-                    <div class="trSpacer spacer" role="separator"></div>
-                    <div class="trActionRow hbox space-l" role="button" tabindex="0">
-                        <div class="vbox push-right space-s">
-                            <p class="as-primary">Assign as president of Mabolo TODA</p>
-                        </div>
-                        <i class="trIcon icon as-gray" aria-hidden="true">&#xE76C;</i>
-                    </div>
-                </div>
-            </div>
-            <div class="group sheet-footer vbox space-m">
-                <button type="button" class="trButton as-standard thickness-l border-l" data-close-sheet="sheet-manage-roles">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- sheet: select toda group -->
+    <!-- sheet: transfer toda group (TODA_ID NOT NULL — no None option) -->
     <div id="sheet-toda-picker" class="trSheet sheet-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="sheet-toda-title">
         <div class="sheet vbox space-xl border-l">
             <div class="group sheet-header vbox space-t">
-                <p id="sheet-toda-title" class="as-headline as-bold">Select TODA group</p>
+                <p id="sheet-toda-title" class="as-headline as-bold">Transfer TODA group</p>
+                <p class="as-secondary as-midgray">Every member must belong to a TODA. Remove active officer terms before moving.</p>
             </div>
             <div class="group sheet-body vbox space-l">
                 <div class="trCard card standard vbox space-m border-l trListCard">
-                    <div class="trActionRow hbox space-l" role="button" tabindex="0" data-close-sheet="sheet-toda-picker">
+                    <div class="trActionRow hbox space-l" aria-disabled="true">
                         <div class="vbox push-right space-s">
-                            <p class="as-primary">Mabolo TODA (T01)</p>
+                            <p class="as-primary disabled">Mabolo TODA (TODA-01)</p>
+                            <p class="as-secondary as-gray">Current association</p>
                         </div>
                     </div>
                     <div class="trSpacer spacer" role="separator"></div>
                     <div class="trActionRow hbox space-l" role="button" tabindex="0" data-close-sheet="sheet-toda-picker">
                         <div class="vbox push-right space-s">
-                            <p class="as-primary">Pacol TODA (T02)</p>
+                            <p class="as-primary">Pacol TODA (TODA-02)</p>
+                            <p class="as-secondary as-gray">Pacol - Centro</p>
                         </div>
                     </div>
                 </div>

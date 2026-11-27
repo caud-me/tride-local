@@ -1,9 +1,10 @@
-/* app entry point */
+/* member portal entry point */
 
+// params: none
 async function startApp() {
     try {
-        const status = await apiGetStatus();
-        if (status.oobeRequired) {
+        const status = await apiStatus();
+        if (status.setupRequired) {
             setSessionMemberId(null);
             setRootPage(renderOobePage, {});
             return;
@@ -17,11 +18,12 @@ async function startApp() {
     } catch (err) {
         const appRoot = document.getElementById("app");
         appRoot.replaceChildren();
-        appRoot.appendChild(trEmptyState({
+        const emptyNode = trEmptyState({
             icon: "\uE783",
             title: "Cannot reach backend",
             subtitle: err.message
-        }));
+        });
+        appRoot.appendChild(emptyNode);
     }
 }
 

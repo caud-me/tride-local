@@ -16,19 +16,29 @@
             </button>
             <div class="vbox push-right space-s">
                 <h1 class="as-headline lh-1 as-bold">Export data</h1>
+                <p class="as-tertiary as-gray lh-1">for all TODAs</p>
             </div>
         </header>
 
         <main class="content vbox space-xl">
             <section class="trSection section vbox space-l">
                 <div class="trCardGroup group vbox space-m">
-                    <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">What to export</p>
+                    <p class="trSectionHeading as-cardheadline as-secondary as-gray as-bold" role="heading" aria-level="2">What to export (6 tables)</p>
                     <div class="trCard card standard vbox space-m border-l trListCard">
                         <label class="trCheckRow check-row hbox space-l">
                             <input type="checkbox" checked>
                             <div class="vbox push-right space-s">
+                                <p class="as-primary">Federations</p>
+                                <p class="as-secondary as-gray">City and district federations</p>
+                            </div>
+                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                        </label>
+                        <div class="trSpacer spacer" role="separator"></div>
+                        <label class="trCheckRow check-row hbox space-l">
+                            <input type="checkbox" checked>
+                            <div class="vbox push-right space-s">
                                 <p class="as-primary">TODA associations</p>
-                                <p class="as-secondary as-gray">All registered TODA groups and routes</p>
+                                <p class="as-secondary as-gray">SEC-registered TODAs, routes, and terminals</p>
                             </div>
                             <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
                         </label>
@@ -37,7 +47,7 @@
                             <input type="checkbox" checked>
                             <div class="vbox push-right space-s">
                                 <p class="as-primary">Members</p>
-                                <p class="as-secondary as-gray">All federation members and roles</p>
+                                <p class="as-secondary as-gray">Atomic address and driver credential profiles</p>
                             </div>
                             <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
                         </label>
@@ -46,12 +56,30 @@
                             <input type="checkbox" checked>
                             <div class="vbox push-right space-s">
                                 <p class="as-primary">Tricycle units</p>
-                                <p class="as-secondary as-gray">All tricycle units and assignments</p>
+                                <p class="as-secondary as-gray">Franchised tricycles, color zones, and permits</p>
+                            </div>
+                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                        </label>
+                        <div class="trSpacer spacer" role="separator"></div>
+                        <label class="trCheckRow check-row hbox space-l">
+                            <input type="checkbox" checked>
+                            <div class="vbox push-right space-s">
+                                <p class="as-primary">Driver assignments</p>
+                                <p class="as-secondary as-gray">Primary and alternate (relyebo) shifts</p>
+                            </div>
+                            <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
+                        </label>
+                        <div class="trSpacer spacer" role="separator"></div>
+                        <label class="trCheckRow check-row hbox space-l">
+                            <input type="checkbox" checked>
+                            <div class="vbox push-right space-s">
+                                <p class="as-primary">Officer terms</p>
+                                <p class="as-secondary as-gray">Elected TODA board positions and term dates</p>
                             </div>
                             <i class="trIcon icon check" aria-hidden="true">&#xE73E;</i>
                         </label>
                     </div>
-                    <p class="as-cardfootnote as-tertiary as-gray">Select one or more tables to include in the export.</p>
+                    <p class="as-cardfootnote as-tertiary as-gray">Select one or more tables. SQL exports follow strict foreign key insert order.</p>
                 </div>
 
                 <div class="trCardGroup group vbox space-m">
@@ -61,15 +89,16 @@
                             <label for="export-format"><span class="as-tertiary as-gray">File format</span></label>
                             <div class="hbox space-m">
                                 <select id="export-format" class="flex1">
-                                    <option value="csv" selected>Excel (.csv)</option>
+                                    <option value="sql" selected>SQL (.sql)</option>
+                                    <option value="json">JSON (.json)</option>
+                                    <option value="csv">Excel (.csv)</option>
                                     <option value="pdf">PDF (Print)</option>
-                                    <option value="sql">SQL (.sql)</option>
                                 </select>
                                 <i class="trIcon icon as-gray" aria-hidden="true">&#xE70D;</i>
                             </div>
                         </div>
                     </div>
-                    <p class="as-cardfootnote as-tertiary as-gray">SQL exports raw insert statements; PDF opens a printable report.</p>
+                    <p class="as-cardfootnote as-tertiary as-gray">SQL builds replayable inserts; JSON shows a live preview and downloads a snapshot.</p>
                 </div>
             </section>
 
