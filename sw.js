@@ -1,6 +1,6 @@
 /* offline service worker cache for tride-local (dbms1_tride 6-table edition) */
 
-const TRIDE_CACHE_NAME = "tride-local-v30";
+const TRIDE_CACHE_NAME = "tride-local-v31";
 const PRECACHE_URLS = [
     "./",
     "./index.html",

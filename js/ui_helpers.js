@@ -289,12 +289,19 @@ function buildAssociationCard(toda, options) {
         presLine.textContent = "No active president";
     }
 
+    // based on final_dbms1_relational-model.md, Federation_ID, show linked federation name or unaffiliated label on association card
+    const fedLabel = toda.federationName || toda.Federation_Name || "Unaffiliated";
+    let routeSubtitle = fedLabel;
+    if (toda.Route) {
+        routeSubtitle = toda.Route + " · " + fedLabel;
+    }
+
     const card = trBrandCard({
         subtext: "ASSOCIATION",
         big: false,
         topRight: countText,
         title: toda.TODA_Name,
-        subtitle: toda.Route,
+        subtitle: routeSubtitle,
         bottomRight: presLine,
         onClick: opts.onClick
     });

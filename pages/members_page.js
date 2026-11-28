@@ -612,13 +612,26 @@ function renderMemberDetailPage(params) {
 
         const unitItems = [];
         if (drivenShifts.length > 0) {
-            const shiftRows = [];
+            const shiftCards = [];
             const sCount = drivenShifts.length;
             for (let i = 0; i < sCount; i += 1) {
                 const sh = drivenShifts[i];
-                const row = trActionRow({
-                    label: "Unit " + sh.Body_Number + " (" + sh.Driver_Role + ")",
-                    subtitle: sh.Shift_Schedule + " · " + sh.Status + " · " + sh.Date_Assigned,
+                const roleLabel = sh.Driver_Role ? sh.Driver_Role.toUpperCase() : "DRIVER";
+                const statusText = sh.Status || "Active";
+                const ownerName = formatFullName(sh.Owner_First_Name, sh.Owner_Last_Name);
+                const ownerDisplay = ownerName || sh.Owner_Member_ID || "Unknown owner";
+                const ownerLine = trEl("p", "as-tertiary as-gray");
+                const ownerPrefix = document.createTextNode("Owner: ");
+                const ownerBold = trEl("span", "as-bold", ownerDisplay);
+                ownerLine.appendChild(ownerPrefix);
+                ownerLine.appendChild(ownerBold);
+
+                const shiftCard = trBrandCard({
+                    subtext: roleLabel,
+                    topRight: statusText,
+                    title: sh.Body_Number || sh.Tricycle_ID,
+                    subtitle: sh.Shift_Schedule + " · " + sh.Date_Assigned,
+                    bottomRight: ownerLine,
                     onClick: function () {
                         pushPage(renderManageUnitPage, {
                             tricycleId: sh.Tricycle_ID,
@@ -628,15 +641,13 @@ function renderMemberDetailPage(params) {
                         });
                     }
                 });
-                shiftRows.push(row);
+                shiftCards.push(shiftCard);
             }
-            const shiftCard = trListCard(shiftRows);
-            const shiftGroup = trCardGroup({
-                headline: "Shift assignments (" + drivenShifts.length + ")",
-                card: shiftCard,
-                footnote: "Tap a shift to open the tricycle unit."
+            const shiftStack = trCardStack({
+                heading: "Shift assignments (" + drivenShifts.length + ")",
+                cards: shiftCards
             });
-            unitItems.push(shiftGroup);
+            unitItems.push(shiftStack);
         }
 
         const remainingUnits = MEMBER_PAGE_MAX_UNITS - owned.length;

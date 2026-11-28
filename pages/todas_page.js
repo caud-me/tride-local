@@ -74,24 +74,15 @@ function renderTodasPage(params) {
 
         function updateHeaderActions() {
             const actions = [];
-            if (isSecretary) {
-                if (activeTab === "federations") {
-                    const addFedIcon = trIcon("\uE710", {
-                        label: "Add federation",
-                        onClick: function () {
-                            pushPage(renderAddFederationPage, {});
-                        }
-                    });
-                    actions.push(addFedIcon);
-                } else {
-                    const addTodaIcon = trIcon("\uE710", {
-                        label: "Add TODA",
-                        onClick: function () {
-                            pushPage(renderAddTodaPage, {});
-                        }
-                    });
-                    actions.push(addTodaIcon);
-                }
+            // based on final_dbms1_active-baseline-and-naga-city-rules.md, FEDERATION, allow secretary to register toda while federation stays accredited by city council
+            if (isSecretary && activeTab !== "federations") {
+                const addTodaIcon = trIcon("\uE710", {
+                    label: "Add TODA",
+                    onClick: function () {
+                        pushPage(renderAddTodaPage, {});
+                    }
+                });
+                actions.push(addTodaIcon);
             }
             const nextNav = trNavBar({
                 title: isSecretary ? "TODAs & federations" : "TODA associations",
@@ -189,7 +180,7 @@ function renderTodasPage(params) {
                 const emptyNode = trEmptyState({
                     icon: "\uE82F",
                     title: "No federations yet",
-                    subtitle: "Tap + to register a federation."
+                    subtitle: "Federations are accredited by the LGU during initial setup."
                 });
                 tabPanel.appendChild(emptyNode);
                 return;
@@ -271,10 +262,12 @@ function renderFederationDetailPage(params) {
 
     Promise.all([
         apiGetFederation(safeParams.federationId),
-        apiHome(viewerId)
+        apiHome(viewerId),
+        apiListTodas()
     ]).then(function (results) {
         const fed = results[0].federation;
         const viewerRoles = results[1].roles || {};
+        const allTodas = results[2].todas || [];
         const isSecretary = Boolean(viewerRoles.isSecretary);
 
         main.replaceChildren();
@@ -319,64 +312,33 @@ function renderFederationDetailPage(params) {
 
         const topItems = [fedGroup];
 
-        const linkedTodas = fed.todas || [];
+        const linkedTodas = [];
+        const allTodaCount = allTodas.length;
+        for (let i = 0; i < allTodaCount; i += 1) {
+            const candidate = allTodas[i];
+            if (candidate.Federation_ID === fed.Federation_ID) {
+                linkedTodas.push(candidate);
+            }
+        }
         if (linkedTodas.length > 0) {
-            const todaRows = [];
+            const todaCards = [];
             const tLen = linkedTodas.length;
             for (let i = 0; i < tLen; i += 1) {
                 const t = linkedTodas[i];
-                const row = trActionRow({
-                    label: t.TODA_Name,
-                    subtitle: t.TODA_ID + " · " + t.Route,
-                    onClick: function () {
-                        pushPage(renderTodaDetailPage, { todaId: t.TODA_ID });
-                    }
+                const card = buildAssociationCard(t, function () {
+                    pushPage(renderTodaDetailPage, { todaId: t.TODA_ID });
                 });
-                todaRows.push(row);
+                todaCards.push(card);
             }
-            const todaListCard = trListCard(todaRows);
-            const todaGroup = trCardGroup({
-                headline: "Affiliated TODAs (" + linkedTodas.length + ")",
-                card: todaListCard,
-                footnote: "TODAs currently linked to this federation."
+            const todaStack = trCardStack({
+                heading: "Affiliated TODAs (" + linkedTodas.length + ")",
+                cards: todaCards
             });
-            topItems.push(todaGroup);
+            topItems.push(todaStack);
         }
 
         const topSec = trSection(topItems);
         main.appendChild(topSec);
-
-        if (isSecretary) {
-            const removeRow = trActionRow({
-                label: "Remove " + fed.Federation_Name,
-                critical: true,
-                hideChevron: true,
-                onClick: function () {
-                    trConfirm({
-                        title: "Remove " + fed.Federation_Name + "?",
-                        message: "Affiliated TODAs will stay active with Federation set to None.",
-                        confirmLabel: "Remove federation",
-                        critical: true,
-                        onConfirm: async function () {
-                            try {
-                                await apiDeleteFederation(fed.Federation_ID);
-                                popPage();
-                            } catch (err) {
-                                trAlert({ title: "Cannot remove federation", message: err.message });
-                            }
-                        }
-                    });
-                }
-            });
-            const dangerCard = trCard([removeRow]);
-            const dangerGroup = trCardGroup({
-                headline: "Danger zone",
-                card: dangerCard,
-                footnote: "Deleting a federation clears Federation_ID on affiliated TODAs without deleting them."
-            });
-            const dangerSec = trSection(dangerGroup);
-            main.appendChild(dangerSec);
-        }
     }).catch(function (err) {
         main.replaceChildren();
         const errEmpty = trEmptyState({
